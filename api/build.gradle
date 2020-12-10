@@ -44,6 +44,7 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
 
 	annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
+	testImplementation 'com.github.javafaker:javafaker:1.0.2'
 }
 
 flyway {
