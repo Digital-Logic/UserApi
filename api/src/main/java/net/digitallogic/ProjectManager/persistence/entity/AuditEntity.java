@@ -14,6 +14,7 @@ import java.util.UUID;
 @ToString(of = {"id"})
 @SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 @MappedSuperclass
 public abstract class AuditEntity<ID extends Serializable> implements Persistable<ID> {
 

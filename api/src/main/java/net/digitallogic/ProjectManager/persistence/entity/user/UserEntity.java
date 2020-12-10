@@ -16,7 +16,7 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
-@ToString(of = {"email"})
+@ToString(of = {"email"}, callSuper = true)
 @Entity(name = "UserEntity")
 @Table(name = "user_entity")
 public class UserEntity extends AuditEntity<UUID> {

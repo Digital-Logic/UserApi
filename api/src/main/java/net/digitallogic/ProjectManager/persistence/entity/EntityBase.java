@@ -12,6 +12,7 @@ import java.io.Serializable;
 @SuperBuilder
 @ToString(of = {"id"})
 @NoArgsConstructor
+@AllArgsConstructor
 @MappedSuperclass
 public abstract class EntityBase<ID extends Serializable> implements Persistable<ID> {
 
