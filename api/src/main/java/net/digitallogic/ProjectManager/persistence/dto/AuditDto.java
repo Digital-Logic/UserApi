@@ -2,6 +2,7 @@ package net.digitallogic.ProjectManager.persistence.dto;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import net.digitallogic.ProjectManager.persistence.entity.AuditEntity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -28,4 +29,18 @@ public abstract class AuditDto<ID extends Serializable> {
 	protected LocalDateTime lastModifiedDate;
 	protected UUID lastModifiedBy;
 	protected UUID createdBy;
+
+
+	public AuditDto(AuditEntity<ID> entity) {
+		this.id = entity.getId();
+		this.version = entity.getVersion();
+
+		this.archived = entity.isArchived();
+
+		this.createdBy = entity.getCreatedBy();
+		this.createdDate = entity.getCreatedDate();
+
+		this.lastModifiedBy = entity.getLastModifiedBy();
+		this.lastModifiedDate = entity.getLastModifiedDate();
+	}
 }

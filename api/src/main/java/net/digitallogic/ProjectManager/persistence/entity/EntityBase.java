@@ -2,6 +2,7 @@ package net.digitallogic.ProjectManager.persistence.entity;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import net.digitallogic.ProjectManager.persistence.dto.DtoBase;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
@@ -37,4 +38,10 @@ public abstract class EntityBase<ID extends Serializable> implements Persistable
 	@PostPersist
 	@PostLoad
 	private void toggleIsNew() { isNew = false; }
+
+	public EntityBase(DtoBase<ID> dto) {
+		this.id = dto.getId();
+		this.version = dto.getVersion();
+		this.archived = dto.isArchived();
+	}
 }

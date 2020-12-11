@@ -1,10 +1,12 @@
 package net.digitallogic.ProjectManager.persistence.entity;
 
 import net.digitallogic.ProjectManager.fixtures.UserFixtures;
+import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class UserEntityTest {
 
@@ -17,5 +19,14 @@ public class UserEntityTest {
 		assertThat(user).hasSameHashCodeAs(copy);
 
 		assertThat(user).isNotEqualTo(UserFixtures.userEntity());
+	}
+
+	@Test
+	public void dtoToEntityTest() {
+		UserDto dto = UserFixtures.userDto();
+		UserEntity entity = new UserEntity(dto);
+		assertThat(entity).isEqualToComparingOnlyGivenFields(dto,
+				"id", "email",
+				"firstName", "lastName", "archived", "version");
 	}
 }

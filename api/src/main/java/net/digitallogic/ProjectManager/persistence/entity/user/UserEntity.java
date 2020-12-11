@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.entity.AuditEntity;
 
 import javax.persistence.Column;
@@ -32,4 +33,13 @@ public class UserEntity extends AuditEntity<UUID> {
 
 	@Column(name = "last_name")
 	private String lastName;
+
+
+	public UserEntity(UserDto dto) {
+		super(dto);
+
+		this.email = dto.getEmail();
+		this.firstName = dto.getFirstName();
+		this.lastName = dto.getLastName();
+	}
 }
