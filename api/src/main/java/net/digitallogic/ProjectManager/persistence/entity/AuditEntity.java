@@ -2,6 +2,7 @@ package net.digitallogic.ProjectManager.persistence.entity;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import net.digitallogic.ProjectManager.persistence.dto.AuditDto;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
@@ -52,4 +53,11 @@ public abstract class AuditEntity<ID extends Serializable> implements Persistabl
 
 	@Column(name = "created_by")
 	protected UUID createdBy;
+
+
+	public AuditEntity(AuditDto<ID> dto) {
+		this.id = dto.getId();
+		this.archived = dto.isArchived();
+		this.version = dto.getVersion();
+	}
 }
