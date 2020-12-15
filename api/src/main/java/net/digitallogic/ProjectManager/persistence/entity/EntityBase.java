@@ -15,7 +15,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-public abstract class EntityBase<ID extends Serializable> implements Persistable<ID> {
+public abstract class EntityBase<ID extends Serializable>
+		implements Persistable<ID> {
 
 	@Id
 	@Column(name = "id", unique = true, nullable = false)

@@ -1,16 +1,12 @@
 package net.digitallogic.ProjectManager.persistence.entity.user;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.entity.AuditEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -34,12 +30,29 @@ public class UserEntity extends AuditEntity<UUID> {
 	@Column(name = "last_name")
 	private String lastName;
 
+	@Builder.Default
+	@ManyToMany
+	@JoinTable(
+		name = "user_role_lookup",
+		joinColumns = @JoinColumn(name = "user_id"),
+		inverseJoinColumns = @JoinColumn(name = "role_id")
+	)
+	private Set<RoleEntity> roles = new HashSet<>();
 
-	public UserEntity(UserDto dto) {
-		super(dto);
-
-		this.email = dto.getEmail();
-		this.firstName = dto.getFirstName();
-		this.lastName = dto.getLastName();
+	public void addRole(RoleEntity role) {
+		roles.add(role);
 	}
+
+	public void removeRole(RoleEntity role) {
+		roles.remove(role);
+	}
+
+
+//	public UserEntity(UserDto dto) {
+//		super(dto);
+//
+//		this.email = dto.getEmail();
+//		this.firstName = dto.getFirstName();
+//		this.lastName = dto.getLastName();
+//	}
 }

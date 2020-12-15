@@ -32,7 +32,7 @@ CREATE UNIQUE INDEX idx_unique_role ON role_entity (UPPER(name));
 GRANT SELECT, INSERT, UPDATE ON role_entity TO ${app_user};
 
 /* ** Role authority lookup table ** */
-CREATE TABLE role_authority_entity
+CREATE TABLE role_authority_lookup
 (
     role_id      UUID NOT NULL,
     authority_id UUID NOT NULL,
@@ -41,4 +41,16 @@ CREATE TABLE role_authority_entity
     CONSTRAINT fk_authority_entity FOREIGN KEY (authority_id) REFERENCES authority_entity (id)
 );
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON role_authority_entity TO ${app_user};
+GRANT SELECT, INSERT, UPDATE, DELETE ON role_authority_lookup TO ${app_user};
+
+/* ** User role lookup table ** */
+CREATE TABLE user_role_lookup
+(
+    user_id UUID NOT NULL,
+    role_id UUID NOT NULL,
+
+    CONSTRAINT fk_user_entity FOREIGN KEY (user_id) REFERENCES user_entity (id),
+    CONSTRAINT fk_role_entity FOREIGN KEY (role_id) REFERENCES role_entity (id)
+);
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON user_role_lookup TO ${app_user};

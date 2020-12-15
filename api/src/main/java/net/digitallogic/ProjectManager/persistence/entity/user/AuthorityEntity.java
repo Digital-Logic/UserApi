@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(of = {"id"})
 @Entity(name = "AuthorityEntity")
 @Table(name = "authority_entity")
 public class AuthorityEntity {

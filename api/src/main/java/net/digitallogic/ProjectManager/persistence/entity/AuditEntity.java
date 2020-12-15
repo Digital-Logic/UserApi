@@ -17,7 +17,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-public abstract class AuditEntity<ID extends Serializable> implements Persistable<ID> {
+public abstract class AuditEntity<ID extends Serializable>
+		implements Persistable<ID> {
 
 	@Id
 	@Column(name = "id", nullable = false, unique = true)

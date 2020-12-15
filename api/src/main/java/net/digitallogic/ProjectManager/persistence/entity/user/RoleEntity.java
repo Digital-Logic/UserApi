@@ -1,13 +1,11 @@
 package net.digitallogic.ProjectManager.persistence.entity.user;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.entity.AuditEntity;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,11 +23,12 @@ public class RoleEntity extends AuditEntity<UUID> {
 
 	@ManyToMany
 	@JoinTable(
-			name = "role_authority_entity",
+			name = "role_authority_lookup",
 			joinColumns = @JoinColumn(name = "role_id"),
 			inverseJoinColumns = @JoinColumn(name = "authority_id")
 	)
-	private Set<AuthorityEntity> authorities;
+	@Builder.Default
+	private Set<AuthorityEntity> authorities = new HashSet<>();
 
 	public void addAuthority(AuthorityEntity authority) {
 		authorities.add(authority);

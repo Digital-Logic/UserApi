@@ -14,7 +14,7 @@ INSERT INTO role_entity (id, name, created_by)
 
 
 /* ** Role_Authority Lookup table insert ** */
-INSERT INTO role_authority_entity(role_id, authority_id)
+INSERT INTO role_authority_lookup(role_id, authority_id)
     VALUES ((SELECT id FROM role_entity WHERE name = 'ADMIN_ROLE'),
             (SELECT id FROM authority_entity WHERE name = 'ADMIN_USERS')),
 

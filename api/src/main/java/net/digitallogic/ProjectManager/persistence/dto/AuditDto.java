@@ -14,7 +14,7 @@ import java.util.UUID;
 @ToString(of = {"id"})
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class AuditDto<ID extends Serializable> {
+public abstract class AuditDto<ID extends Serializable>	{
 
 	protected ID id;
 
