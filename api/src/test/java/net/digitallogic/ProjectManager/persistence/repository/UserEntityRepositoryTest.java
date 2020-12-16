@@ -36,7 +36,7 @@ public class UserEntityRepositoryTest {
 	@Test
 	@Sql(value = "classpath:db/testUser.sql")
 	public void findByEmailIgnoreCaseTest() {
-		Optional<UserEntity> user = userEntityRepository.findByEmailIgnoreCase("Test@Testing.com");
+		Optional<UserEntity> user = userEntityRepository.findByEmail("Test@Testing.com");
 		assertThat(user).isNotEmpty();
 		assertThat(user.get().getEmail()).isEqualToIgnoringCase("test@testing.com");
 	}
@@ -44,7 +44,7 @@ public class UserEntityRepositoryTest {
 	@Test
 	@Sql(value = "classpath:db/testUser.sql")
 	public void findByIdTest() {
-		Optional<UserEntity> userEntity = userEntityRepository.findByEmailIgnoreCase("Test@Testing.com");
+		Optional<UserEntity> userEntity = userEntityRepository.findByEmail("Test@Testing.com");
 		assertThat(userEntity).isNotEmpty();
 
 		Optional<UserEntity> user = userEntityRepository.findById(userEntity.get().getId());
@@ -61,9 +61,8 @@ public class UserEntityRepositoryTest {
 		PersistenceUtil pu = Persistence.getPersistenceUtil();
 
 		Optional<UserEntity> user = userEntityRepository
-				.findOne(
-						userEntityRepository.findByEmailSpec("adminTestUser@gmail.com"),
-						entityGraphBuilder.createEntityGraph("roles")
+				.findByEmail(
+						"adminTestUser@gmail.com", entityGraphBuilder.createEntityGraph("roles")
 				);
 
 		assertThat(user).isNotEmpty();
@@ -83,9 +82,8 @@ public class UserEntityRepositoryTest {
 
 		PersistenceUtil pu = Persistence.getPersistenceUtil();
 
-		Optional<UserEntity> user = userEntityRepository.findOne(
-				userEntityRepository.findByEmailSpec("adminTestUser@gmail.com"),
-				graphBuilder.createEntityGraph("authorities")
+		Optional<UserEntity> user = userEntityRepository.findByEmail(
+				"adminTestUser@gmail.com", graphBuilder.createEntityGraph("authorities")
 		);
 
 		assertThat(user).isNotEmpty();

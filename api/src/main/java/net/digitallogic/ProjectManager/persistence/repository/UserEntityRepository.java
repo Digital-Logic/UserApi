@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import javax.persistence.EntityGraph;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,7 +16,11 @@ public interface UserEntityRepository extends PagingAndSortingRepository<UserEnt
 
 	boolean existsByEmailIgnoreCase(String email);
 
-	Optional<UserEntity> findByEmailIgnoreCase(String email);
+	Optional<UserEntity> findByEmail(String email);
+
+	default Optional<UserEntity> findByEmail(String email, EntityGraph<UserEntity> graph) {
+		return findOne(findByEmailSpec(email.toUpperCase()), graph);
+	}
 
 	default Specification<UserEntity> findByEmailSpec(final String email) {
 		return ((root, query, builder) ->
