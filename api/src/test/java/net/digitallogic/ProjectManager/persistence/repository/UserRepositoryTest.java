@@ -6,6 +6,7 @@ import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.EntityGraphBuilder;
+import net.digitallogic.ProjectManager.security.ROLES;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -18,25 +19,25 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RepositoryTest
-public class UserEntityRepositoryTest {
+public class UserRepositoryTest {
 
 	@Autowired
 	EntityManager entityManager;
 
 	@Autowired
-	UserEntityRepository userEntityRepository;
+	UserRepository userRepository;
 
 	@Test
 	@Sql(value = "classpath:db/testUser.sql")
 	public void existByEmailTest() {
-		assertThat(userEntityRepository.existsByEmailIgnoreCase("Test@Testing.com"))
+		assertThat(userRepository.existsByEmailIgnoreCase("Test@Testing.com"))
 				.isTrue();
 	}
 
 	@Test
 	@Sql(value = "classpath:db/testUser.sql")
 	public void findByEmailIgnoreCaseTest() {
-		Optional<UserEntity> user = userEntityRepository.findByEmail("Test@Testing.com");
+		Optional<UserEntity> user = userRepository.findByEmail("Test@Testing.com");
 		assertThat(user).isNotEmpty();
 		assertThat(user.get().getEmail()).isEqualToIgnoringCase("test@testing.com");
 	}
@@ -44,10 +45,10 @@ public class UserEntityRepositoryTest {
 	@Test
 	@Sql(value = "classpath:db/testUser.sql")
 	public void findByIdTest() {
-		Optional<UserEntity> userEntity = userEntityRepository.findByEmail("Test@Testing.com");
+		Optional<UserEntity> userEntity = userRepository.findByEmail("Test@Testing.com");
 		assertThat(userEntity).isNotEmpty();
 
-		Optional<UserEntity> user = userEntityRepository.findById(userEntity.get().getId());
+		Optional<UserEntity> user = userRepository.findById(userEntity.get().getId());
 		assertThat(user).isNotEmpty();
 	}
 
@@ -60,7 +61,7 @@ public class UserEntityRepositoryTest {
 
 		PersistenceUtil pu = Persistence.getPersistenceUtil();
 
-		Optional<UserEntity> user = userEntityRepository
+		Optional<UserEntity> user = userRepository
 				.findByEmail(
 						"adminTestUser@gmail.com", entityGraphBuilder.createEntityGraph("roles")
 				);
@@ -68,6 +69,7 @@ public class UserEntityRepositoryTest {
 		assertThat(user).isNotEmpty();
 		assertThat(pu.isLoaded(user.get(), UserEntity_.ROLES)).isTrue();
 
+		assertThat(user.get().getRoles()).hasSize(1);
 		// Verify that authorities have not been loaded
 		user.get().getRoles().forEach(role -> {
 			assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)).isFalse();
@@ -82,16 +84,22 @@ public class UserEntityRepositoryTest {
 
 		PersistenceUtil pu = Persistence.getPersistenceUtil();
 
-		Optional<UserEntity> user = userEntityRepository.findByEmail(
+		Optional<UserEntity> user = userRepository.findByEmail(
 				"adminTestUser@gmail.com", graphBuilder.createEntityGraph("authorities")
 		);
 
 		assertThat(user).isNotEmpty();
 
 		assertThat(pu.isLoaded(user.get(), UserEntity_.ROLES)).isTrue();
+		assertThat(user.get().getRoles()).hasSize(1);
 
 		user.get().getRoles().forEach(role -> {
 			assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES));
+		});
+
+		user.get().getRoles().forEach(role -> {
+			assertThat(role.getName()).isEqualTo(ROLES.ADMIN.name);
+			assertThat(role.getAuthorities()).hasSize(2);
 		});
 	}
 }

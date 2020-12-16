@@ -1,5 +1,6 @@
 package net.digitallogic.ProjectManager.config;
 
+import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
@@ -39,13 +40,13 @@ public class RepositoryConfig {
 
 	@Bean
 	public EntityGraphBuilder<UserEntity> userEntityGraphBuilder() {
-		return new EntityGraphBuilder<UserEntity>(
+		return new EntityGraphBuilder<>(
 				entityManager,
 				UserEntity.class,
 				Map.ofEntries(
-						entry("roles", graph ->
+						entry(UserEntity_.ROLES, graph ->
 								graph.addSubgraph(UserEntity_.roles)),
-						entry("authorities", graph -> {
+						entry(RoleEntity_.AUTHORITIES, graph -> {
 							graph.addSubgraph(UserEntity_.roles)
 									.addSubgraph(RoleEntity_.AUTHORITIES);
 						})
@@ -53,4 +54,30 @@ public class RepositoryConfig {
 		);
 	}
 
+	@Bean
+	public EntityGraphBuilder<RoleEntity> roleEntityGraphBuilder() {
+		return new EntityGraphBuilder<>(
+				entityManager,
+				RoleEntity.class,
+				Map.ofEntries(
+						entry(RoleEntity_.AUTHORITIES,
+								graph -> graph.addSubgraph(RoleEntity_.authorities)
+						)
+				)
+		);
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

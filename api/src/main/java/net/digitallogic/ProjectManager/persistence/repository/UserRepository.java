@@ -11,12 +11,14 @@ import javax.persistence.EntityGraph;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserEntityRepository extends PagingAndSortingRepository<UserEntity, UUID>,
+public interface UserRepository extends PagingAndSortingRepository<UserEntity, UUID>,
 		EntityGraphRepository<UserEntity, UUID>, JpaSpecificationExecutor<UserEntity> {
 
 	boolean existsByEmailIgnoreCase(String email);
 
-	Optional<UserEntity> findByEmail(String email);
+	default Optional<UserEntity> findByEmail(String email) {
+		return findOne(findByEmailSpec(email));
+	}
 
 	default Optional<UserEntity> findByEmail(String email, EntityGraph<UserEntity> graph) {
 		return findOne(findByEmailSpec(email.toUpperCase()), graph);
