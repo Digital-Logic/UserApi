@@ -21,7 +21,7 @@ public class RoleEntity extends AuditEntity<UUID> {
 	@Column(name = "name", nullable = false, unique = true)
 	private String name;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "role_authority_lookup",
 			joinColumns = @JoinColumn(name = "role_id"),

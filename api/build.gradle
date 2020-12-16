@@ -11,12 +11,12 @@ plugins {
 
 def dbConfig = [
         dev : [dbUrl   : 'jdbc:postgresql://localhost/project_manager',
-               app_user: [user: 'pm_app_user', password: 'password'],
-               pm_user : [user: 'pm_migration_user', password: 'password']
+               app: [user: 'pm_app_user', password: 'password'],
+               mirgration : [user: 'pm_migration_user', password: 'password']
         ],
         test: [dbUrl   : 'jdbc:postgresql://localhost/project_manager_test',
-               app_user: [user: 'pm_app_user', password: 'password'],
-               pm_user : [user: 'pm_migration_user', password: 'password']
+               app: [user: 'pm_app_user', password: 'password'],
+               mirgration: [user: 'pm_migration_user', password: 'password']
         ]
 ]
 
@@ -66,13 +66,13 @@ dependencies {
 
 flyway {
     url = dbConfig.dev.dbUrl
-    user = dbConfig.dev.pm_user.user
-    password = dbConfig.dev.pm_user.password
+    user = dbConfig.dev.mirgration.user
+    password = dbConfig.dev.mirgration.password
     schemas = ['public']
     placeholders = [
             'sysAccountEmail': "'system_account@localhost'",
             'sysAccountPwd'  : "'{bcrypt}\$2y\$17\$mnQvgxTWmCsE2Pecu2zk7uKnrfeH5Qhgw6A7qR6asRWBmvH7Mg4Qu'",
-            'app_user'       : "'pm_app_user'"
+            'app_user'       : dbConfig.dev.app.user
     ]
 }
 
@@ -88,8 +88,8 @@ jooq {
                 jdbc {
                     driver = 'org.postgresql.Driver'
                     url = dbConfig.dev.dbUrl
-                    user = dbConfig.dev.app_user.user
-                    password = dbConfig.dev.app_user.password
+                    user = dbConfig.dev.app.user
+                    password = dbConfig.dev.app.password
                 }
                 generator {
                     name = 'org.jooq.codegen.DefaultGenerator'

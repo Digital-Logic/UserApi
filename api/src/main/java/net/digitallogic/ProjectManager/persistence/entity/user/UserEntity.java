@@ -31,7 +31,7 @@ public class UserEntity extends AuditEntity<UUID> {
 	private String lastName;
 
 	@Builder.Default
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 		name = "user_role_lookup",
 		joinColumns = @JoinColumn(name = "user_id"),

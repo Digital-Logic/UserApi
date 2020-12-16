@@ -41,6 +41,9 @@ CREATE TABLE role_authority_lookup
     CONSTRAINT fk_authority_entity FOREIGN KEY (authority_id) REFERENCES authority_entity (id)
 );
 
+CREATE INDEX idx_role_fk_on_auth_lookup ON role_authority_lookup (role_id);
+CREATE INDEX idx_authority_fk_on_auth_lookup ON role_authority_lookup (authority_id);
+
 GRANT SELECT, INSERT, UPDATE, DELETE ON role_authority_lookup TO ${app_user};
 
 /* ** User role lookup table ** */
@@ -52,5 +55,8 @@ CREATE TABLE user_role_lookup
     CONSTRAINT fk_user_entity FOREIGN KEY (user_id) REFERENCES user_entity (id),
     CONSTRAINT fk_role_entity FOREIGN KEY (role_id) REFERENCES role_entity (id)
 );
+
+CREATE INDEX idx_user_fk_on_role_lookup ON user_role_lookup (user_id);
+CREATE INDEX idx_role_fk_on_role_lookup ON user_role_lookup (role_id);
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON user_role_lookup TO ${app_user};
