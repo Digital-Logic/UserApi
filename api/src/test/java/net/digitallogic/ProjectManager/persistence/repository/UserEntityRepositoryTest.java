@@ -1,10 +1,9 @@
 package net.digitallogic.ProjectManager.persistence.repository;
 
+import net.digitallogic.ProjectManager.annotations.RepositoryTest;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 
 import javax.persistence.EntityManager;
@@ -12,8 +11,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@RepositoryTest
 public class UserEntityRepositoryTest {
 
 	@Autowired
