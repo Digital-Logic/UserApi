@@ -1,6 +1,6 @@
 /* ** User Status BiTemporal entity ** */
 
-CREATE TABLE user_status_entity
+CREATE TABLE user_status
 (
     id                  UUID      NOT NULL,
 
@@ -12,9 +12,9 @@ CREATE TABLE user_status_entity
     system_stop         TIMESTAMP NOT NULL DEFAULT 'INFINITY'::TIMESTAMP,
 
     /* ** User Status Properties ** */
-    enabled             BOOLEAN   NOT NULL DEFAULT FALSE,
-    expired             BOOLEAN   NOT NULL DEFAULT FALSE,
-    locked              BOOLEAN   NOT NULL DEFAULT FALSE,
+    account_enabled     BOOLEAN   NOT NULL DEFAULT FALSE,
+    account_expired     BOOLEAN   NOT NULL DEFAULT FALSE,
+    account_locked      BOOLEAN   NOT NULL DEFAULT FALSE,
     credentials_expired BOOLEAN   NOT NULL DEFAULT FALSE,
 
     /* ** Audit Properties ** */
@@ -26,10 +26,10 @@ CREATE TABLE user_status_entity
     PRIMARY KEY (id, valid_start, system_start),
 
     CONSTRAINT fk_user_entity FOREIGN KEY (id) REFERENCES user_entity (id),
-    CONSTRAINT fk_audit_message FOREIGN KEY (audit_message) REFERENCES audit_message_entity (id)
+    CONSTRAINT fk_audit_message FOREIGN KEY (audit_message) REFERENCES audit_message (id)
 );
 
-CREATE INDEX idx_valid_time ON user_status_entity (id, valid_start DESC, valid_stop);
-CREATE INDEX idx_system_time ON user_status_entity (id, system_start DESC, system_stop);
+CREATE INDEX idx_valid_time ON user_status (id, valid_start DESC, valid_stop);
+CREATE INDEX idx_system_time ON user_status (id, system_start DESC, system_stop);
 
-GRANT SELECT, INSERT, UPDATE on user_status_entity to ${app_user};
+GRANT SELECT, INSERT, UPDATE ON user_status TO ${app_user};

@@ -26,3 +26,5 @@ CREATE UNIQUE INDEX idx_unique_email ON user_entity (UPPER(email));
 
 GRANT SELECT, INSERT, UPDATE ON user_entity TO ${app_user};
 
+
+

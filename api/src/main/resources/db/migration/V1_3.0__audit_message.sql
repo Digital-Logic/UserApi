@@ -1,4 +1,4 @@
-CREATE TABLE audit_message_entity
+CREATE TABLE audit_message
 (
     id                 UUID      NOT NULL PRIMARY KEY,
     message            TEXT      NOT NULL,
@@ -17,4 +17,4 @@ CREATE TABLE audit_message_entity
     CONSTRAINT fk_last_modified_by FOREIGN KEY (last_modified_by) REFERENCES user_entity (id)
 );
 
-GRANT SELECT, INSERT, UPDATE on audit_message_entity to ${app_user};
+GRANT SELECT, INSERT, UPDATE on audit_message to ${app_user};
