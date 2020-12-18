@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.dto.AuditDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
+import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +26,19 @@ public class RoleDto extends AuditDto<UUID> {
 	public RoleDto(RoleEntity entity) {
 		super(entity);
 		name = entity.getName();
-		authorities = entity.getAuthorities()
-				.stream()
+
+		if (pu.isLoaded(entity, RoleEntity_.AUTHORITIES)) {
+			authorities = entity.getAuthorities()
+					.stream()
+					.map(AuthorityDto::new)
+					.collect(Collectors.toList());
+		}
+	}
+
+	public RoleDto(RoleDto dto) {
+		super(dto);
+		name = dto.getName();
+		authorities = dto.getAuthorities().stream()
 				.map(AuthorityDto::new)
 				.collect(Collectors.toList());
 	}

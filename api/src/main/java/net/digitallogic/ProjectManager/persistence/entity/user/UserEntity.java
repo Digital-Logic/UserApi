@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @SuperBuilder
@@ -39,20 +40,39 @@ public class UserEntity extends AuditEntity<UUID> {
 	)
 	private Set<RoleEntity> roles = new HashSet<>();
 
+	@Builder.Default
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "id.id",
+			cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+	private Set<UserStatusEntity> userStatus = new HashSet<>();
+
 	public void addRole(RoleEntity role) {
 		roles.add(role);
 	}
-
 	public void removeRole(RoleEntity role) {
 		roles.remove(role);
 	}
 
+	public void addUserStatus(UserStatusEntity userStatusEntity) {
+		this.userStatus.add(userStatusEntity);
+		userStatusEntity.setUser(this);
+		userStatusEntity.getId().setId(this.getId());
+	}
 
-//	public UserEntity(UserDto dto) {
-//		super(dto);
-//
-//		this.email = dto.getEmail();
-//		this.firstName = dto.getFirstName();
-//		this.lastName = dto.getLastName();
-//	}
+	public UserEntity(UserEntity entity) {
+		super(entity);
+		this.email = entity.getEmail();
+		this.password = entity.getPassword();
+		this.firstName = entity.getFirstName();
+		this.lastName = entity.getLastName();
+
+		//Deep copy roles
+		this.roles = entity.getRoles().stream()
+				.map(RoleEntity::new)
+				.collect(Collectors.toSet());
+
+		//copy user status
+		this.userStatus = entity.getUserStatus().stream()
+				.map(UserStatusEntity::new)
+				.collect(Collectors.toSet());
+	}
 }

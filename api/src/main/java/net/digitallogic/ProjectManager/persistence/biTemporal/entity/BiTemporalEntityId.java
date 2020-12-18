@@ -33,4 +33,10 @@ public class BiTemporalEntityId<ID extends Serializable> implements Serializable
 		this.validStart = validStart;
 		this.systemStart = systemStart;
 	}
+
+	public BiTemporalEntityId(BiTemporalEntityId<ID> entity) {
+		this.id = entity.getId();
+		this.validStart = entity.getValidStart();
+		this.systemStart = entity.getSystemStart();
+	}
 }

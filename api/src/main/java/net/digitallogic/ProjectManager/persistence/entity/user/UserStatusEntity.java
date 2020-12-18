@@ -1,9 +1,6 @@
 package net.digitallogic.ProjectManager.persistence.entity.user;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntity;
 
@@ -13,6 +10,7 @@ import java.util.UUID;
 @Data
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 @Entity(name = "UserStatusEntity")
 @Table(name = "user_status")
@@ -38,4 +36,15 @@ public class UserStatusEntity extends BiTemporalEntity<UUID> {
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinColumn(name = "id")
 	private UserEntity user;
+
+	/* ** BiDirectional linking to UserEntity is not maintained
+		on coping, This is only intended to be used during testing ** */
+	public UserStatusEntity(UserStatusEntity entity) {
+		super(entity);
+		this.accountEnabled = entity.isAccountEnabled();
+		this.accountExpired = entity.isAccountExpired();
+		this.accountLocked = entity.isAccountLocked();
+		this.credentialsExpired = entity.isCredentialsExpired();
+		this.user = entity.getUser();
+	}
 }

@@ -4,13 +4,15 @@ import net.digitallogic.ProjectManager.fixtures.UserFixtures;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class UserEntityTest {
 
 	@Test
-	public void equalsAndHashTest() {
+	public void equalsAndHashEqualityTest() {
 		UserEntity user = UserFixtures.userEntity();
 		UserEntity copy = UserEntity.builder().id(user.getId()).build();
 
@@ -20,13 +22,23 @@ public class UserEntityTest {
 		assertThat(user).isNotEqualTo(UserFixtures.userEntity());
 	}
 
-	// Removed code to convert dto to entity.
-//	@Test
-//	public void dtoToEntityTest() {
-//		UserDto dto = UserFixtures.userDto();
-//		UserEntity entity = new UserEntity(dto);
-//		assertThat(entity).isEqualToComparingOnlyGivenFields(dto,
-//				"id", "email",
-//				"firstName", "lastName", "archived", "version");
-//	}
+	@Test
+	public void equalsAndHashNonEqualityTest() {
+		UserEntity user = UserFixtures.userEntity();
+		UserEntity copy = new UserEntity(user);
+		copy.setId(UUID.randomUUID());
+
+		assertThat(copy).isNotEqualTo(user);
+		assertThat(copy.hashCode()).isNotEqualTo(user.hashCode());
+	}
+
+	@Test
+	public void copyConstructorTest() {
+		UserEntity user = UserFixtures.userEntity();
+		UserEntity copy = new UserEntity(user);
+
+		assertThat(copy).isEqualTo(user);
+		assertThat(copy).hasSameHashCodeAs(user);
+		assertThat(copy).isEqualToComparingFieldByField(user);
+	}
 }

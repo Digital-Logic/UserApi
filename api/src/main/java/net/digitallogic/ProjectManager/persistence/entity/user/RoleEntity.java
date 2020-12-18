@@ -8,10 +8,12 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @ToString(of = {"name"}, callSuper = true)
 @Entity(name = "RoleEntity")
@@ -36,5 +38,16 @@ public class RoleEntity extends AuditEntity<UUID> {
 
 	public void removeAuthority(AuthorityEntity authority) {
 		authorities.remove(authority);
+	}
+
+
+	public RoleEntity(RoleEntity entity) {
+		super(entity);
+		this.name = entity.getName();
+
+		// Copy authorities
+		this.authorities = entity.getAuthorities().stream()
+				.map(AuthorityEntity::new)
+				.collect(Collectors.toSet());
 	}
 }

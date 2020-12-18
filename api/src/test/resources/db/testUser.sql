@@ -4,3 +4,6 @@ INSERT INTO user_entity(id, email, password, first_name, last_name) VALUES
 INSERT INTO user_role_lookup(user_id, role_id) VALUES
 ((select id from user_entity where email = 'test@testing.com'),
  (select id from role_entity where name = 'USER_ROLE'));
+
+INSERT INTO user_status(id, created_by)
+(select id, id from user_entity where email = 'test@testing.com')

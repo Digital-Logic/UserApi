@@ -1,9 +1,6 @@
 package net.digitallogic.ProjectManager.persistence.biTemporal.entity;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.entity.audit.AuditMessageEntity;
 
@@ -16,6 +13,7 @@ import static net.digitallogic.ProjectManager.persistence.biTemporal.Constants.M
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(of = {"id"})
 @MappedSuperclass
@@ -47,4 +45,15 @@ public abstract class BiTemporalEntity<ID extends Serializable> {
 	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "audit_message")
 	protected AuditMessageEntity auditMessage;
+
+
+	public BiTemporalEntity(BiTemporalEntity<ID> entity) {
+		this.id = new BiTemporalEntityId<>(entity.getId());
+		this.validStop = entity.getValidStop();
+		this.systemStop = entity.getSystemStop();
+
+		this.createdBy = entity.getCreatedBy();
+		this.createdDate = entity.getCreatedDate();
+		this.auditMessage = entity.getAuditMessage();
+	}
 }

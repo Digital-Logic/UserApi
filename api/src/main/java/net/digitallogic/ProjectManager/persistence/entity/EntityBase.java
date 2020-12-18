@@ -33,6 +33,7 @@ public abstract class EntityBase<ID extends Serializable>
 
 	@Transient
 	@Builder.Default
+	@Setter(AccessLevel.PROTECTED)
 	protected boolean isNew = true;
 
 	/* ** Toggle isNew boolean ** */
@@ -44,5 +45,13 @@ public abstract class EntityBase<ID extends Serializable>
 		this.id = dto.getId();
 		this.version = dto.getVersion();
 		this.archived = dto.isArchived();
+	}
+
+	public EntityBase(EntityBase<ID> entity) {
+		this.id = entity.getId();
+		this.version = entity.getVersion();
+		this.archived = entity.isArchived();
+		this.isNew = entity.isNew;
+
 	}
 }

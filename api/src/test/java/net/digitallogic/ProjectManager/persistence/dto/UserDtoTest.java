@@ -5,12 +5,15 @@ import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class UserDtoTest {
 
 	@Test
-	public void equalsAndHashTest() {
+	public void equalsAndHashEqualityTest() {
 		UserDto user = UserFixtures.userDto();
 		UserDto copy = UserDto.builder().id(user.getId()).build();
 
@@ -22,7 +25,25 @@ public class UserDtoTest {
 	}
 
 	@Test
-	public void entityToDtoTest() {
+	public void equalsAndHashNonEqualityTest() {
+		UserDto user = UserFixtures.userDto();
+		UserDto copy = new UserDto(user);
+
+		copy.setId(UUID.randomUUID());
+		assertThat(copy).isNotEqualTo(user);
+		assertThat(copy.hashCode()).isNotEqualTo(user.hashCode());
+	}
+
+	@Test
+	public void copyConstructorTest() {
+		UserDto user = UserFixtures.userDto();
+		UserDto copy = new UserDto(user);
+
+		assertThat(copy).isEqualToComparingFieldByField(user);
+	}
+
+	@Test
+	public void mapEntityToDtoTest() {
 		UserEntity entity = UserFixtures.userEntity();
 
 		UserDto dto = new UserDto(entity);
@@ -31,5 +52,8 @@ public class UserDtoTest {
 				"id", "email", "firstName", "lastName",
 				"version", "archived", "createdDate", "lastModifiedDate", "lastModifiedBy",
 				"createdBy");
+
+		assertThat(dto.getRoles()).hasSameSizeAs(entity.getRoles());
+		assertThat(dto.getUserStatus()).hasSameSizeAs(entity.getUserStatus());
 	}
 }

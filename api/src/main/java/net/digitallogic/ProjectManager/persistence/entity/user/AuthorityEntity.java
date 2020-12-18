@@ -1,7 +1,6 @@
 package net.digitallogic.ProjectManager.persistence.entity.user;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +10,9 @@ import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(of = {"id"})
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "AuthorityEntity")
 @Table(name = "authority_entity")
 public class AuthorityEntity {
@@ -21,4 +23,9 @@ public class AuthorityEntity {
 
 	@Column(name = "name", nullable = false, unique = true)
 	private String name;
+
+	public AuthorityEntity(AuthorityEntity entity) {
+		this.id = entity.getId();
+		this.name = entity.getName();
+	}
 }

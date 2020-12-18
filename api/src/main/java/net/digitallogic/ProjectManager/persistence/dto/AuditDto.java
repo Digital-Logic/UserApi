@@ -4,6 +4,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.entity.AuditEntity;
 
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceUtil;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,7 +16,8 @@ import java.util.UUID;
 @ToString(of = {"id"})
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class AuditDto<ID extends Serializable>	{
+public abstract class AuditDto<ID extends Serializable> {
+	protected static PersistenceUtil pu = Persistence.getPersistenceUtil();
 
 	protected ID id;
 
@@ -42,5 +45,15 @@ public abstract class AuditDto<ID extends Serializable>	{
 
 		this.lastModifiedBy = entity.getLastModifiedBy();
 		this.lastModifiedDate = entity.getLastModifiedDate();
+	}
+
+	public AuditDto(AuditDto<ID> dto) {
+		this.id = dto.getId();
+		this.version = dto.getVersion();
+		this.archived = dto.isArchived();
+		this.createdBy = dto.getCreatedBy();
+		this.createdDate = dto.getCreatedDate();
+		this.lastModifiedDate = dto.getLastModifiedDate();
+		this.lastModifiedBy = dto.getLastModifiedBy();
 	}
 }
