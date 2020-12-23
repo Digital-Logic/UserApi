@@ -2,7 +2,7 @@ package net.digitallogic.ProjectManager.persistence.entity.user;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import net.digitallogic.ProjectManager.persistence.entity.AuditEntity;
+import net.digitallogic.ProjectManager.persistence.entity.EntityBase;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @ToString(of = {"email"}, callSuper = true)
 @Entity(name = "UserEntity")
 @Table(name = "user_entity")
-public class UserEntity extends AuditEntity<UUID> {
+public class UserEntity extends EntityBase<UUID> {
 
 	@Column(name = "email", unique = true, nullable = false)
 	private String email;
@@ -40,10 +40,9 @@ public class UserEntity extends AuditEntity<UUID> {
 	)
 	private Set<RoleEntity> roles = new HashSet<>();
 
-	@Builder.Default
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "id.id",
-			cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-	private Set<UserStatusEntity> userStatus = new HashSet<>();
+//	@Builder.Default
+//	@OneToMany(fetch = FetchType.LAZY, mappedBy = "id.id")
+//	private Set<UserStatusEntity> userStatus = new HashSet<>();
 
 	public void addRole(RoleEntity role) {
 		roles.add(role);
@@ -52,11 +51,20 @@ public class UserEntity extends AuditEntity<UUID> {
 		roles.remove(role);
 	}
 
-	public void addUserStatus(UserStatusEntity userStatusEntity) {
-		this.userStatus.add(userStatusEntity);
-		userStatusEntity.setUser(this);
-		userStatusEntity.getId().setId(this.getId());
-	}
+//	public void addUserStatus(UserStatusEntity userStatusEntity) {
+//		this.userStatus.add(userStatusEntity);
+//		userStatusEntity.setUser(this);
+//	}
+//
+//	public void addUserStatus(UserStatusEntity status, LocalDateTime effective) {
+//		status.setId(
+//				BiTemporalEntityId.<UUID>builder()
+//						.id(this.getId())
+//						.validStart(effective)
+//						.build()
+//		);
+//		this.userStatus.add(status);
+//	}
 
 	public UserEntity(UserEntity entity) {
 		super(entity);
@@ -68,11 +76,6 @@ public class UserEntity extends AuditEntity<UUID> {
 		//Deep copy roles
 		this.roles = entity.getRoles().stream()
 				.map(RoleEntity::new)
-				.collect(Collectors.toSet());
-
-		//copy user status
-		this.userStatus = entity.getUserStatus().stream()
-				.map(UserStatusEntity::new)
 				.collect(Collectors.toSet());
 	}
 }

@@ -8,6 +8,7 @@ import net.digitallogic.ProjectManager.persistence.entity.EntityBase;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUtil;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @SuperBuilder
@@ -26,15 +27,22 @@ public abstract class DtoBase<ID extends Serializable> {
 	@Builder.Default
 	protected boolean archived = false;
 
+	protected LocalDateTime createdDate;
+	protected LocalDateTime lastModifiedDate;
+
 	public DtoBase(EntityBase<ID> entity) {
 		this.id = entity.getId();
 		this.version = entity.getVersion();
 		this.archived = entity.isArchived();
+		this.createdDate = entity.getCreatedDate();
+		this.lastModifiedDate = entity.getLastModifiedDate();
 	}
 
 	public DtoBase(DtoBase<ID> dto) {
 		this.id = dto.getId();
 		this.version = dto.getVersion();
 		this.archived = dto.isArchived();
+		this.createdDate = dto.getCreatedDate();
+		this.lastModifiedDate = dto.getLastModifiedDate();
 	}
 }

@@ -19,7 +19,6 @@ CREATE TABLE user_status
 
     /* ** Audit Properties ** */
     created_by          UUID      NOT NULL,
-    created_date        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     audit_message       UUID,
 

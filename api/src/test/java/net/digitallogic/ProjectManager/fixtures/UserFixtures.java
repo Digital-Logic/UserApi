@@ -1,6 +1,7 @@
 package net.digitallogic.ProjectManager.fixtures;
 
 import com.github.javafaker.Faker;
+import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 
@@ -30,8 +31,6 @@ public class UserFixtures {
 				.userStatus(List.of(
 
 				))
-				.createdBy(UUID.randomUUID())
-				.lastModifiedBy(UUID.randomUUID())
 				.createdDate(LocalDateTime.now(clock))
 				.lastModifiedDate(LocalDateTime.now(clock))
 				.build();
@@ -52,8 +51,6 @@ public class UserFixtures {
 				.email(faker.internet().emailAddress())
 				.password(faker.internet().password())
 				.roles(new HashSet<>(RoleFixtures.roleEntity(random.nextInt(2))))
-				.createdBy(UUID.randomUUID())
-				.lastModifiedBy(UUID.randomUUID())
 				.createdDate(LocalDateTime.now(clock))
 				.lastModifiedDate(LocalDateTime.now(clock))
 				.build();
@@ -63,5 +60,15 @@ public class UserFixtures {
 		return Stream.generate(UserFixtures::userEntity)
 				.limit(size)
 				.collect(Collectors.toList());
+	}
+
+	public static CreateUserDto createUser() { return createUser(clock); }
+	public static CreateUserDto createUser(Clock clock) {
+		return CreateUserDto.builder()
+				.email(faker.internet().emailAddress())
+				.firstName(faker.name().firstName())
+				.lastName(faker.name().lastName())
+				.password(faker.internet().password())
+				.build();
 	}
 }

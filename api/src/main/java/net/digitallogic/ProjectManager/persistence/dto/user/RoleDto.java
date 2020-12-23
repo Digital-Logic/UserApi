@@ -1,5 +1,6 @@
 package net.digitallogic.ProjectManager.persistence.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.dto.AuditDto;
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @ToString(of = {"name"}, callSuper = true)
 @NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class RoleDto extends AuditDto<UUID> {
 
 	private String name;

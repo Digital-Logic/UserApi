@@ -36,11 +36,8 @@ public abstract class BiTemporalEntity<ID extends Serializable> {
 	protected LocalDateTime systemStop = MAX_DATE;
 
 	/* ** Audit fields ** */
-	@Column(name = "created_by", nullable = false)
+	@Column(name = "created_by", nullable = false, updatable = false)
 	protected UUID createdBy;
-
-	@Column(name = "created_date", nullable = false)
-	protected LocalDateTime createdDate;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "audit_message")
@@ -53,7 +50,6 @@ public abstract class BiTemporalEntity<ID extends Serializable> {
 		this.systemStop = entity.getSystemStop();
 
 		this.createdBy = entity.getCreatedBy();
-		this.createdDate = entity.getCreatedDate();
 		this.auditMessage = entity.getAuditMessage();
 	}
 }

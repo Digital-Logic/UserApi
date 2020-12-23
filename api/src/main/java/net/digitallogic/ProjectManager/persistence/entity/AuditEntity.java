@@ -44,7 +44,7 @@ public abstract class AuditEntity<ID extends Serializable>
 	private void toggleIsNew() { isNew = false; }
 
 	/* ** Audit Fields ** */
-	@Column(name = "created_by")
+	@Column(name = "created_by", updatable = false)
 	protected UUID createdBy;
 
 	@Column(name = "created_date", updatable = false, insertable = false) // Database will insert value

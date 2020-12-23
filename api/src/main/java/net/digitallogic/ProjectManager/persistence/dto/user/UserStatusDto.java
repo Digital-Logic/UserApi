@@ -1,9 +1,7 @@
 package net.digitallogic.ProjectManager.persistence.dto.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.biTemporal.dto.BiTemporalDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
 
@@ -13,6 +11,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class UserStatusDto extends BiTemporalDto<UUID> {
 
 	private boolean accountEnabled;

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(of = {"id"})
@@ -36,6 +37,12 @@ public abstract class EntityBase<ID extends Serializable>
 	@Setter(AccessLevel.PROTECTED)
 	protected boolean isNew = true;
 
+	@Column(name = "created_date", updatable = false, insertable = false)
+	protected LocalDateTime createdDate;
+
+	@Column(name = "last_modified_date")
+	protected LocalDateTime lastModifiedDate;
+
 	/* ** Toggle isNew boolean ** */
 	@PostPersist
 	@PostLoad
@@ -52,6 +59,8 @@ public abstract class EntityBase<ID extends Serializable>
 		this.version = entity.getVersion();
 		this.archived = entity.isArchived();
 		this.isNew = entity.isNew;
+		this.createdDate = entity.getCreatedDate();
+		this.lastModifiedDate = entity.getLastModifiedDate();
 
 	}
 }

@@ -1,9 +1,7 @@
 package net.digitallogic.ProjectManager.config;
 
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
-import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
-import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
+import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntity_;
+import net.digitallogic.ProjectManager.persistence.entity.user.*;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.AdvancedJpaRepository;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.EntityGraphBuilder;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.RepositoryFactoryBean;
@@ -31,7 +29,7 @@ import static java.util.Map.entry;
 )
 public class RepositoryConfig {
 
-	private EntityManager entityManager;
+	private final EntityManager entityManager;
 
 	@Autowired
 	public RepositoryConfig(EntityManager entityManager) {
@@ -46,10 +44,10 @@ public class RepositoryConfig {
 				Map.ofEntries(
 						entry(UserEntity_.ROLES, graph ->
 								graph.addSubgraph(UserEntity_.roles)),
-						entry(RoleEntity_.AUTHORITIES, graph -> {
+						entry(RoleEntity_.AUTHORITIES, graph ->
 							graph.addSubgraph(UserEntity_.roles)
-									.addSubgraph(RoleEntity_.AUTHORITIES);
-						})
+									.addSubgraph(RoleEntity_.AUTHORITIES)
+						)
 				)
 		);
 	}
@@ -61,8 +59,21 @@ public class RepositoryConfig {
 				RoleEntity.class,
 				Map.ofEntries(
 						entry(RoleEntity_.AUTHORITIES,
-								graph -> graph.addSubgraph(RoleEntity_.authorities)
-						)
+								graph -> graph.addSubgraph(RoleEntity_.authorities))
+				)
+		);
+	}
+
+	@Bean
+	public EntityGraphBuilder<UserStatusEntity> userStatusGraphBuilder() {
+		return new EntityGraphBuilder<>(
+				entityManager,
+				UserStatusEntity.class,
+				Map.ofEntries(
+					entry(UserStatusEntity_.USER,
+							graph -> graph.addSubgraph(UserStatusEntity_.user)),
+					entry(BiTemporalEntity_.AUDIT_MESSAGE,
+							graph -> graph.addSubgraph(UserStatusEntity_.AUDIT_MESSAGE))
 				)
 		);
 	}

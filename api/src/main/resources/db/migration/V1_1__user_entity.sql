@@ -14,12 +14,7 @@ CREATE TABLE user_entity
 
     /* ** Audit fields ** */
     created_date       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by         UUID,
-    last_modified_date TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    last_modified_by   UUID,
-
-    CONSTRAINT fk_created_by FOREIGN KEY (created_by) REFERENCES user_entity (id),
-    CONSTRAINT fk_last_modified_by FOREIGN KEY (last_modified_by) REFERENCES user_entity (id)
+    last_modified_date TIMESTAMP
 );
 
 CREATE UNIQUE INDEX idx_unique_email ON user_entity (UPPER(email));

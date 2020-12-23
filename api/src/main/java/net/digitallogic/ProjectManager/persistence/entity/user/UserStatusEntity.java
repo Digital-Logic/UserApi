@@ -17,19 +17,19 @@ import java.util.UUID;
 public class UserStatusEntity extends BiTemporalEntity<UUID> {
 
 	@Builder.Default
-	@Column(name = "account_enabled")
+	@Column(name = "account_enabled", updatable = false)
 	private boolean accountEnabled = false;
 
 	@Builder.Default
-	@Column(name = "account_expired")
+	@Column(name = "account_expired", updatable = false)
 	private boolean accountExpired = false;
 
 	@Builder.Default
-	@Column(name = "account_locked")
+	@Column(name = "account_locked", updatable = false)
 	private boolean accountLocked = false;
 
 	@Builder.Default
-	@Column(name = "credentials_expired")
+	@Column(name = "credentials_expired", updatable = false)
 	private boolean credentialsExpired = false;
 
 	@MapsId("id")

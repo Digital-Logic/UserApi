@@ -26,7 +26,7 @@ public class UserStatusEntityTest {
 				.build();
 
 		UserStatusEntity copy = UserStatusEntity.builder()
-				.id(new BiTemporalEntityId<>(user.getId(), status.getValidStart(), status.getSystemStart()))
+				.id(new BiTemporalEntityId<>(user.getId(), status.getValidStart()))
 				.build();
 
 		assertThat(copy).isEqualTo(status);
@@ -43,7 +43,7 @@ public class UserStatusEntityTest {
 				.credentialsExpired(false)
 				.createdBy(UUID.randomUUID())
 				.build();
-		user.addUserStatus(status);
+		//user.addUserStatus(status);
 
 		UserStatusEntity copy = new UserStatusEntity(status);
 
@@ -63,10 +63,14 @@ public class UserStatusEntityTest {
 				.createdBy(UUID.randomUUID())
 				.build();
 
-		user.addUserStatus(status);
+	//	user.addUserStatus(status);
 
 		UserStatusEntity difId = new UserStatusEntity(status);
-		difId.getId().setId(UUID.randomUUID());
+		difId.setId(
+				BiTemporalEntityId.<UUID>builder()
+						.id(UUID.randomUUID())
+						.build()
+		);
 
 		assertThat(difId).isNotEqualTo(status);
 		assertThat(difId.hashCode()).isNotEqualTo(status.hashCode());

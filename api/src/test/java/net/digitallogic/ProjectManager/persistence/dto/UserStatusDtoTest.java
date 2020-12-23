@@ -24,7 +24,7 @@ public class UserStatusDtoTest {
 				.credentialsExpired(false)
 				.createdBy(UUID.randomUUID())
 				.build();
-		user.addUserStatus(status);
+//		user.addUserStatus(status);
 
 		return new UserStatusDto(status);
 	}

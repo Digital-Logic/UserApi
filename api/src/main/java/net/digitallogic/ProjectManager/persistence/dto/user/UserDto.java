@@ -1,11 +1,9 @@
 package net.digitallogic.ProjectManager.persistence.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-import net.digitallogic.ProjectManager.persistence.dto.AuditDto;
+import net.digitallogic.ProjectManager.persistence.dto.DtoBase;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
 
@@ -17,8 +15,10 @@ import java.util.stream.Collectors;
 @Data
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class UserDto extends AuditDto<UUID> {
+public class UserDto extends DtoBase<UUID> {
 
 	private String email;
 	private String firstName;
@@ -40,12 +40,6 @@ public class UserDto extends AuditDto<UUID> {
 		if (pu.isLoaded(entity, UserEntity_.ROLES)) {
 			roles = entity.getRoles().stream()
 					.map(RoleDto::new)
-					.collect(Collectors.toList());
-		}
-
-		if (pu.isLoaded(entity, UserEntity_.USER_STATUS)) {
-			userStatus = entity.getUserStatus().stream()
-					.map(UserStatusDto::new)
 					.collect(Collectors.toList());
 		}
 	}

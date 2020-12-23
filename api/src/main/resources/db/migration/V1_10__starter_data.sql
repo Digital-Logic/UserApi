@@ -1,6 +1,8 @@
 INSERT INTO user_entity (id, email, password, first_name, last_name)
     VALUES (uuid_generate_v4(), ${sysAccountEmail}, ${sysAccountPwd}, 'System', 'Account');
 
+INSERT INTO user_status(id, account_locked, created_by)
+    (select id, true, id from user_entity where email = ${sysAccountEmail});
 
 /* Authorities */
 INSERT INTO authority_entity (id, name)

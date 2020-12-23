@@ -10,7 +10,7 @@ CREATE TABLE audit_message
     /* ** Audit fields ** */
     created_date       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by         UUID      NOT NULL,
-    last_modified_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_modified_date TIMESTAMP,
     last_modified_by   UUID,
 
     CONSTRAINT fk_created_by FOREIGN KEY (created_by) REFERENCES user_entity (id),

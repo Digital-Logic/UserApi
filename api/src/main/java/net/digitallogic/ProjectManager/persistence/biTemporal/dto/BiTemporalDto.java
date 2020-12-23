@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntity;
 import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntity_;
 import net.digitallogic.ProjectManager.persistence.dto.audit.AuditMessageDto;
@@ -16,9 +17,10 @@ import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(of = {"id", "validStart", "systemStart"})
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BiTemporalDto<ID extends Serializable> {
+public abstract class BiTemporalDto<ID extends Serializable> {
 	protected static PersistenceUtil pu = Persistence.getPersistenceUtil();
 
 	protected ID id;
@@ -40,7 +42,6 @@ public class BiTemporalDto<ID extends Serializable> {
 		this.systemStop = entity.getSystemStop();
 
 		this.createdBy = entity.getCreatedBy();
-		this.createdDate = entity.getCreatedDate();
 
 		if (pu.isLoaded(entity, BiTemporalEntity_.AUDIT_MESSAGE) &&
 				entity.getAuditMessage() != null) {
