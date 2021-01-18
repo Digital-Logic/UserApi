@@ -44,6 +44,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-core'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
+    implementation 'cz.jirutka.rsql:rsql-parser:2.1.0'
 
     jooqGenerator 'org.postgresql:postgresql'
 
@@ -117,9 +118,15 @@ jooq {
     }
 }
 
-tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:unchecked"
+tasks.withType(org.gradle.api.tasks.testing.Test) {
+    environment('TZ', 'UTC')
 }
+
+tasks.withType(JavaCompile) {
+    options.verbose
+    options.compilerArgs += ["-Xlint:unchecked"]
+}
+
 
 task migrateTest(type: FlywayMigrateTask) {
     group = 'flywayTest'

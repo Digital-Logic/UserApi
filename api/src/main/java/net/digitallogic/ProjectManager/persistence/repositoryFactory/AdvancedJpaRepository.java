@@ -1,5 +1,6 @@
 package net.digitallogic.ProjectManager.persistence.repositoryFactory;
 
+import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder.GraphResolver;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +13,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
-import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -44,9 +44,8 @@ public class AdvancedJpaRepository<T, ID extends Serializable>
 		);
 	}
 
-	/* *** EntityGraph Methods *** */
-
-	public Optional<T> findById(ID id, @Nullable EntityGraph<T> graph) {
+	/* *** EntityGraphResolver Methods *** */
+	public Optional<T> findById(ID id, @Nullable GraphResolver graph) {
 		Assert.notNull(id, "The given id must not be null.");
 
 		Class<T> clazz = getDomainClass();
@@ -56,10 +55,12 @@ public class AdvancedJpaRepository<T, ID extends Serializable>
 		return Optional.ofNullable(entityManager.find(clazz, id, hints));
 	}
 
-	public Optional<T> findOne(@Nullable Specification<T> spec, @Nullable EntityGraph<T> graph) {
+	public Optional<T> findOne(@Nullable Specification<T> spec, @Nullable GraphResolver graphResolver) {
 		try {
 			TypedQuery<T> query = getQuery(spec, Sort.unsorted());
-			query.setHint(loadType, graph);
+
+			if (graphResolver != null)
+				query.setHint(loadType, graphResolver.createGraph(entityManager));
 
 			return Optional.of(query.getSingleResult());
 		} catch (NoResultException ex) {
@@ -68,39 +69,46 @@ public class AdvancedJpaRepository<T, ID extends Serializable>
 		}
 	}
 
-	public List<T> findAll(@Nullable Specification<T> spec, @Nullable EntityGraph<T> graph) {
+	public List<T> findAll(@Nullable Specification<T> spec, @Nullable GraphResolver graphResolver) {
 		TypedQuery<T> query = getQuery(spec, Sort.unsorted());
-		query.setHint(loadType, graph);
+
+		if (graphResolver != null)
+			query.setHint(loadType, graphResolver.createGraph(entityManager));
 
 		return query.getResultList();
 	}
 
-	public List<T> findAll(@Nullable EntityGraph<T> graph) {
+	public List<T> findAll(@Nullable GraphResolver graphResolver) {
 		TypedQuery<T> query = getQuery(null, Sort.unsorted());
-		query.setHint(loadType, graph);
+
+		if (graphResolver != null)
+			query.setHint(loadType, graphResolver.createGraph(entityManager));
 
 		return query.getResultList();
 	}
 
-	public Page<T> findAll(@Nullable Specification<T> spec, Pageable pageable, @Nullable EntityGraph<T> graph) {
+	public Page<T> findAll(@Nullable Specification<T> spec, Pageable pageable, @Nullable GraphResolver graphResolver) {
 		TypedQuery<T> query = getQuery(spec, pageable);
-		query.setHint(loadType, graph);
+		if (graphResolver != null)
+			query.setHint(loadType, graphResolver.createGraph(entityManager));
 
 		return pageable.isUnpaged() ? new PageImpl<T>(query.getResultList())
 				: readPage(query, getDomainClass(), pageable, spec);
 	}
 
-	public Page<T> findAll(Pageable pageable, @Nullable EntityGraph<T> graph) {
+	public Page<T> findAll(Pageable pageable, @Nullable GraphResolver graphResolver) {
 		if (pageable.isUnpaged()) {
-			return new PageImpl<T>(findAll(graph));
+			return new PageImpl<T>(findAll(graphResolver));
 		}
 
-		return findAll((Specification<T>) null, pageable, graph);
+		return findAll(null, pageable, graphResolver);
 	}
 
-	public List<T> findAll(Sort sort, @Nullable EntityGraph<T> graph) {
+	public List<T> findAll(Sort sort, @Nullable GraphResolver graphResolver) {
 		TypedQuery<T> query = getQuery(null, sort);
-		query.setHint("javax.persistence.loadgraph", graph);
+
+		if (graphResolver != null)
+			query.setHint("javax.persistence.loadgraph", graphResolver.createGraph(entityManager));
 
 		return query.getResultList();
 	}

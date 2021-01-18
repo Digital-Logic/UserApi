@@ -4,7 +4,7 @@ import net.digitallogic.ProjectManager.annotations.RepositoryTest;
 import net.digitallogic.ProjectManager.config.RepositoryConfig;
 import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
-import net.digitallogic.ProjectManager.persistence.repositoryFactory.EntityGraphBuilder;
+import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.security.ROLES;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +36,10 @@ public class RoleRepositoryTest {
 
 	@Test
 	public void findByNameEntityGraphTest() {
-		EntityGraphBuilder<RoleEntity> graphBuilder = new RepositoryConfig(entityManager)
-				.roleEntityGraphBuilder();
+		GraphBuilder<RoleEntity> graphBuilder = new RepositoryConfig().roleEntityGraphBuilder();
 
 		Optional<RoleEntity> role = roleRepository.findByName(ROLES.ADMIN.name,
-				graphBuilder.createEntityGraph(RoleEntity_.AUTHORITIES));
+				graphBuilder.createResolver(RoleEntity_.AUTHORITIES));
 
 		assertThat(role).isNotEmpty();
 		assertThat(pu.isLoaded(role.get(), RoleEntity_.AUTHORITIES)).isTrue();

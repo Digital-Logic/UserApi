@@ -4,6 +4,8 @@ import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalE
 import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntityId;
 import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntityId_;
 import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntity_;
+import net.digitallogic.ProjectManager.persistence.biTemporal.repository.BiTemporalRepository;
+import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder.GraphResolver;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +18,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
-import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -30,7 +31,7 @@ import java.util.Optional;
 
 @NoRepositoryBean
 public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends Serializable>
-	extends SimpleJpaRepository<T, BiTemporalEntityId<ID>> implements EntityGraphRepository<T, ID> {
+	extends SimpleJpaRepository<T, BiTemporalEntityId<ID>> implements BiTemporalRepository<T, ID> {
 
 	private final String loadType = "javax.persistence.loadgraph";
 
@@ -50,68 +51,8 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 		);
 	}
 
-	/* *** *** */
-
-//	@Transactional
-//	public <S extends T> S save(S entity) {
-//		System.out.println("Saving Entity!");
-//
-//		BiTemporalEntityId<ID> id = entity.getId();
-//		if (id.getId()== null) {
-//			System.out.println("ID valid is null!");
-//		}
-//		Class<T> clazz = entityInformation.getJavaType();
-
-//		Field mapsIdField = findIdField(clazz)
-//				.orElseThrow();
-//
-//		try {
-//			BeanInfo info = Introspector.getBeanInfo(clazz, Object.class);
-//			for (PropertyDescriptor pd:info.getPropertyDescriptors()) {
-//				if (pd.getName().equals(mapsIdField.getName())) {
-//					System.out.println("Getter: " + pd.getReadMethod().getName());
-//					Method getUser = pd.getReadMethod();
-//					getUser.invoke(entity);
-//				}
-//			}
-//
-//		} catch (IntrospectionException |
-//				IllegalAccessException |
-//				InvocationTargetException ex) {
-//			ex.printStackTrace();
-//		}
-
-//		List<T> curEntities = findAll(
-//			getById(entity.getEmbeddedId())
-//				.and(fetchByValidTime(entity.getValidStart(), entity.getValidStop()))
-//				.and(fetchBySystemTime(LocalDateTime.now(Clock.systemUTC())))
-//		);
-//
-//		System.out.println("List size: " + curEntities.size());
-//		curEntities.forEach(e -> {
-//			System.out.println("Entity: " + e.getId() + ", validStart: " + e.getValidStart());
-//		});
-//
-//		entityManager.persist(entity);
-//		return entity;
-//	}
-
-//	protected Optional<Field> findIdField(Class clazz) {
-//		Field[] fields = clazz.getDeclaredFields();
-//		for (Field field:fields) {
-//			if (field.getAnnotation(MapsId.class) != null)
-//				return Optional.of(field);
-//		}
-//
-//		if (clazz.getSuperclass() != Object.class) {
-//			return findIdField(clazz.getSuperclass());
-//		}
-//		return Optional.empty();
-//	}
-
-
-	/* *** EntityGraph Methods *** */
-	public Optional<T> findById(ID id, @Nullable EntityGraph<T> graph) {
+	/* *** EntityGraphResolver Methods *** */
+	public Optional<T> findById(ID id, @Nullable GraphResolver graph) {
 		Assert.notNull(id, "The given id must not be null.");
 
 		Class<T> clazz = getDomainClass();
@@ -121,10 +62,12 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 		return Optional.ofNullable(entityManager.find(clazz, id, hints));
 	}
 
-	public Optional<T> findOne(@Nullable Specification<T> spec, @Nullable EntityGraph<T> graph) {
+	public Optional<T> findOne(@Nullable Specification<T> spec, @Nullable GraphResolver graphResolver) {
 		try {
 			TypedQuery<T> query = getQuery(spec, Sort.unsorted());
-			query.setHint(loadType, graph);
+
+			if (graphResolver != null)
+				query.setHint(loadType, graphResolver.createGraph(entityManager));
 
 			return Optional.of(query.getSingleResult());
 		} catch (NoResultException ex) {
@@ -133,53 +76,62 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 		}
 	}
 
-	public List<T> findAll(@Nullable Specification<T> spec, @Nullable EntityGraph<T> graph) {
+	public List<T> findAll(@Nullable Specification<T> spec, @Nullable GraphResolver graphResolver) {
 		TypedQuery<T> query = getQuery(spec, Sort.unsorted());
-		query.setHint(loadType, graph);
+
+		if (graphResolver != null)
+			query.setHint(loadType, graphResolver.createGraph(entityManager));
 
 		return query.getResultList();
 	}
 
-	public List<T> findAll(@Nullable EntityGraph<T> graph) {
+	public List<T> findAll(@Nullable GraphResolver graphResolver) {
 		TypedQuery<T> query = getQuery(null, Sort.unsorted());
-		query.setHint(loadType, graph);
+
+		if (graphResolver != null)
+			query.setHint(loadType, graphResolver.createGraph(entityManager));
 
 		return query.getResultList();
 	}
 
-	public Page<T> findAll(@Nullable Specification<T> spec, Pageable pageable, @Nullable EntityGraph<T> graph) {
+	public Page<T> findAll(@Nullable Specification<T> spec, Pageable pageable, @Nullable GraphResolver graphResolver) {
 		TypedQuery<T> query = getQuery(spec, pageable);
-		query.setHint(loadType, graph);
+		if (graphResolver != null)
+			query.setHint(loadType, graphResolver.createGraph(entityManager));
 
-		return pageable.isUnpaged() ? new PageImpl<>(query.getResultList())
+		return pageable.isUnpaged() ? new PageImpl<T>(query.getResultList())
 				: readPage(query, getDomainClass(), pageable, spec);
 	}
 
-	public Page<T> findAll(Pageable pageable, @Nullable EntityGraph<T> graph) {
+	public Page<T> findAll(Pageable pageable, @Nullable GraphResolver graphResolver) {
 		if (pageable.isUnpaged()) {
-			return new PageImpl<>(findAll(graph));
+			return new PageImpl<T>(findAll(graphResolver));
 		}
 
-		return findAll(null, pageable, graph);
+		return findAll((Specification<T>) null, pageable, graphResolver);
 	}
 
-	public List<T> findAll(Sort sort, @Nullable EntityGraph<T> graph) {
+	public List<T> findAll(Sort sort, @Nullable GraphResolver graphResolver) {
 		TypedQuery<T> query = getQuery(null, sort);
-		query.setHint("javax.persistence.loadgraph", graph);
+
+		if (graphResolver != null)
+			query.setHint("javax.persistence.loadgraph", graphResolver.createGraph(entityManager));
 
 		return query.getResultList();
 	}
 
+	// ** BiTemporal Methods ** //
+
 	public Optional<T> findById(ID id, final LocalDateTime time) {
 		return findOne(getById(id)
-				.and(fetchCurrentByValidTime(time))
+				.and(currentValidTimeSpec(time))
 		);
 	}
 
 	public Iterable<T> getHistoryById(ID id, final LocalDateTime time) {
 		return findAll(
 				getById(id)
-						.and(fetchBySystemTime(time))
+						.and(systemTimeSpec(time))
 		);
 	}
 
@@ -193,18 +145,18 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 		);
 	}
 
-	public Specification<T> fetchCurrentByValidTime(final LocalDateTime time) {
-		return fetchByValidTime(time)
-				.and(fetchBySystemTime(LocalDateTime.now(Clock.systemUTC())));
+	public Specification<T> currentValidTimeSpec(final LocalDateTime time) {
+		return validTimeSpec(time)
+				.and(systemTimeSpec(LocalDateTime.now(Clock.systemUTC())));
 	}
 
 	/* **  Get all valid entities with validStart and validStop  ** */
-	public Specification<T> fetchByValidTime(final LocalDateTime time) {
-		return fetchByValidTime(time, time);
+	public Specification<T> validTimeSpec(final LocalDateTime time) {
+		return validTimeSpec(time, time);
 	}
 
-	public Specification<T> fetchByValidTime(final LocalDateTime validStart,
-	                                          final LocalDateTime validStop) {
+	public Specification<T> validTimeSpec(final LocalDateTime validStart,
+	                                      final LocalDateTime validStop) {
 		return ((root, query, builder) ->
 				builder.and(
 						builder.lessThanOrEqualTo(root.get(BiTemporalEntity_.id).get(BiTemporalEntityId_.validStart), validStop),
@@ -212,12 +164,12 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 				));
 	}
 
-	public Specification<T> fetchBySystemTime(final LocalDateTime time) {
-		return fetchBySystemTime(time, time);
+	public Specification<T> systemTimeSpec(final LocalDateTime time) {
+		return systemTimeSpec(time, time);
 	}
 
-	public Specification<T> fetchBySystemTime(final LocalDateTime systemStart,
-	                                           final LocalDateTime systemStop) {
+	public Specification<T> systemTimeSpec(final LocalDateTime systemStart,
+	                                       final LocalDateTime systemStop) {
 		return ((root, query, builder) ->
 				builder.and(
 						builder.lessThanOrEqualTo(root.get(BiTemporalEntity_.id).get(BiTemporalEntityId_.systemStart), systemStop),

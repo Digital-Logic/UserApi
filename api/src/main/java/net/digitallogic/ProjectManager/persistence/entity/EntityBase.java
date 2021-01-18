@@ -61,6 +61,5 @@ public abstract class EntityBase<ID extends Serializable>
 		this.isNew = entity.isNew;
 		this.createdDate = entity.getCreatedDate();
 		this.lastModifiedDate = entity.getLastModifiedDate();
-
 	}
 }

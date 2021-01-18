@@ -93,4 +93,9 @@ public class UserServiceTest {
 				userService.createUser(UserFixtures.createUser()))
 				.isInstanceOf(BadRequestException.class);
 	}
+
+	@Test
+	void getAllUsersTest() {
+
+	}
 }

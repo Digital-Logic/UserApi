@@ -1,11 +1,11 @@
 package net.digitallogic.ProjectManager.config;
 
-import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntity_;
 import net.digitallogic.ProjectManager.persistence.entity.user.*;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.AdvancedJpaRepository;
-import net.digitallogic.ProjectManager.persistence.repositoryFactory.EntityGraphBuilder;
+import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.RepositoryFactoryBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.digitallogic.ProjectManager.web.filter.SpecSupport;
+import net.digitallogic.ProjectManager.web.filter.operators.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -13,13 +13,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import javax.persistence.EntityManager;
-import java.util.Map;
-
-import static java.util.Map.entry;
+import java.time.LocalDateTime;
 
 @Configuration
-@ComponentScan(value = "net.digitallogic.ProjectManager")
+@ComponentScan(value = "net.digitallogic.ProjectManager.persistence")
 @EnableJpaRepositories(
 		basePackages = "net.digitallogic.ProjectManager.persistence",
 		repositoryFactoryBeanClass = RepositoryFactoryBean.class,
@@ -29,53 +26,63 @@ import static java.util.Map.entry;
 )
 public class RepositoryConfig {
 
-	private final EntityManager entityManager;
-
-	@Autowired
-	public RepositoryConfig(EntityManager entityManager) {
-		this.entityManager = entityManager;
+	static {
+		configUserEntityFilters();
 	}
 
 	@Bean
-	public EntityGraphBuilder<UserEntity> userEntityGraphBuilder() {
-		return new EntityGraphBuilder<>(
-				entityManager,
-				UserEntity.class,
-				Map.ofEntries(
-						entry(UserEntity_.ROLES, graph ->
-								graph.addSubgraph(UserEntity_.roles)),
-						entry(RoleEntity_.AUTHORITIES, graph ->
-							graph.addSubgraph(UserEntity_.roles)
-									.addSubgraph(RoleEntity_.AUTHORITIES)
-						)
-				)
-		);
+	public GraphBuilder<UserEntity> userEntityGraphBuilder() {
+		return GraphBuilder.builder(UserEntity.class)
+				.addProperty(UserEntity_.ROLES)
+				.addProperty(RoleEntity_.AUTHORITIES,
+						g -> g.addSubgraph(UserEntity_.roles)
+							.addSubgraph(RoleEntity_.AUTHORITIES))
+				.build();
 	}
 
 	@Bean
-	public EntityGraphBuilder<RoleEntity> roleEntityGraphBuilder() {
-		return new EntityGraphBuilder<>(
-				entityManager,
-				RoleEntity.class,
-				Map.ofEntries(
-						entry(RoleEntity_.AUTHORITIES,
-								graph -> graph.addSubgraph(RoleEntity_.authorities))
-				)
-		);
+	public GraphBuilder<RoleEntity> roleEntityGraphBuilder() {
+		return GraphBuilder.builder(RoleEntity.class)
+				.addProperty(RoleEntity_.AUTHORITIES)
+				.build();
 	}
 
 	@Bean
-	public EntityGraphBuilder<UserStatusEntity> userStatusGraphBuilder() {
-		return new EntityGraphBuilder<>(
-				entityManager,
-				UserStatusEntity.class,
-				Map.ofEntries(
-					entry(UserStatusEntity_.USER,
-							graph -> graph.addSubgraph(UserStatusEntity_.user)),
-					entry(BiTemporalEntity_.AUDIT_MESSAGE,
-							graph -> graph.addSubgraph(UserStatusEntity_.AUDIT_MESSAGE))
-				)
-		);
+	public GraphBuilder<UserStatusEntity> userStatusGraphBuilder() {
+		return GraphBuilder.builder(UserStatusEntity.class)
+				.addProperty(UserStatusEntity_.USER)
+				.addProperty(UserStatusEntity_.AUDIT_MESSAGE)
+				.build();
+	}
+
+
+	public static void configUserEntityFilters() {
+		SpecSupport.addFilter(UserEntity.class)
+				.addProperty(UserEntity_.FIRST_NAME, String.class)
+					.addComparator(new Equals<>())
+					.addComparator(new Like<>())
+					.addComparator(new Ilike<>())
+					.build()
+				.addProperty(UserEntity_.LAST_NAME, String.class)
+					.addComparator(new Equals<>())
+					.addComparator(new Like<>())
+					.addComparator(new Ilike<>())
+					.build()
+				.addProperty(UserEntity_.CREATED_DATE, LocalDateTime.class)
+					.addComparator(new Equals<>())
+					.addComparator(new LessThan<>())
+					.addComparator(new GreaterThan<>())
+					.addComparator(new LessThanOrEqual<>())
+					.addComparator(new GreaterThanOrEqual<>())
+					.build()
+				.addProperty(UserStatusEntity_.ACCOUNT_ENABLED, LocalDateTime.class)
+					.resolvePath(false)
+					.addComparator(new AccountEnabled())
+					.build()
+				.addProperty(UserEntity_.ARCHIVED, Boolean.class)
+					.addComparator(new Equals<>())
+					.build()
+				.build();
 	}
 }
 

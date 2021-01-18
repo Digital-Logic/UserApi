@@ -1,15 +1,23 @@
 package net.digitallogic.ProjectManager.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import java.time.Clock;
+import java.util.TimeZone;
 
 @Configuration
+@ComponentScan(value = "net.digitallogic.ProjectManager")
+@Slf4j
 public class AppConfig {
+
+	public AppConfig() {
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+	}
 
 	@Bean
 	public MessageSource messageSource() {
@@ -25,7 +33,4 @@ public class AppConfig {
 		factory.setValidationMessageSource(messageSource());
 		return factory;
 	}
-
-	@Bean
-	public Clock systemClock() { return Clock.systemUTC(); }
 }

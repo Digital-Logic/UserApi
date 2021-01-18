@@ -40,9 +40,9 @@ public class UserEntity extends EntityBase<UUID> {
 	)
 	private Set<RoleEntity> roles = new HashSet<>();
 
-//	@Builder.Default
-//	@OneToMany(fetch = FetchType.LAZY, mappedBy = "id.id")
-//	private Set<UserStatusEntity> userStatus = new HashSet<>();
+	@Builder.Default
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "id.id")
+	private Set<UserStatusEntity> userStatus = new HashSet<>();
 
 	public void addRole(RoleEntity role) {
 		roles.add(role);
@@ -76,6 +76,11 @@ public class UserEntity extends EntityBase<UUID> {
 		//Deep copy roles
 		this.roles = entity.getRoles().stream()
 				.map(RoleEntity::new)
+				.collect(Collectors.toSet());
+
+		//Deep copy status
+		this.userStatus = entity.getUserStatus().stream()
+				.map(UserStatusEntity::new)
 				.collect(Collectors.toSet());
 	}
 }
