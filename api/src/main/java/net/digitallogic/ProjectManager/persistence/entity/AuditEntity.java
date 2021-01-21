@@ -3,7 +3,12 @@ package net.digitallogic.ProjectManager.persistence.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.dto.AuditDto;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,6 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public abstract class AuditEntity<ID extends Serializable>
 		implements Persistable<ID> {
 
@@ -44,15 +50,19 @@ public abstract class AuditEntity<ID extends Serializable>
 	private void toggleIsNew() { isNew = false; }
 
 	/* ** Audit Fields ** */
-	@Column(name = "created_by", updatable = false)
+	@CreatedBy
+	@Column(name = "created_by")
 	protected UUID createdBy;
 
-	@Column(name = "created_date", updatable = false, insertable = false) // Database will insert value
+	@CreatedDate
+	@Column(name = "created_date", updatable = false) // Database will insert value
 	protected LocalDateTime createdDate;
 
+	@LastModifiedDate
 	@Column(name = "last_modified_by")
 	protected UUID lastModifiedBy;
 
+	@LastModifiedBy
 	@Column(name = "last_modified_date")
 	protected LocalDateTime lastModifiedDate;
 

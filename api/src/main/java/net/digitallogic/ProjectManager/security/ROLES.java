@@ -8,5 +8,5 @@ public enum ROLES {
 	;
 
 	public final String name;
-	private ROLES(String name) { this.name = name; }
+	ROLES(String name) { this.name = name; }
 }

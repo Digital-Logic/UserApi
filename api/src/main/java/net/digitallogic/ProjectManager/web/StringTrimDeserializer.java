@@ -7,6 +7,10 @@ import org.springframework.boot.jackson.JsonComponent;
 
 import java.io.IOException;
 
+/**
+ * Trims whitespace around on json object property values,
+ * eg { "key": "  value  " } into { "key": "value" }
+ */
 @JsonComponent
 public class StringTrimDeserializer extends StringDeserializer {
 

@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 
 public class AuthorityFixtures {
 
-	private static Random random = new Random();
+	private static final Random random = new Random();
 
-	private static List<AuthorityDto> authDtos = Arrays.stream(AUTHORITIES.values())
+	private static final List<AuthorityDto> authDtos = Arrays.stream(AUTHORITIES.values())
 			.map(auth -> AuthorityDto.builder()
 					.id(UUID.randomUUID())
 					.name(auth.name)
@@ -22,7 +22,7 @@ public class AuthorityFixtures {
 			)
 			.collect(Collectors.toList());
 
-	private static List<AuthorityEntity> authEntities = Arrays.stream(AUTHORITIES.values())
+	private static final List<AuthorityEntity> authEntities = Arrays.stream(AUTHORITIES.values())
 			.map(auth -> AuthorityEntity.builder()
 					.id(UUID.randomUUID())
 					.name(auth.name)

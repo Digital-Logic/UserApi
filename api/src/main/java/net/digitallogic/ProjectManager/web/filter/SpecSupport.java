@@ -18,8 +18,7 @@ import java.util.Set;
 
 public class SpecSupport {
 
-	@Nullable
-	private static volatile ConversionService converter;
+	private static ConversionService converter;
 
 	public static ConversionService getConverter() {
 		if (converter == null) {
@@ -41,6 +40,7 @@ public class SpecSupport {
 		}
 	}
 
+	@Nullable
 	public static <T> Specification<T> toSpecification(@Nullable String queryStr) {
 		if (queryStr == null)
 			return null;

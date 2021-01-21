@@ -20,12 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RoleRepositoryTest {
 
 	@Autowired
-	EntityManager entityManager;
+	private EntityManager entityManager;
 
 	@Autowired
-	RoleRepository roleRepository;
+	private RoleRepository roleRepository;
 
-	PersistenceUtil pu = Persistence.getPersistenceUtil();
+	private final PersistenceUtil pu = Persistence.getPersistenceUtil();
 
 	@Test
 	public void findByNameTest() {

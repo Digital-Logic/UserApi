@@ -99,16 +99,16 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 		if (graphResolver != null)
 			query.setHint(loadType, graphResolver.createGraph(entityManager));
 
-		return pageable.isUnpaged() ? new PageImpl<T>(query.getResultList())
+		return pageable.isUnpaged() ? new PageImpl<>(query.getResultList())
 				: readPage(query, getDomainClass(), pageable, spec);
 	}
 
 	public Page<T> findAll(Pageable pageable, @Nullable GraphResolver graphResolver) {
 		if (pageable.isUnpaged()) {
-			return new PageImpl<T>(findAll(graphResolver));
+			return new PageImpl<>(findAll(graphResolver));
 		}
 
-		return findAll((Specification<T>) null, pageable, graphResolver);
+		return findAll(null, pageable, graphResolver);
 	}
 
 	public List<T> findAll(Sort sort, @Nullable GraphResolver graphResolver) {
@@ -145,6 +145,7 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 		);
 	}
 
+	@Nullable
 	public Specification<T> currentValidTimeSpec(final LocalDateTime time) {
 		return validTimeSpec(time)
 				.and(systemTimeSpec(LocalDateTime.now(Clock.systemUTC())));

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @NoRepositoryBean
-public interface BiTemporalRepository<T extends BiTemporalEntity, ID extends Serializable>
+public interface BiTemporalRepository<T extends BiTemporalEntity<ID>, ID extends Serializable>
 		extends Repository<T, BiTemporalEntityId<ID>>, JpaSpecificationExecutor<T> {
 
 	<S extends T> S save(S entity);

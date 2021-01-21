@@ -50,7 +50,9 @@ public class AdvancedJpaRepository<T, ID extends Serializable>
 
 		Class<T> clazz = getDomainClass();
 		Map<String, Object> hints = new HashMap<>();
-		hints.put(loadType, graph);
+
+		if (graph != null)
+			hints.put(loadType, graph.createGraph(entityManager));
 
 		return Optional.ofNullable(entityManager.find(clazz, id, hints));
 	}
@@ -64,7 +66,6 @@ public class AdvancedJpaRepository<T, ID extends Serializable>
 
 			return Optional.of(query.getSingleResult());
 		} catch (NoResultException ex) {
-
 			return Optional.empty();
 		}
 	}
@@ -92,13 +93,13 @@ public class AdvancedJpaRepository<T, ID extends Serializable>
 		if (graphResolver != null)
 			query.setHint(loadType, graphResolver.createGraph(entityManager));
 
-		return pageable.isUnpaged() ? new PageImpl<T>(query.getResultList())
+		return pageable.isUnpaged() ? new PageImpl<>(query.getResultList())
 				: readPage(query, getDomainClass(), pageable, spec);
 	}
 
 	public Page<T> findAll(Pageable pageable, @Nullable GraphResolver graphResolver) {
 		if (pageable.isUnpaged()) {
-			return new PageImpl<T>(findAll(graphResolver));
+			return new PageImpl<>(findAll(graphResolver));
 		}
 
 		return findAll(null, pageable, graphResolver);

@@ -3,7 +3,10 @@ package net.digitallogic.ProjectManager.persistence.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.dto.DtoBase;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,6 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public abstract class EntityBase<ID extends Serializable>
 		implements Persistable<ID> {
 
@@ -25,6 +29,7 @@ public abstract class EntityBase<ID extends Serializable>
 
 	@Version
 	@Builder.Default
+	@Setter(value = AccessLevel.PRIVATE)
 	@Column(name = "version", nullable = false)
 	protected int version = 0;
 
@@ -37,9 +42,11 @@ public abstract class EntityBase<ID extends Serializable>
 	@Setter(AccessLevel.PROTECTED)
 	protected boolean isNew = true;
 
-	@Column(name = "created_date", updatable = false, insertable = false)
+	@CreatedDate
+	@Column(name = "created_date", updatable = false)
 	protected LocalDateTime createdDate;
 
+	@LastModifiedDate
 	@Column(name = "last_modified_date")
 	protected LocalDateTime lastModifiedDate;
 

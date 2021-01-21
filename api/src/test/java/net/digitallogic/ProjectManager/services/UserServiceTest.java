@@ -1,5 +1,6 @@
 package net.digitallogic.ProjectManager.services;
 
+import net.digitallogic.ProjectManager.config.RepositoryConfig;
 import net.digitallogic.ProjectManager.fixtures.RoleFixtures;
 import net.digitallogic.ProjectManager.fixtures.UserFixtures;
 import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
@@ -9,16 +10,23 @@ import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
 import net.digitallogic.ProjectManager.persistence.repository.RoleRepository;
 import net.digitallogic.ProjectManager.persistence.repository.UserRepository;
 import net.digitallogic.ProjectManager.persistence.repository.UserStatusRepository;
+import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.web.exceptions.BadRequestException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -43,8 +51,16 @@ public class UserServiceTest {
 	@Mock
 	MessageSource messageSource;
 
+	@Mock
+	GraphBuilder<UserEntity> userGraphBuilder;
+
 	@InjectMocks
 	UserServiceImpl userService;
+
+	@BeforeAll
+	static void beforeAll() {
+		RepositoryConfig.configUserEntityFilters();
+	}
 
 	@BeforeEach
 	void setup() {
@@ -96,6 +112,24 @@ public class UserServiceTest {
 
 	@Test
 	void getAllUsersTest() {
+		when(userRepository.findAll(any(), any(PageRequest.class), any()))
+				.thenReturn(new PageImpl<>(UserFixtures.userEntity(2), PageRequest.of(0, 2, Sort.by("createdDate")), 2));
 
+		when(userGraphBuilder.createResolver(any())).thenReturn(null);
+
+		Slice<UserDto> resultSet = userService.getAllUsers(0, 25, "createdDate", null, null);
+
+		assertThat(resultSet).hasSize(2);
+	}
+
+	@Test
+	void getUserTest() {
+		when(userRepository.findById(any(UUID.class), any()))
+				.thenReturn(Optional.of(UserFixtures.userEntity()));
+
+		when(userGraphBuilder.createResolver(any())).thenReturn(null);
+
+		UserDto result = userService.getUser(UUID.randomUUID(), null);
+		assertThat(result).isNotNull();
 	}
 }

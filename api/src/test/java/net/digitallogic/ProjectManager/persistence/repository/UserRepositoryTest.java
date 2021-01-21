@@ -53,6 +53,7 @@ public class UserRepositoryTest {
 	public void findByIdTest() {
 		Optional<UserEntity> userEntity = userRepository.findByEmail("Test@Testing.com");
 		assertThat(userEntity).isNotEmpty();
+		assertThat(userEntity.get().getId()).isNotNull();
 
 		Optional<UserEntity> user = userRepository.findById(userEntity.get().getId());
 		assertThat(user).isNotEmpty();
@@ -76,9 +77,8 @@ public class UserRepositoryTest {
 
 		assertThat(user.get().getRoles()).hasSize(1);
 		// Verify that authorities have not been loaded
-		user.get().getRoles().forEach(role -> {
-			assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)).isFalse();
-		});
+		user.get().getRoles().forEach(role ->
+				assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)).isFalse());
 	}
 
 	@Test
@@ -97,9 +97,8 @@ public class UserRepositoryTest {
 		assertThat(pu.isLoaded(user.get(), UserEntity_.ROLES)).isTrue();
 		assertThat(user.get().getRoles()).hasSize(1);
 
-		user.get().getRoles().forEach(role -> {
-			assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES));
-		});
+		user.get().getRoles().forEach(role ->
+				assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)));
 
 		user.get().getRoles().forEach(role -> {
 			assertThat(role.getName()).isEqualTo(ROLES.ADMIN.name);
@@ -131,15 +130,13 @@ public class UserRepositoryTest {
 							userGraphBuilder.createResolver(graphNodes)
 					);
 					if (graphNodes.equals(UserEntity_.ROLES)) {
-						userSlice.forEach(user -> {
-							assertThat(pu.isLoaded(user, UserEntity_.ROLES));
-						});
+						userSlice.forEach(user ->
+								assertThat(pu.isLoaded(user, UserEntity_.ROLES)));
 					} else if (graphNodes.equals(RoleEntity_.AUTHORITIES)) {
 						userSlice.forEach(user -> {
 							assertThat(pu.isLoaded(user, UserEntity_.ROLES));
-							user.getRoles().forEach(role -> {
-								assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES));
-							});
+							user.getRoles().forEach(role ->
+									assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)));
 						});
 					}
 					assertThat(userSlice).hasSize(2);

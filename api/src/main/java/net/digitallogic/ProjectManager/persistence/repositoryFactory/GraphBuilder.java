@@ -2,8 +2,9 @@ package net.digitallogic.ProjectManager.persistence.repositoryFactory;
 
 import lombok.extern.slf4j.Slf4j;
 import net.digitallogic.ProjectManager.services.Utils;
-import net.digitallogic.ProjectManager.web.exceptions.InvalidExpansionProperties;
-import net.digitallogic.ProjectManager.web.exceptions.InvalidExpansionProperties.PropertyError;
+import net.digitallogic.ProjectManager.web.exceptions.BadRequestException;
+import net.digitallogic.ProjectManager.web.exceptions.MessageCode;
+import net.digitallogic.ProjectManager.web.exceptions.MessageConverter;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.EntityGraph;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ public class GraphBuilder<T> {
 		this.graphMapper = graphMapper;
 	}
 
+	@Nullable
 	public GraphResolver createResolver(@Nullable String expandAttributes) {
 		if (expandAttributes == null || expandAttributes.isBlank())
 			return null;
@@ -47,14 +50,14 @@ public class GraphBuilder<T> {
 			properties = Utils.snakeCaseToCamel(
 					expandAttributes.split("\\s*,\\s*"));
 
-			List<PropertyError> invalidProps = properties.stream()
+			Map<String, MessageConverter> invalidProps = properties.stream()
 					.filter(Predicate.not(graphMapper::containsKey))
-					.map(p -> PropertyError.of(p, "Invalid expansion property"))
-					.collect(Collectors.toList());
+					.collect(Collectors.toMap(
+							Function.identity(), prop -> new MessageConverter(MessageCode.INVALID_EXPANSION_PROPERTY)));
 
+			// Check if we have any invalid properties
 			if (!invalidProps.isEmpty()) {
-				// we have at less a one invalid property
-				throw new InvalidExpansionProperties(invalidProps);
+				throw new BadRequestException(invalidProps);
 			}
 		}
 

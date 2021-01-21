@@ -17,14 +17,13 @@ public class UserStatusDtoTest {
 
 	private UserStatusDto get() {
 		UserEntity user = UserFixtures.userEntity();
-		UserStatusEntity status = (UserStatusEntity) UserStatusEntity.builder()
+		UserStatusEntity status = UserStatusEntity.builder()
 				.accountEnabled(true)
 				.accountExpired(false)
 				.accountLocked(false)
 				.credentialsExpired(false)
 				.createdBy(UUID.randomUUID())
 				.build();
-//		user.addUserStatus(status);
 
 		return new UserStatusDto(status);
 	}

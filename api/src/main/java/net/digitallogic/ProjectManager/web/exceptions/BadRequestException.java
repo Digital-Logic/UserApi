@@ -1,23 +1,44 @@
 package net.digitallogic.ProjectManager.web.exceptions;
 
-public class BadRequestException extends RuntimeException {
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 
-	public BadRequestException() {
+import java.util.List;
+import java.util.Map;
+
+@Getter
+public class BadRequestException extends HttpRequestException {
+
+	public BadRequestException(MessageCode code, Object... args) {
+		super(HttpStatus.BAD_REQUEST, code, List.of(args), null, null);
 	}
 
-	public BadRequestException(String message) {
-		super(message);
+	public BadRequestException(MessageConverter message,
+	                           @Nullable Object details,
+	                           @Nullable Exception ex) {
+		super(HttpStatus.BAD_REQUEST, message, details, ex);
 	}
 
-	public BadRequestException(String message, Throwable cause) {
-		super(message, cause);
+	public BadRequestException(MessageConverter message,
+	                           @Nullable Object details) {
+		super(HttpStatus.BAD_REQUEST, message, details);
+	}
+	public BadRequestException(MessageConverter message) {
+		super(HttpStatus.BAD_REQUEST, message);
 	}
 
-	public BadRequestException(Throwable cause) {
-		super(cause);
+	public BadRequestException(Map<String, MessageConverter> messages,
+	                           @Nullable Object details,
+	                           @Nullable Exception ex) {
+		super(HttpStatus.BAD_REQUEST, messages, details, ex);
+	}
+	public BadRequestException(Map<String, MessageConverter> messages,
+	                           @Nullable Object details) {
+		super(HttpStatus.BAD_REQUEST, messages, details);
 	}
 
-	public BadRequestException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
+	public BadRequestException(Map<String, MessageConverter> messages) {
+		super(HttpStatus.BAD_REQUEST, messages);
 	}
 }

@@ -15,7 +15,7 @@ public class UserStatusEntityTest {
 	@Test
 	public void equalsAndHashEqualityTest() {
 		UserEntity user = UserFixtures.userEntity();
-		UserStatusEntity status = (UserStatusEntity) UserStatusEntity.builder()
+		UserStatusEntity status = UserStatusEntity.builder()
 				.id(new BiTemporalEntityId<>(user.getId()))
 				.user(user)
 				.accountEnabled(true)
@@ -36,7 +36,7 @@ public class UserStatusEntityTest {
 	@Test
 	public void copyConstructor() {
 		UserEntity user = UserFixtures.userEntity();
-		UserStatusEntity status = (UserStatusEntity) UserStatusEntity.builder()
+		UserStatusEntity status = UserStatusEntity.builder()
 				.accountEnabled(true)
 				.accountExpired(false)
 				.accountLocked(false)
@@ -55,7 +55,7 @@ public class UserStatusEntityTest {
 	@Test
 	public void equalsAndHashNonEqualityTest() {
 		UserEntity user = UserFixtures.userEntity();
-		UserStatusEntity status = (UserStatusEntity) UserStatusEntity.builder()
+		UserStatusEntity status = UserStatusEntity.builder()
 				.accountEnabled(true)
 				.accountExpired(false)
 				.accountLocked(false)

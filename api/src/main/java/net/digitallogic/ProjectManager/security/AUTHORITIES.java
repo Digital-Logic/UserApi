@@ -7,5 +7,5 @@ public enum AUTHORITIES {
 	;
 
 	public final String name;
-	private AUTHORITIES(String name){ this.name = name; }
+	AUTHORITIES(String name){ this.name = name; }
 }

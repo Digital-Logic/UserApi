@@ -1,8 +1,9 @@
 package net.digitallogic.ProjectManager.web.filter.operators;
 
-import org.springframework.lang.NonNull;
-
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class Ilike<T> extends Operator<T, String> {
@@ -11,7 +12,7 @@ public class Ilike<T> extends Operator<T, String> {
 	}
 
 	@Override
-	public Predicate toPredicate(CriteriaBuilder builder, Root<T> root, @NonNull Path<String> path, List<String> args) {
+	public Predicate toPredicate(CriteriaBuilder builder, Root<T> root, Path<String> path, List<String> args) {
 		return builder.like(
 				builder.upper(path),
 				args.get(0).toUpperCase()
