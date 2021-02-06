@@ -20,77 +20,58 @@ public class HttpRequestException extends RuntimeException {
 	@Nullable
 	private final Object details;
 
-	@Getter
-	@Nullable
-	private final Exception ex;
-
 	public HttpRequestException(HttpStatus httpStatus,
 	                            MessageConverter message,
-	                            @Nullable Object details,
-	                            @Nullable Exception ex) {
+	                            @Nullable Object details) {
 
 		this.httpStatus = httpStatus;
 		this.exceptionMessage = new ExceptionMessage.SingularExceptionMessage(message);
 		this.details = details;
-		this.ex = ex;
 	}
 
 	public HttpRequestException(HttpStatus httpStatus,
 	                            Map<String, MessageConverter> messages,
-	                            @Nullable Object details,
-	                            @Nullable Exception ex) {
+	                            @Nullable Object details) {
 		this.httpStatus = httpStatus;
 		this.exceptionMessage = new ExceptionMessage.MultiExceptionMessage(messages);
 		this.details = details;
-		this.ex = ex;
 	}
 
-
-	public HttpRequestException(HttpStatus httpStatus,
-	                            MessageCode code,
-	                            List<Object> args,
-	                            @Nullable Object details,
-	                            @Nullable Exception ex) {
-		this(httpStatus, new MessageConverter(code, args), details, ex);
-	}
 	public HttpRequestException(HttpStatus httpStatus,
 	                            MessageCode messageCode,
 	                            List<Object> args,
 	                            @Nullable Object details) {
-		this(httpStatus, new MessageConverter(messageCode, args), details, null);
+		this(httpStatus, new MessageConverter(messageCode, args), details);
+	}
+	public HttpRequestException(HttpStatus httpStatus,
+	                            MessageCode messageCode,
+	                            List<Object> args) {
+		this(httpStatus, new MessageConverter(messageCode, args), null);
 	}
 	public HttpRequestException(HttpStatus httpStatus,
 	                            MessageCode messageCode,
 	                            Object... args) {
-		this(httpStatus, new MessageConverter(messageCode, args), null, null);
-	}
-
-	public HttpRequestException(HttpStatus httpStatus,
-	                            MessageConverter message,
-	                            @Nullable Object details) {
-		this(httpStatus, message, details, null);
+		this(httpStatus, new MessageConverter(messageCode, args), null);
 	}
 
 	public HttpRequestException(HttpStatus httpStatus,
 	                            MessageConverter messageConverter) {
-		this(httpStatus, messageConverter, null , null);
+		this(httpStatus, messageConverter, null );
 	}
 
 	// Multipart
 
 	public HttpRequestException(HttpStatus httpStatus,
-	                            Map<String, MessageConverter> messages,
-	                            @Nullable Object details) {
-		this(httpStatus, messages, details , null);
-	}
-
-	public HttpRequestException(HttpStatus httpStatus,
 	                            Map<String, MessageConverter> messages) {
-		this(httpStatus, messages, null , null);
+		this(httpStatus, messages, null);
 	}
 
 	public Object getMessage(MessageSource messageSource) {
 		return exceptionMessage.getMessage(messageSource);
+	}
+
+	public String getStatusCode() {
+		return exceptionMessage.getStatusCode();
 	}
 
 
@@ -101,7 +82,7 @@ public class HttpRequestException extends RuntimeException {
 	 */
 	public static abstract class ExceptionMessage {
 		public abstract Object getMessage(final MessageSource messageSource);
-
+		public abstract String getStatusCode();
 		/**
 		 * Singular Exception Message
 		 */
@@ -118,6 +99,11 @@ public class HttpRequestException extends RuntimeException {
 						message.getMessageCode(),
 						message.args.toArray(),
 						LocaleContextHolder.getLocale());
+			}
+
+			@Override
+			public String getStatusCode() {
+				return message.getStatusCode();
 			}
 		}
 
@@ -139,6 +125,15 @@ public class HttpRequestException extends RuntimeException {
 								entry -> getMessage(entry, messageSource)
 						));
 			}
+
+			@Override
+			public String getStatusCode() {
+				return String.join(",", messages.values()
+						.stream()
+						.map(MessageConverter::getStatusCode)
+						.collect(Collectors.toSet()));
+			}
+
 			private String getMessage(Map.Entry<String, MessageConverter> entry, MessageSource messageSource) {
 				MessageConverter code = entry.getValue();
 				return messageSource.getMessage(

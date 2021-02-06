@@ -1,19 +1,50 @@
 package net.digitallogic.ProjectManager.services;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static net.digitallogic.ProjectManager.services.Utils.processSortBy;
+import static net.digitallogic.ProjectManager.services.Utils.toCamel;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UtilsTest {
 
-	@Test
-	void processSortByTest() {
-		List<Sort.Order> result = processSortBy("last_name, first_name");
+	@ParameterizedTest
+	@MethodSource
+	void processSortByTest(String sortString, List<String> actual) {
+		List<Sort.Order> result = processSortBy(sortString);
 		assertThat(result).extracting("property")
-				.containsExactly("lastName", "firstName");
+				.containsSequence(actual);
+	}
+
+	private static Stream<Arguments> processSortByTest() {
+		return Stream.of(
+				Arguments.of("first_name", List.of("firstName")),
+				Arguments.of(" first_name , last_name ", List.of("firstName", "lastName")),
+				Arguments.of("  firstName, lastName ", List.of("firstName", "lastName")),
+				Arguments.of("  first_name , lastName", List.of("firstName", "lastName"))
+		);
+	}
+
+
+	@ParameterizedTest
+	@MethodSource
+	void toCamelTest(String strToConvert, String actual) {
+		assertThat(toCamel(strToConvert)).isEqualTo(actual);
+	}
+	private static Stream<Arguments> toCamelTest() {
+		return Stream.of(
+				Arguments.of("firstName", "firstName"),
+				Arguments.of(" first_name ", "firstName"),
+				Arguments.of("first_name ", "firstName"),
+				Arguments.of("first_name ", "firstName"),
+				Arguments.of("firstName  ", "firstName"),
+				Arguments.of("  firstName", "firstName")
+		);
 	}
 }

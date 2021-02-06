@@ -2,8 +2,8 @@ import org.flywaydb.gradle.task.FlywayCleanTask
 import org.flywaydb.gradle.task.FlywayMigrateTask
 
 plugins {
-    id 'org.springframework.boot' version '2.3.4.RELEASE' // '2.4.1'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'org.springframework.boot' version '2.4.2' // '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.flywaydb.flyway' version '6.5.6'
     id 'nu.studer.jooq' version '5.2'
     id 'java'
@@ -40,6 +40,16 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.session:spring-session-core'
+    implementation 'org.springframework.session:spring-session-data-redis'
+    // implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'io.lettuce:lettuce-core:6.0.2.RELEASE'
+    //implementation 'org.springframework.session:spring-session-jdbc'
+
+    // Json web token
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.1'
+    runtime 'io.jsonwebtoken:jjwt-impl:0.11.1',
+            'io.jsonwebtoken:jjwt-jackson:0.11.1'
 
     implementation 'org.flywaydb:flyway-core'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
@@ -83,7 +93,6 @@ jooq {
 
     configurations {
         main {  // name of the jOOQ configuration
-
             generationTool {
                 logging = org.jooq.meta.jaxb.Logging.WARN
                 jdbc {

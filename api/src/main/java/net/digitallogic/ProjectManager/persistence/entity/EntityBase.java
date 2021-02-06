@@ -61,6 +61,7 @@ public abstract class EntityBase<ID extends Serializable>
 		this.archived = dto.isArchived();
 	}
 
+	// Copy constructor
 	public EntityBase(EntityBase<ID> entity) {
 		this.id = entity.getId();
 		this.version = entity.getVersion();

@@ -2,7 +2,7 @@ package net.digitallogic.ProjectManager.persistence.repository;
 
 import net.digitallogic.ProjectManager.annotations.RepositoryTest;
 import net.digitallogic.ProjectManager.persistence.entity.user.AuthorityEntity;
-import net.digitallogic.ProjectManager.security.AUTHORITIES;
+import net.digitallogic.ProjectManager.security.Authorities;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,7 +26,7 @@ public class AuthorityRepositoryTest {
 	@Test
 	public void findByNameTest() {
 		Optional<AuthorityEntity> authority =
-				authorityRepository.findByName(AUTHORITIES.ADMIN_ROLES.name);
+				authorityRepository.findByName(Authorities.ADMIN_ROLES.name);
 
 		assertThat(authority).isNotEmpty();
 	}

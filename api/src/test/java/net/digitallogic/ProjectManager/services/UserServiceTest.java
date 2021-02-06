@@ -5,6 +5,7 @@ import net.digitallogic.ProjectManager.fixtures.RoleFixtures;
 import net.digitallogic.ProjectManager.fixtures.UserFixtures;
 import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
+import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
 import net.digitallogic.ProjectManager.persistence.repository.RoleRepository;
@@ -12,6 +13,7 @@ import net.digitallogic.ProjectManager.persistence.repository.UserRepository;
 import net.digitallogic.ProjectManager.persistence.repository.UserStatusRepository;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.web.exceptions.BadRequestException;
+import net.digitallogic.ProjectManager.web.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -131,5 +133,27 @@ public class UserServiceTest {
 
 		UserDto result = userService.getUser(UUID.randomUUID(), null);
 		assertThat(result).isNotNull();
+	}
+
+	@Test
+	void getUserInvalidIdTest() {
+		when(userRepository.findById(any(UUID.class), any()))
+				.thenReturn(Optional.empty());
+
+		when(userGraphBuilder.createResolver(any())).thenReturn(null);
+
+		assertThatThrownBy(() ->
+				userService.getUser(UUID.randomUUID(), null))
+				.isInstanceOf(NotFoundException.class);
+	}
+
+	@Test
+	void updateUserTest() {
+		UserEntity user = UserFixtures.userEntity();
+		UserUpdateDto updateData = UserUpdateDto.builder()
+				.id(user.getId())
+				.lastName("SomethingNew")
+				.build();
+
 	}
 }

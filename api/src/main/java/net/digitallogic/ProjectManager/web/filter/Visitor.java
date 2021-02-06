@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
+import static net.digitallogic.ProjectManager.services.Utils.toCamel;
 
 @Slf4j
 public class Visitor<T> implements RSQLVisitor<Predicate, Root<T>> {
@@ -77,7 +78,7 @@ public class Visitor<T> implements RSQLVisitor<Predicate, Root<T>> {
 
 		try {
 			PropConverter<T, ?> converter = (PropConverter<T, ?>) converters.get(clazz)
-					.get(node.getSelector());
+					.get(toCamel(node.getSelector()));
 
 			return converter
 					.toPredicate(builder, root, node.getOperator(), node.getArguments());

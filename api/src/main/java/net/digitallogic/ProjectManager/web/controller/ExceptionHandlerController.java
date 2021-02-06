@@ -3,13 +3,16 @@ package net.digitallogic.ProjectManager.web.controller;
 import lombok.extern.slf4j.Slf4j;
 import net.digitallogic.ProjectManager.persistence.dto.ErrorDto;
 import net.digitallogic.ProjectManager.web.exceptions.HttpRequestException;
+import net.digitallogic.ProjectManager.web.exceptions.MessageCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.web.authentication.rememberme.CookieTheftException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -51,6 +54,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(
 				ErrorDto.builder()
 						.message(validationErrors)
+						.code(MessageCode.FIELD_VALIDATION_ERROR.code)
 						.build(),
 				headers,
 				HttpStatus.BAD_REQUEST
@@ -62,6 +66,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(
 				ErrorDto.builder()
 						.message(ex.getMessage(messageSource))
+						.code(ex.getStatusCode())
 						.details(ex.getDetails())
 						.path(request.getRequestURI())
 				.build(),
@@ -69,19 +74,28 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 		);
 	}
 
-
 	@ExceptionHandler(PropertyReferenceException.class)
 	protected ResponseEntity<ErrorDto> handlePropertyReferenceException(
 			PropertyReferenceException ex, HttpServletRequest request) {
 		return new ResponseEntity<>(
 				ErrorDto.builder()
-						.message(ex.getMessage())
+						.message(getMessage(MessageCode.ENTITY_INVALID_PROPERTY.message, ex.getPropertyName()))
+						.code(MessageCode.ENTITY_INVALID_PROPERTY.code)
 						.path(request.getRequestURI())
 						.build(),
 				HttpStatus.BAD_REQUEST
 		);
 	}
 
+	@ExceptionHandler(CookieTheftException.class)
+	protected ResponseEntity<ErrorDto> handleCookieTheftException() {
+		return new ResponseEntity<>(
+				ErrorDto.builder().build(),
+				HttpStatus.UNAUTHORIZED
+		);
+	}
+
+	// TODO change message output
 	@ExceptionHandler(ObjectOptimisticLockingFailureException.class)
 	protected ResponseEntity<ErrorDto> handleOptimisticLockException(
 			ObjectOptimisticLockingFailureException ex, HttpServletRequest request) {
@@ -95,5 +109,9 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 						.build(),
 				HttpStatus.CONFLICT
 		);
+	}
+
+	private String getMessage(String messageCode, Object... args) {
+		return messageSource.getMessage(messageCode, args, LocaleContextHolder.getLocale());
 	}
 }

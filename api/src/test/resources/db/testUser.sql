@@ -1,37 +1,12 @@
-INSERT INTO user_entity(id, email, password, first_name, last_name)
-    VALUES (uuid_generate_v4(), 'test@testing.com', 'password', 'John', 'Doe');
+INSERT INTO user_entity(id, email, password, first_name, last_name, created_date)
+    VALUES ('4718e879-c061-47bf-bcb4-a2db495b2fe9', 'test@testing.com', '{bcrypt}$2a$10$Vwszsopqc.4RCDi6.mHPleOek9dvb2S2ecwVAB.k1mCHu5p9nFf9i', 'John', 'Doe', '2020-01-01');
 
 INSERT INTO user_role_lookup(user_id, role_id)
-    VALUES ((SELECT id FROM user_entity WHERE email = 'test@testing.com'),
-            (SELECT id FROM role_entity WHERE name = 'USER_ROLE'));
+    VALUES ('4718e879-c061-47bf-bcb4-a2db495b2fe9', (SELECT id FROM role_entity WHERE name = 'USER_ROLE'));
 
 INSERT INTO user_status(id, valid_start, system_start, system_stop, created_by)
-    (SELECT id,
-            NOW() - INTERVAL '30 days',
-            NOW() - INTERVAL '30 days',
-            NOW() - INTERVAL '25 days',
-            id
-         FROM user_entity
-         WHERE email = 'test@testing.com');
+    values ('4718e879-c061-47bf-bcb4-a2db495b2fe9', '2020-01-01','2020-01-01','2020-01-05', '4718e879-c061-47bf-bcb4-a2db495b2fe9');
 
-INSERT INTO user_status(id, valid_start, valid_stop, system_start, created_by)
-    (SELECT id,
-            valid_start,
-            system_stop,
-            system_stop,
-            id
-         FROM user_status
-         WHERE id =
-               (SELECT id FROM user_entity WHERE email = 'test@testing.com')
-    );
-
-INSERT INTO user_status(id, valid_start, system_start, account_enabled, created_by)
-    (SELECT id,
-            valid_stop,
-            system_start,
-            TRUE,
-            id
-         FROM user_status us
-         WHERE id = (SELECT id FROM user_entity WHERE email = 'test@testing.com')
-           AND us.system_start = (SELECT MAX(system_start) FROM user_status us1 WHERE us1.id = us.id)
-    );
+INSERT INTO user_status(id, valid_start, valid_stop, system_start, account_enabled, created_by)
+    values ('4718e879-c061-47bf-bcb4-a2db495b2fe9', '2020-01-01', '2020-01-05', '2020-01-05', false, '4718e879-c061-47bf-bcb4-a2db495b2fe9'),
+           ('4718e879-c061-47bf-bcb4-a2db495b2fe9', '2020-01-05', 'infinity'::timestamp, '2020-01-05', true, '4718e879-c061-47bf-bcb4-a2db495b2fe9');

@@ -124,6 +124,7 @@ public class UserServiceImpl implements UserService {
 		UserEntity sysUser = userRepository.findByEmail("system_account@localhost")
 				.orElseThrow();
 
+		// TODO optimized this into one save
 		UserStatusEntity status = UserStatusEntity.builder()
 				.user(user)
 				.createdBy(sysUser.getId())

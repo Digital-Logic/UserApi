@@ -41,8 +41,8 @@ public class UserControllerImpl implements UserController {
 			@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "limit", defaultValue = "25") int limit,
 			@RequestParam(name = "sort", defaultValue = "createdDate") String sort,
-			@RequestParam(name = "expand", required = false) @Nullable String expand,
 			@RequestParam(name = "filter", required = false) @Nullable String filter,
+			@RequestParam(name = "expand", required = false) @Nullable String expand,
 			HttpServletResponse response) {
 
 		Slice<UserDto> dtoSlice = userService.getAllUsers(page, limit, sort, filter, expand);

@@ -15,8 +15,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorDto {
+
 	@Builder.Default
 	private LocalDateTime timestamp = LocalDateTime.now(Clock.systemUTC());
+	private String code;
 	private Object message;
 	private Object details;
 	private String path;

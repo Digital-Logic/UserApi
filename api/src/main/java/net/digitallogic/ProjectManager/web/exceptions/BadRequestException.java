@@ -11,28 +11,18 @@ import java.util.Map;
 public class BadRequestException extends HttpRequestException {
 
 	public BadRequestException(MessageCode code, Object... args) {
-		super(HttpStatus.BAD_REQUEST, code, List.of(args), null, null);
-	}
-
-	public BadRequestException(MessageConverter message,
-	                           @Nullable Object details,
-	                           @Nullable Exception ex) {
-		super(HttpStatus.BAD_REQUEST, message, details, ex);
+		super(HttpStatus.BAD_REQUEST, code, List.of(args));
 	}
 
 	public BadRequestException(MessageConverter message,
 	                           @Nullable Object details) {
 		super(HttpStatus.BAD_REQUEST, message, details);
 	}
+
 	public BadRequestException(MessageConverter message) {
 		super(HttpStatus.BAD_REQUEST, message);
 	}
 
-	public BadRequestException(Map<String, MessageConverter> messages,
-	                           @Nullable Object details,
-	                           @Nullable Exception ex) {
-		super(HttpStatus.BAD_REQUEST, messages, details, ex);
-	}
 	public BadRequestException(Map<String, MessageConverter> messages,
 	                           @Nullable Object details) {
 		super(HttpStatus.BAD_REQUEST, messages, details);

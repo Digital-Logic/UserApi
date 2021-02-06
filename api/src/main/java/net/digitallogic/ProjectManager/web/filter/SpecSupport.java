@@ -1,9 +1,13 @@
 package net.digitallogic.ProjectManager.web.filter;
 
 import cz.jirutka.rsql.parser.RSQLParser;
+import cz.jirutka.rsql.parser.RSQLParserException;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import cz.jirutka.rsql.parser.ast.Node;
+import lombok.extern.slf4j.Slf4j;
 import net.digitallogic.ProjectManager.converters.LocalDateTimeConverter;
+import net.digitallogic.ProjectManager.web.exceptions.BadRequestException;
+import net.digitallogic.ProjectManager.web.exceptions.MessageCode;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 public class SpecSupport {
 
 	private static ConversionService converter;
@@ -47,12 +52,23 @@ public class SpecSupport {
 
 		return ((Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
 
-			// get all available operators for this class
-			Set<ComparisonOperator> operators = Visitor.getOperators(root.getJavaType());
+			try {
+				// get all available operators for this class
+				Set<ComparisonOperator> operators = Visitor.getOperators(root.getJavaType());
 
-			Node rootNode = new RSQLParser(operators).parse(queryStr);
+				Node rootNode = new RSQLParser(operators).parse(queryStr);
 
-			return rootNode.accept(new Visitor<>(builder), root);
+				return rootNode.accept(new Visitor<>(builder), root);
+
+			} catch (RSQLParserException ex) {
+				log.info("Invalid query string {}.", queryStr);
+				throw new BadRequestException(MessageCode.FILTER_INVALID_QUERY);
+
+			} catch (IllegalArgumentException ex) {
+				log.error("ComparisonOperators not available for given object type: {}",
+						root.getJavaType().getSimpleName());
+				return null;
+			}
 		});
 	}
 

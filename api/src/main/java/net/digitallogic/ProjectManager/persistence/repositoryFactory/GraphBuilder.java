@@ -47,7 +47,7 @@ public class GraphBuilder<T> {
 
 		public GraphResolver(String expandAttributes) {
 			// Split attributes list and transform to camelCase if needed.
-			properties = Utils.snakeCaseToCamel(
+			properties = Utils.toCamel(
 					expandAttributes.split("\\s*,\\s*"));
 
 			Map<String, MessageConverter> invalidProps = properties.stream()

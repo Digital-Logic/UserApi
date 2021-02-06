@@ -6,8 +6,9 @@ import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
-import net.digitallogic.ProjectManager.security.ROLES;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -17,10 +18,9 @@ import org.springframework.test.context.jdbc.Sql;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUtil;
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,17 +45,14 @@ public class UserRepositoryTest {
 	public void findByEmailIgnoreCaseTest() {
 		Optional<UserEntity> user = userRepository.findByEmail("Test@Testing.com");
 		assertThat(user).isNotEmpty();
-		assertThat(user.get().getEmail()).isEqualToIgnoringCase("test@testing.com");
+		assertThat(user.get()
+				.getEmail()).isEqualToIgnoringCase("test@testing.com");
 	}
 
 	@Test
 	@Sql(value = "classpath:db/testUser.sql")
 	public void findByIdTest() {
-		Optional<UserEntity> userEntity = userRepository.findByEmail("Test@Testing.com");
-		assertThat(userEntity).isNotEmpty();
-		assertThat(userEntity.get().getId()).isNotNull();
-
-		Optional<UserEntity> user = userRepository.findById(userEntity.get().getId());
+		Optional<UserEntity> user = userRepository.findById(UUID.fromString("4718e879-c061-47bf-bcb4-a2db495b2fe9"));
 		assertThat(user).isNotEmpty();
 	}
 
@@ -75,35 +72,39 @@ public class UserRepositoryTest {
 		assertThat(user).isNotEmpty();
 		assertThat(pu.isLoaded(user.get(), UserEntity_.ROLES)).isTrue();
 
-		assertThat(user.get().getRoles()).hasSize(1);
+		assertThat(user.get()
+				.getRoles()).hasSize(1);
 		// Verify that authorities have not been loaded
-		user.get().getRoles().forEach(role ->
-				assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)).isFalse());
+		user.get()
+				.getRoles()
+				.forEach(role ->
+						assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)).isFalse());
 	}
 
-	@Test
+	@ParameterizedTest
 	@Sql(value = "classpath:db/adminUser.sql")
-	public void userEntityGraphAuthoritiesTest() {
+	@ValueSource(strings = {UserEntity_.ROLES, RoleEntity_.AUTHORITIES, " "})
+	public void userEntityGraphAuthoritiesTest(String resultGraph) {
 		GraphBuilder<UserEntity> graphBuilder = new RepositoryConfig().userEntityGraphBuilder();
-
 		PersistenceUtil pu = Persistence.getPersistenceUtil();
 
 		Optional<UserEntity> user = userRepository.findByEmail(
-				"adminTestUser@gmail.com", graphBuilder.createResolver("authorities")
+				"adminTestUser@gmail.com", graphBuilder.createResolver(resultGraph)
 		);
 
 		assertThat(user).isNotEmpty();
 
-		assertThat(pu.isLoaded(user.get(), UserEntity_.ROLES)).isTrue();
-		assertThat(user.get().getRoles()).hasSize(1);
+		if (resultGraph.equals(UserEntity_.ROLES)) {
+			assertThat(pu.isLoaded(user.get(), UserEntity_.ROLES)).isTrue();
+			assertThat(user.get()
+					.getRoles()).hasSize(1);
+		}
 
-		user.get().getRoles().forEach(role ->
-				assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)));
-
-		user.get().getRoles().forEach(role -> {
-			assertThat(role.getName()).isEqualTo(ROLES.ADMIN.name);
-			assertThat(role.getAuthorities()).hasSize(2);
-		});
+		if (resultGraph.equals(RoleEntity_.AUTHORITIES)) {
+			assertThat(pu.isLoaded(user.get(), UserEntity_.ROLES)).isTrue();
+			user.get().getRoles().forEach(role ->
+					assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)).isTrue());
+		}
 	}
 
 	@Test
@@ -116,31 +117,32 @@ public class UserRepositoryTest {
 		assertThat(userSlice).hasSize(2);
 	}
 
-	@Test
+	@ParameterizedTest
 	@Sql(value = "classpath:db/adminUser.sql")
-	public void getAllUsersGraphTest() {
+	@ValueSource(strings = {" ", UserEntity_.ROLES, RoleEntity_.AUTHORITIES, UserEntity_.ROLES + "," + RoleEntity_.AUTHORITIES})
+	public void getAllUsersGraphTest(String requestGraph) {
 		GraphBuilder<UserEntity> userGraphBuilder = new RepositoryConfig().userEntityGraphBuilder();
 		final PersistenceUtil pu = Persistence.getPersistenceUtil();
 
-		Stream.of("  ", UserEntity_.ROLES, RoleEntity_.AUTHORITIES, UserEntity_.ROLES + "," + RoleEntity_.AUTHORITIES)
-				.forEach(graphNodes -> {
 
-					Slice<UserEntity> userSlice = userRepository.findAll(
-							PageRequest.of(0, 25, Sort.by("email")),
-							userGraphBuilder.createResolver(graphNodes)
-					);
-					if (graphNodes.equals(UserEntity_.ROLES)) {
-						userSlice.forEach(user ->
-								assertThat(pu.isLoaded(user, UserEntity_.ROLES)));
-					} else if (graphNodes.equals(RoleEntity_.AUTHORITIES)) {
-						userSlice.forEach(user -> {
-							assertThat(pu.isLoaded(user, UserEntity_.ROLES));
-							user.getRoles().forEach(role ->
-									assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)));
-						});
-					}
-					assertThat(userSlice).hasSize(2);
-				});
+		Slice<UserEntity> userSlice = userRepository.findAll(
+				PageRequest.of(0, 25, Sort.by("email")),
+				userGraphBuilder.createResolver(requestGraph)
+		);
+
+		if (requestGraph.equals(UserEntity_.ROLES)) {
+			userSlice.forEach(user ->
+					assertThat(pu.isLoaded(user, UserEntity_.ROLES)));
+
+		} else if (requestGraph.equals(RoleEntity_.AUTHORITIES)) {
+			userSlice.forEach(user -> {
+				assertThat(pu.isLoaded(user, UserEntity_.ROLES));
+				user.getRoles()
+						.forEach(role ->
+								assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)));
+			});
+		}
+		assertThat(userSlice).hasSize(2);
 	}
 
 	@Test
@@ -149,10 +151,7 @@ public class UserRepositoryTest {
 		Optional<UserEntity> user = userRepository.findOne(
 				userRepository.findByEmailSpec("test@testing.com")
 						.and(userRepository
-								.filterByAccountEnabled(
-										LocalDateTime.now(Clock.systemUTC())
-										.minusDays(26)
-								)
+								.filterByAccountEnabled(LocalDateTime.of(2020, 01, 04, 0, 0))
 						)
 		);
 

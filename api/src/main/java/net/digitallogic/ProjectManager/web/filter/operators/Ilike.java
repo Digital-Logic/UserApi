@@ -16,6 +16,7 @@ public class Ilike<T> extends Operator<T, String> {
 		return builder.like(
 				builder.upper(path),
 				args.get(0).toUpperCase()
+					.replace("*", "%")
 		);
 	}
 }

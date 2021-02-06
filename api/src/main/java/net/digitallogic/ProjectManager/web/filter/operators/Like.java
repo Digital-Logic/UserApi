@@ -18,6 +18,7 @@ public class Like<T> extends Operator<T, String> {
 		return builder.like(
 				path,
 				args.get(0)
+					.replace("*", "%")
 		);
 	}
 }

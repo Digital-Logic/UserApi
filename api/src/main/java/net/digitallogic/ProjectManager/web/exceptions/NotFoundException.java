@@ -9,13 +9,7 @@ import java.util.Map;
 public class NotFoundException extends HttpRequestException {
 
 	public NotFoundException(MessageCode code, Object... args) {
-		super(HttpStatus.NOT_FOUND, code, List.of(args), null, null);
-	}
-
-	public NotFoundException(MessageConverter message,
-	                         @Nullable Object details,
-	                         @Nullable Exception ex) {
-		super(HttpStatus.NOT_FOUND, message, details, ex);
+		super(HttpStatus.NOT_FOUND, code, List.of(args));
 	}
 
 	public NotFoundException(MessageConverter message,
@@ -27,11 +21,6 @@ public class NotFoundException extends HttpRequestException {
 	}
 
 	// Multi code
-	public NotFoundException(Map<String, MessageConverter> messages,
-	                           @Nullable Object details,
-	                           @Nullable Exception ex) {
-		super(HttpStatus.NOT_FOUND, messages, details, ex);
-	}
 	public NotFoundException(Map<String, MessageConverter> messages,
 	                           @Nullable Object details) {
 		super(HttpStatus.NOT_FOUND, messages, details);

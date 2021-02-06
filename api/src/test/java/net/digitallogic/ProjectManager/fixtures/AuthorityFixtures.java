@@ -2,7 +2,7 @@ package net.digitallogic.ProjectManager.fixtures;
 
 import net.digitallogic.ProjectManager.persistence.dto.user.AuthorityDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.AuthorityEntity;
-import net.digitallogic.ProjectManager.security.AUTHORITIES;
+import net.digitallogic.ProjectManager.security.Authorities;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +14,7 @@ public class AuthorityFixtures {
 
 	private static final Random random = new Random();
 
-	private static final List<AuthorityDto> authDtos = Arrays.stream(AUTHORITIES.values())
+	private static final List<AuthorityDto> authDtos = Arrays.stream(Authorities.values())
 			.map(auth -> AuthorityDto.builder()
 					.id(UUID.randomUUID())
 					.name(auth.name)
@@ -22,7 +22,7 @@ public class AuthorityFixtures {
 			)
 			.collect(Collectors.toList());
 
-	private static final List<AuthorityEntity> authEntities = Arrays.stream(AUTHORITIES.values())
+	private static final List<AuthorityEntity> authEntities = Arrays.stream(Authorities.values())
 			.map(auth -> AuthorityEntity.builder()
 					.id(UUID.randomUUID())
 					.name(auth.name)

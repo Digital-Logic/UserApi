@@ -8,14 +8,14 @@ import net.digitallogic.ProjectManager.persistence.repository.UserRepository;
 import net.digitallogic.ProjectManager.web.exceptions.BadRequestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.stream.Stream;
 
 import static net.digitallogic.ProjectManager.web.filter.SpecSupport.toSpecification;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,72 +35,73 @@ public class UserFilterTest {
 		System.out.println("Current timezone: " + timeZone);
 	}
 
-	@Test
+	@ParameterizedTest
 	@Sql(value = "classpath:db/multiplyUsers.sql")
-	public void firstNameEqualsFilterTest() {
-		Stream.of("Sarah", "Howard", "Joe", "John")
-				.forEach(name -> {
-					List<UserEntity> result = userRepository.findAll(
-							toSpecification("firstName==" + name)
-					);
-					assertThat(result).hasSize(1);
-				});
+	@ValueSource(strings = {"Sarah", "Howard", "Joe", "John"})
+	public void firstNameEqualsFilterTest(String queryName) {
+
+		List<UserEntity> result = userRepository.findAll(
+				toSpecification("firstName==" + queryName)
+		);
+		assertThat(result).hasSize(1);
 	}
 
-	@Test
+	@ParameterizedTest
 	@Sql(value = "classpath:db/multiplyUsers.sql")
-	public void firstNameLikeFilterTest() {
-		Stream.of("Sara_", "Sar%", "%ward", "John")
-				.forEach(name -> {
-					List<UserEntity> results = userRepository.findAll(toSpecification("firstName=like=" + name));
-					assertThat(results).hasSize(1);
-				});
+	@ValueSource(strings = {"Sara_", "Sar%", "%ward", "John"})
+	public void firstNameLikeFilterTest(String queryName) {
+		List<UserEntity> results = userRepository.findAll(toSpecification("firstName=like=" + queryName));
+		assertThat(results).hasSize(1);
 	}
 
-	@Test
+	@ParameterizedTest
 	@Sql(value = "classpath:db/multiplyUsers.sql")
-	public void firstNameILikeFilterTest() {
-		Stream.of("saRa_", "sar%", "%warD", "john")
-				.forEach(name -> {
-					List<UserEntity> results = userRepository.findAll(toSpecification("firstName=ilike=" + name));
-					assertThat(results).hasSize(1);
-				});
+	@ValueSource(strings = {"saRa_", "sar%", "%warD", "john"})
+	public void firstNameILikeFilterTest(String queryName) {
+
+		List<UserEntity> results = userRepository.findAll(toSpecification("firstName=ilike=" + queryName));
+		assertThat(results).hasSize(1);
 	}
 
-	@Test
+	@ParameterizedTest
 	@Sql(value = "classpath:db/multiplyUsers.sql")
-	public void lastNameEqualsFilterTest() {
-		Stream.of("Conner", "TheDuck", "Exotic", "Wick")
-				.forEach(name -> {
-					List<UserEntity> results = userRepository.findAll(
-							toSpecification("lastName==" + name)
-					);
-					assertThat(results).hasSize(1);
-				});
+	@ValueSource(strings = {"Conner", "TheDuck", "Exotic", "Wick"})
+	public void lastNameEqualsFilterTest(String queryName) {
+
+		List<UserEntity> results = userRepository.findAll(
+				toSpecification("lastName==" + queryName)
+		);
+		assertThat(results).hasSize(1);
+
 	}
 
-	@Test
+	@ParameterizedTest
 	@Sql(value = "classpath:db/multiplyUsers.sql")
-	public void lastNameLikeFilterTest() {
-		Stream.of("Conne_", "Con%", "%Duck", "Wick")
-				.forEach(name -> {
-					List<UserEntity> results = userRepository.findAll(
-							toSpecification("lastName=like=" + name));
+	@ValueSource(strings = {"Conne_", "Con%", "%Duck", "Wick"})
+	public void lastNameLikeFilterTest(String queryName) {
+		List<UserEntity> results = userRepository.findAll(
+				toSpecification("lastName=like=" + queryName));
 
-					assertThat(results).hasSize(1);
-				});
+		assertThat(results).hasSize(1);
 	}
 
-	@Test
+	@ParameterizedTest
 	@Sql(value = "classpath:db/multiplyUsers.sql")
-	public void lastNameILikeFilterTest() {
-		Stream.of("coNne_", "con%", "%duck", "WICK")
-				.forEach(name -> {
-					List<UserEntity> results = userRepository.findAll(
-							toSpecification("lastName=ilike=" + name));
+	@ValueSource(strings = {"coNne_", "con%", "%duck", "WICK"})
+	public void lastNameILikeFilterTest(String queryName) {
 
-					assertThat(results).hasSize(1);
-				});
+		List<UserEntity> results = userRepository.findAll(
+				toSpecification("lastName=ilike=" + queryName));
+
+		assertThat(results).hasSize(1);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"lastName<=joe", "createdDate==today", "accountEnabled==true", "lastName=ilike="})
+	public void invalidFilterTest(String filter){
+		assertThatThrownBy(() ->
+					userRepository.findAll(toSpecification(filter))
+				).isInstanceOf(BadRequestException.class);
 	}
 
 	@Test
@@ -108,23 +109,20 @@ public class UserFilterTest {
 	public void createDateLessThanFilterTest() {
 		List<UserEntity> results = userRepository.findAll(
 				toSpecification("createdDate<" +
-						LocalDateTime.now(Clock.systemUTC())
-								.plusMinutes(5)
-				)
+						LocalDateTime.of(2020, 1, 1, 1, 0))
 		);
-		assertThat(results).hasSize(5);
+		assertThat(results).hasSize(1);
 	}
+
 
 	@Test
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	public void createDateLessThanEqualToFilterTest() {
 		List<UserEntity> results = userRepository.findAll(
 				toSpecification("createdDate<=" +
-						LocalDateTime.now(Clock.systemUTC())
-								.plusMinutes(5)
-				)
+						LocalDateTime.of(2020, 1, 1, 0, 0))
 		);
-		assertThat(results).hasSize(5);
+		assertThat(results).hasSize(1);
 	}
 
 	@Test
@@ -132,12 +130,10 @@ public class UserFilterTest {
 	public void createDateGreaterThanFilterTest() {
 		List<UserEntity> results = userRepository.findAll(
 				toSpecification("createdDate>" +
-						LocalDateTime.now(Clock.systemUTC())
-								.minusMinutes(5)
-				)
+						LocalDateTime.of(2020, 3, 1, 1, 0))
 		);
-		log.error("TimeZone: " + TimeZone.getDefault());
-		assertThat(results).hasSize(4);
+		log.info("TimeZone: " + TimeZone.getDefault());
+		assertThat(results).hasSize(2);
 	}
 
 	@Test
@@ -145,11 +141,9 @@ public class UserFilterTest {
 	public void createDateGreaterThanEqualToFilterTest() {
 		List<UserEntity> results = userRepository.findAll(
 				toSpecification("createdDate>=" +
-						LocalDateTime.now(Clock.systemUTC())
-								.minusMinutes(5)
-				)
+						LocalDateTime.of(2020, 3, 1, 0, 0))
 		);
-		assertThat(results).hasSize(4);
+		assertThat(results).hasSize(3);
 	}
 
 	@Test

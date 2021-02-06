@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import java.time.Clock;
 import java.util.TimeZone;
 
 @Configuration
@@ -32,5 +33,10 @@ public class AppConfig {
 		LocalValidatorFactoryBean factory = new LocalValidatorFactoryBean();
 		factory.setValidationMessageSource(messageSource());
 		return factory;
+	}
+
+	@Bean
+	public Clock clock() {
+		return Clock.systemUTC();
 	}
 }

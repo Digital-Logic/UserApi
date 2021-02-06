@@ -13,20 +13,20 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class CreateUserDto {
 
-	@Size(max = 60, message = "{error.field.Size.max.message}")
-	@NotEmpty(message = "{error.field.NotNull.message}")
-	@Email(message = "{error.field.Email.message}")
+	@Size(max = 60, message = "{error.field.size.max.message}")
+	@NotEmpty(message = "{error.field.notNull.message}")
+	@Email(message = "{error.field.email.message}")
 	private String email;
 
-	@Size(min=7, max=30, message = "{error.field.Size.minMax.message}")
-	@NotEmpty(message = "{error.field.NotNull.message}")
+	@Size(min=7, max=30, message = "{error.field.size.minMax.message}")
+	@NotEmpty(message = "{error.field.notNull.message}")
 	private String password;
 
-	@NotEmpty(message = "{error.field.NotNull.message}")
-	@Size(min=3)
+	@NotEmpty(message = "{error.field.notNull.message}")
+	@Size(min=3, message = "{error.field.size.min.message}")
 	private String firstName;
 
-	@NotEmpty(message = "{error.field.NotNull.message}")
-	@Size(min=3)
+	@NotEmpty(message = "{error.field.notNull.message}")
+	@Size(min=3, message = "{error.field.size.min.message}")
 	private String lastName;
 }

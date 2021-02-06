@@ -22,6 +22,10 @@ public class MessageConverter {
 	}
 
 	public String getMessageCode() {
-		return this.messageCode.property;
+		return this.messageCode.message;
+	}
+
+	public String getStatusCode() {
+		return this.messageCode.code;
 	}
 }

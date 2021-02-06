@@ -33,6 +33,7 @@ public class UserStatusEntityTest {
 		assertThat(copy).hasSameHashCodeAs(status);
 	}
 
+	// TODO fix user.addUserStatus
 	@Test
 	public void copyConstructor() {
 		UserEntity user = UserFixtures.userEntity();

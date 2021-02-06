@@ -1,18 +1,17 @@
 INSERT INTO user_entity(id, email, password, first_name, last_name)
-    VALUES (uuid_generate_v4(), 'adminTestUser@gmail.com', 'password', 'John', 'Doe');
+    VALUES ('4876a5ba-319e-4ca1-829d-1f6cb5e3599f', 'adminTestUser@gmail.com',
+            '{bcrypt}$2a$10$ZiSDjl9BEom0FhqR9uQ8SOXCCfyN2MhbiLC6JTSkNnK/alLWeE2M2', 'John', 'Doe');
 
 INSERT INTO user_role_lookup(user_id, role_id)
-    VALUES ((SELECT id FROM user_entity WHERE email = 'adminTestUser@gmail.com'),
+    VALUES ('4876a5ba-319e-4ca1-829d-1f6cb5e3599f',
             (SELECT id FROM role_entity WHERE name = 'ADMIN_ROLE'));
 
 INSERT INTO user_status(id, valid_start, system_start, system_stop, created_by)
-    (SELECT id,
+    VALUES ('4876a5ba-319e-4ca1-829d-1f6cb5e3599f',
             NOW() - INTERVAL '30 days',
             NOW() - INTERVAL '30 days',
             NOW() - INTERVAL '25 days',
-            id
-         FROM user_entity
-         WHERE email = 'adminTestUser@gmail.com');
+            '4876a5ba-319e-4ca1-829d-1f6cb5e3599f');
 
 INSERT INTO user_status(id, valid_start, valid_stop, system_start, created_by)
     (SELECT id,

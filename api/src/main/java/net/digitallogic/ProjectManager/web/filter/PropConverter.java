@@ -70,7 +70,7 @@ public class PropConverter<T, P> {
 			);
 		} catch (ConversionException ex) {
 			log.error("Conversion service throw ConversionException error: " + ex.getMessage());
-			throw new BadRequestException(MessageCode.TYPE_CONVERSION_ERROR, ex);
+			throw new BadRequestException(MessageCode.TYPE_CONVERSION_ERROR);
 		}
 
 		// TODO fix nullable path

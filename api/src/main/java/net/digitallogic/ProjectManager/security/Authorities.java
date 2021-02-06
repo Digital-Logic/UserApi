@@ -1,11 +1,14 @@
 package net.digitallogic.ProjectManager.security;
 
-public enum AUTHORITIES {
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public enum Authorities {
 
 	ADMIN_USERS("ADMIN_USERS"),
 	ADMIN_ROLES("ADMIN_ROLES")
 	;
 
 	public final String name;
-	AUTHORITIES(String name){ this.name = name; }
+	Authorities(String name){ this.name = name; }
 }

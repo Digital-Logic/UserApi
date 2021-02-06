@@ -13,18 +13,18 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserUpdateDto {
 
-	@NotNull(message = "{error.field.NotNull.message}")
+	@NotNull(message = "{error.field.notNull.message}")
 	private UUID id;
 
-	@Size(min=3)
+	@Size(min=3, message = "{error.field.size.min.message}")
 	private String firstName;
 
-	@Size(min=3)
+	@Size(min=3, message = "{error.field.size.min.message}")
 	private String lastName;
 
 	private boolean archived;
 
-	@NotNull(message = "{error.field.NotNull.message}")
+	@NotNull(message = "{error.field.notNull.message}")
 	private int version;
 
 	/* ** Copy constructor ** */
