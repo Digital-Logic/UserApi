@@ -5,7 +5,7 @@ import net.digitallogic.ProjectManager.annotations.RepositoryTest;
 import net.digitallogic.ProjectManager.config.RepositoryConfig;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.repository.UserRepository;
-import net.digitallogic.ProjectManager.web.exceptions.BadRequestException;
+import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

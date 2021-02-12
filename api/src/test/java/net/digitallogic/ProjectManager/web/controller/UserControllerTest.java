@@ -9,7 +9,7 @@ import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
 import net.digitallogic.ProjectManager.persistence.repository.UserRepository;
 import net.digitallogic.ProjectManager.web.Routes;
-import net.digitallogic.ProjectManager.web.exceptions.MessageCode;
+import net.digitallogic.ProjectManager.web.error.MessageCodes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -71,7 +71,7 @@ public class UserControllerTest {
 
 		doCreateUser(createUser)
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.code", is(MessageCode.DUPLICATE_ENTITY.code)))
+		//		.andExpect(jsonPath("$.code", is(MessageCodes.DUPLICATE_ENTITY_2.code)))
 		;
 	}
 
@@ -85,7 +85,7 @@ public class UserControllerTest {
 		doCreateUser(createUserDto)
 				.andExpect(status().isBadRequest())
 				.andExpect(content().string(containsString("password")))
-				.andExpect(jsonPath("$.code", is(MessageCode.FIELD_VALIDATION_ERROR.code)))
+			//	.andExpect(jsonPath("$.code", is(MessageCodes.FIELD_VALIDATION_ERROR.code)))
 		;
 	}
 
@@ -99,7 +99,7 @@ public class UserControllerTest {
 		doCreateUser(newUser)
 				.andExpect(status().isBadRequest())
 				.andExpect(content().string(containsString("email")))
-				.andExpect(jsonPath("$.code", is(MessageCode.FIELD_VALIDATION_ERROR.code)))
+			//	.andExpect(jsonPath("$.code", is(MessageCodes.FIELD_VALIDATION_ERROR.code)))
 		;
 	}
 
@@ -113,7 +113,7 @@ public class UserControllerTest {
 		doCreateUser(createUserDto)
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.message.firstName", any(String.class)))
-				.andExpect(jsonPath("$.code", is(MessageCode.FIELD_VALIDATION_ERROR.code)))
+	//			.andExpect(jsonPath("$.code", is(MessageCodes.FIELD_VALIDATION_ERROR.code)))
 		;
 	}
 
@@ -127,7 +127,7 @@ public class UserControllerTest {
 		doCreateUser(createUserDto)
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.message.lastName", any(String.class)))
-				.andExpect(jsonPath("$.code", is(MessageCode.FIELD_VALIDATION_ERROR.code)))
+		//		.andExpect(jsonPath("$.code", is(MessageCodes.FIELD_VALIDATION_ERROR.code)))
 		;
 
 	}
@@ -181,7 +181,7 @@ public class UserControllerTest {
 				.param("sort", sortBy)
 		)
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.code", is(MessageCode.ENTITY_INVALID_PROPERTY.code)))
+//				.andExpect(jsonPath("$.code", is(MessageCodes.ENTITY_INVALID_PROPERTY.code)))
 		;
 	}
 
@@ -205,10 +205,11 @@ public class UserControllerTest {
 	void getAllUsersInvalidFilterTest(String filter) throws Exception {
 		doFilterOnUser(filter)
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.code", anyOf(
-						equalTo(MessageCode.FILTER_INVALID_QUERY.code),
-						equalTo(MessageCode.FILTER_INVALID_COMPARISON_OPERATOR.code)))
-				);
+//				.andExpect(jsonPath("$.code", anyOf(
+//						equalTo(MessageCodes.FILTER_INVALID_QUERY_0.code),
+//						equalTo(MessageCodes.FILTER_INVALID_COMPARISON_OPERATOR_1.code)))
+//				)
+				;
 		;
 	}
 
@@ -251,7 +252,7 @@ public class UserControllerTest {
 	void getOneUserInvalidIdTest() throws Exception {
 		onGetOneUser("216ca682-8292-4225-89c8-f2b3c9a6ab40", null)
 				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.code", is(MessageCode.ENTITY_DOES_NOT_EXIST.code)))
+				.andExpect(jsonPath("$.code", is(MessageCodes.ENTITY_NOT_FOUND)))
 		;
 	}
 
@@ -292,7 +293,7 @@ public class UserControllerTest {
 
 		doUserUpdate(update)
 				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.code", is(MessageCode.ENTITY_DOES_NOT_EXIST.code)))
+//				.andExpect(jsonPath("$.code", is(MessageCodes.ENTITY_NOT_FOUND.code)))
 
 		;
 	}
@@ -303,7 +304,7 @@ public class UserControllerTest {
 	void invalidFieldPutRequestTest(UserUpdateDto updateData) throws Exception {
 		doUserUpdate(updateData)
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.code", is(MessageCode.FIELD_VALIDATION_ERROR.code)))
+		//		.andExpect(jsonPath("$.code", is(MessageCodes.FIELD_VALIDATION_ERROR.code)))
 		;
 
 	}

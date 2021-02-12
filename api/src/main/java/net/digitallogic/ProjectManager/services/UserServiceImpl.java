@@ -11,9 +11,9 @@ import net.digitallogic.ProjectManager.persistence.repository.UserRepository;
 import net.digitallogic.ProjectManager.persistence.repository.UserStatusRepository;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.security.ROLES;
-import net.digitallogic.ProjectManager.web.exceptions.BadRequestException;
-import net.digitallogic.ProjectManager.web.exceptions.MessageCode;
-import net.digitallogic.ProjectManager.web.exceptions.NotFoundException;
+import net.digitallogic.ProjectManager.web.error.ErrorMessage;
+import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
+import net.digitallogic.ProjectManager.web.error.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -77,7 +77,8 @@ public class UserServiceImpl implements UserService {
 	public UserDto updateUser(UUID id, UserUpdateDto updateUser) {
 
 		UserEntity userEntity = userRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException(MessageCode.ENTITY_DOES_NOT_EXIST, "User", id));
+				.orElseThrow(() ->
+					new NotFoundException(ErrorMessage.NonExistentEntity("User", id)));
 
 		if (updateUser.getFirstName() != null && !updateUser.getFirstName().isBlank() &&
 				!userEntity.getFirstName().equals(updateUser.getFirstName()))
@@ -95,17 +96,20 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-	public UserDto getUser(UUID id, @Nullable String expand) {
+	public UserDto getUser(final UUID id, @Nullable String expand) {
 		return userRepository.findById(id, userGraphBuilder.createResolver(expand))
 						.map(UserDto::new)
-				.orElseThrow(() -> new NotFoundException(MessageCode.ENTITY_DOES_NOT_EXIST, "User", id));
+				.orElseThrow(() ->
+					new NotFoundException(ErrorMessage.NonExistentEntity("User", id)));
 	}
 
 	@Override
 	@Transactional
 	public UserDto createUser(CreateUserDto dto) {
 		if (userRepository.existsByEmailIgnoreCase(dto.getEmail()))
-			throw new BadRequestException(MessageCode.DUPLICATE_ENTITY, "User", dto.getEmail());
+			throw new BadRequestException(
+					ErrorMessage.DuplicateEntityExist("User", dto.getEmail())
+			);
 
 		RoleEntity role = roleRepository.findByName(ROLES.USER.name)
 				.orElseThrow(); // Throw something that can be cached and logged for review

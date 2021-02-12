@@ -1,8 +1,8 @@
 package net.digitallogic.ProjectManager.web.controller;
 
 import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
-import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
+import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
 import net.digitallogic.ProjectManager.services.UserService;
 import net.digitallogic.ProjectManager.web.Routes;
 import org.springframework.beans.factory.annotation.Autowired;

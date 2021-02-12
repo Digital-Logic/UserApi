@@ -1,6 +1,7 @@
 package net.digitallogic.ProjectManager.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -16,7 +17,9 @@ import java.util.TimeZone;
 @Slf4j
 public class AppConfig {
 
-	public AppConfig() {
+	@Autowired
+	public AppConfig()
+	{
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 	}
 
@@ -39,4 +42,9 @@ public class AppConfig {
 	public Clock clock() {
 		return Clock.systemUTC();
 	}
+
+//	@Bean
+//	public ErrorAttributes errorAttributes() {
+//		return new RestErrorAttributes();
+//	}
 }

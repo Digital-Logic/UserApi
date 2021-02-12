@@ -6,8 +6,8 @@ import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import cz.jirutka.rsql.parser.ast.Node;
 import lombok.extern.slf4j.Slf4j;
 import net.digitallogic.ProjectManager.converters.LocalDateTimeConverter;
-import net.digitallogic.ProjectManager.web.exceptions.BadRequestException;
-import net.digitallogic.ProjectManager.web.exceptions.MessageCode;
+import net.digitallogic.ProjectManager.web.error.ErrorMessage;
+import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.jpa.domain.Specification;
@@ -62,7 +62,8 @@ public class SpecSupport {
 
 			} catch (RSQLParserException ex) {
 				log.info("Invalid query string {}.", queryStr);
-				throw new BadRequestException(MessageCode.FILTER_INVALID_QUERY);
+				//throw new BadRequestException(MessageCode.FILTER_INVALID_QUERY);
+				throw new BadRequestException(ErrorMessage.InvalidFilterQuery());
 
 			} catch (IllegalArgumentException ex) {
 				log.error("ComparisonOperators not available for given object type: {}",

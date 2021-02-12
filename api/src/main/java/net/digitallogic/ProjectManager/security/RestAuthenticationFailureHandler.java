@@ -2,10 +2,11 @@ package net.digitallogic.ProjectManager.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import net.digitallogic.ProjectManager.persistence.dto.ErrorDto;
-import net.digitallogic.ProjectManager.persistence.dto.ErrorDto.ErrorDtoBuilder;
-import net.digitallogic.ProjectManager.web.exceptions.MessageCode;
+import net.digitallogic.ProjectManager.web.error.ErrorMessage;
+import net.digitallogic.ProjectManager.web.error.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
@@ -22,10 +23,13 @@ import java.io.IOException;
 public class RestAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
 	private final ObjectMapper objectMapper;
+	private final MessageSource messageSource;
 
 	@Autowired
-	public RestAuthenticationFailureHandler(ObjectMapper objectMapper) {
+	public RestAuthenticationFailureHandler(ObjectMapper objectMapper,
+	                                        MessageSource messageSource) {
 		this.objectMapper = objectMapper;
+		this.messageSource = messageSource;
 	}
 
 	@Override
@@ -38,26 +42,28 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-		ErrorDtoBuilder errorBuilder = ErrorDto.builder();
-		errorBuilder.path(request.getRequestURI());
+
+		ErrorMessage errorMessage;
 
 		if (exception instanceof BadCredentialsException) {
-			errorBuilder.code(MessageCode.AUTH_BAD_CREDENTIALS.code);
+			errorMessage = ErrorMessage.BadCredentials();
 		} else if (exception instanceof DisabledException) {
-			errorBuilder.code(MessageCode.AUTH_ACCOUNT_NOT_ACTIVATED.code);
+			errorMessage = ErrorMessage.AccountDisabled();
 		} else if (exception instanceof LockedException) {
-			errorBuilder.code(MessageCode.AUTH_ACCOUNT_LOCKED.code);
+			errorMessage = ErrorMessage.AccountLocked();
 		} else if (exception instanceof AccountExpiredException) {
-			errorBuilder.code(MessageCode.AUTH_ACCOUNT_EXPIRED.code);
+			errorMessage = ErrorMessage.AccountExpired();
 		} else if (exception instanceof CredentialsExpiredException) {
-			errorBuilder.code(MessageCode.AUTH_CREDENTIALS_EXPIRED.code);
+			errorMessage = ErrorMessage.CredentialsExpired();
+		} else {
+			log.error("Auth failed for unknown reason: {}", exception.getMessage());
+			errorMessage = ErrorMessage.BadCredentials();
 		}
 
-		errorBuilder.message(exception.getMessage());
 
 		objectMapper.writeValue(
 				response.getWriter(),
-				errorBuilder.build()
+				new ErrorResponse(HttpStatus.UNAUTHORIZED, errorMessage, messageSource)
 		);
 	}
 }

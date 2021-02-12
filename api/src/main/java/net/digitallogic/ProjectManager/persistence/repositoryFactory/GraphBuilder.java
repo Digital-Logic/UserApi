@@ -2,9 +2,9 @@ package net.digitallogic.ProjectManager.persistence.repositoryFactory;
 
 import lombok.extern.slf4j.Slf4j;
 import net.digitallogic.ProjectManager.services.Utils;
-import net.digitallogic.ProjectManager.web.exceptions.BadRequestException;
-import net.digitallogic.ProjectManager.web.exceptions.MessageCode;
-import net.digitallogic.ProjectManager.web.exceptions.MessageConverter;
+import net.digitallogic.ProjectManager.web.error.ErrorMessage;
+import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
+import net.digitallogic.ProjectManager.web.error.exceptions.Error;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.EntityGraph;
@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -50,14 +49,19 @@ public class GraphBuilder<T> {
 			properties = Utils.toCamel(
 					expandAttributes.split("\\s*,\\s*"));
 
-			Map<String, MessageConverter> invalidProps = properties.stream()
+			List<Error> errors = properties.stream()
 					.filter(Predicate.not(graphMapper::containsKey))
-					.collect(Collectors.toMap(
-							Function.identity(), prop -> new MessageConverter(MessageCode.INVALID_EXPANSION_PROPERTY)));
+					.map(property ->
+						new Error(property,
+								ErrorMessage.InvalidExpansionProperty())
+					)
+					.collect(Collectors.toList());
 
-			// Check if we have any invalid properties
-			if (!invalidProps.isEmpty()) {
-				throw new BadRequestException(invalidProps);
+			if (!errors.isEmpty()) {
+				throw new BadRequestException(
+						ErrorMessage.InvalidExpansionProperty(),
+						errors
+				);
 			}
 		}
 

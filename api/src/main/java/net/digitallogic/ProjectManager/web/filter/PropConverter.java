@@ -4,8 +4,8 @@ import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.digitallogic.ProjectManager.web.exceptions.BadRequestException;
-import net.digitallogic.ProjectManager.web.exceptions.MessageCode;
+import net.digitallogic.ProjectManager.web.error.ErrorMessage;
+import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
 import net.digitallogic.ProjectManager.web.filter.SpecSupport.FilterBuilder;
 import net.digitallogic.ProjectManager.web.filter.operators.Operator;
 import org.springframework.core.convert.ConversionException;
@@ -62,15 +62,16 @@ public class PropConverter<T, P> {
 					.map(arg -> converter.convert(arg, targetType))
 					.collect(Collectors.toList());
 		} catch (ConversionFailedException ex) {
-			throw new BadRequestException(MessageCode.FILTER_ARG_CONVERSION,
-					List.of(
-							ex.getValue() != null ? ex.getValue().toString() : "null",
-							ex.getTargetType().getType().getSimpleName()),
-					ex
+
+			throw new BadRequestException(
+					ErrorMessage.ConversionFailed(ex.getTargetType().getType(), ex.getValue())
 			);
+
 		} catch (ConversionException ex) {
 			log.error("Conversion service throw ConversionException error: " + ex.getMessage());
-			throw new BadRequestException(MessageCode.TYPE_CONVERSION_ERROR);
+			throw new BadRequestException(
+					ErrorMessage.ConversionFailed()
+			);
 		}
 
 		// TODO fix nullable path
@@ -79,11 +80,15 @@ public class PropConverter<T, P> {
 		if (resolvePath) {
 			path = pathMapper.apply(root);
 		}
+
 		try {
 			return operators.get(operator)
 					.toPredicate(builder, root, path, objArgs);
 		} catch (NullPointerException ex) {
-			throw new BadRequestException(MessageCode.FILTER_INVALID_COMPARISON_OPERATOR);
+			//throw new BadRequestException(MessageCode.FILTER_INVALID_COMPARISON_OPERATOR);
+			throw new BadRequestException(
+					ErrorMessage.InvalidComparisonOperator(operator.getSymbol())
+			);
 		}
 	}
 

@@ -3,7 +3,7 @@ package net.digitallogic.ProjectManager.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.digitallogic.ProjectManager.persistence.dto.user.LoginRequest;
 import net.digitallogic.ProjectManager.web.Routes;
-import net.digitallogic.ProjectManager.web.exceptions.MessageCode;
+import net.digitallogic.ProjectManager.web.error.MessageCodes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -103,7 +103,7 @@ public class UserSignInIntegrationTest {
 				.andExpect(status().isUnauthorized())
 				.andExpect(cookie().doesNotExist(SecurityConstants.REFRESH_TOKEN))
 				.andExpect(cookie().doesNotExist(SecurityConstants.ACCESS_TOKEN))
-				.andExpect(jsonPath("$.code", is(MessageCode.AUTH_BAD_CREDENTIALS.code)));
+				.andExpect(jsonPath("$.code", is(MessageCodes.AUTH_BAD_CREDENTIALS.code)));
 
 	}
 
