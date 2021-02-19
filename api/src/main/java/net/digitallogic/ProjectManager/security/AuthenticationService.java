@@ -108,6 +108,7 @@ public class AuthenticationService implements UserDetailsService {
 				.and(USER_STATUS.VALID_START.lessOrEqual(LocalDateTime.now(clock)))
 				.and(USER_STATUS.VALID_STOP.greaterThan(LocalDateTime.now(clock)))
 				.and(USER_STATUS.SYSTEM_START.lessOrEqual(LocalDateTime.now(clock)))
-				.and(USER_STATUS.SYSTEM_STOP.greaterThan(LocalDateTime.now(clock)));
+				.and(USER_STATUS.SYSTEM_STOP.greaterThan(LocalDateTime.now(clock)))
+				.and(USER_STATUS.DELETED.eq(false));
 	}
 }

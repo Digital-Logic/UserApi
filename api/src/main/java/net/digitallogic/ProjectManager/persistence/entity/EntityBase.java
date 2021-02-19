@@ -33,9 +33,9 @@ public abstract class EntityBase<ID extends Serializable>
 	@Column(name = "version", nullable = false)
 	protected int version = 0;
 
-	@Builder.Default
-	@Column(name = "archived", nullable = false)
-	protected boolean archived = false;
+//	@Builder.Default
+//	@Column(name = "archived", nullable = false)
+//	protected boolean archived = false;
 
 	@Transient
 	@Builder.Default
@@ -58,14 +58,14 @@ public abstract class EntityBase<ID extends Serializable>
 	public EntityBase(DtoBase<ID> dto) {
 		this.id = dto.getId();
 		this.version = dto.getVersion();
-		this.archived = dto.isArchived();
+		//this.archived = dto.isArchived();
 	}
 
 	// Copy constructor
 	public EntityBase(EntityBase<ID> entity) {
 		this.id = entity.getId();
 		this.version = entity.getVersion();
-		this.archived = entity.isArchived();
+	//	this.archived = entity.isArchived();
 		this.isNew = entity.isNew;
 		this.createdDate = entity.getCreatedDate();
 		this.lastModifiedDate = entity.getLastModifiedDate();

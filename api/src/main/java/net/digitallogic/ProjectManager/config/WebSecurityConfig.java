@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -26,9 +28,9 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 @EnableWebSecurity
@@ -36,8 +38,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final String encoderId;
 	private final int encodeRounds;
+
 	private final String rememberMeKey;
 	private final int rememberMeExpires;
+	private final String rememberMeCookieName;
+	private final String errorPath;
+
 	private final AuthenticationFailureHandler authenticationFailureHandler;
 	private final AuthenticationSuccessHandler authenticationSuccessHandler;
 	private final ObjectMapper objectMapper;
@@ -48,8 +54,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public WebSecurityConfig(
 			@Value("${password.encoder}") String encoderId,
 			@Value("${password.encoder.rounds}") int encodeRounds,
-			@Value("${rememberMe.key}") String rememberMeKey,
+			@Value("${token.rememberMe.key}") String rememberMeKey,
+			@Value("${rememberMe.cookie.name}") String rememberMeCookieName,
 			@Value("${rememberMe.expires}") int rememberMeExpires,
+			@Value("${server.error.path}") String errorPath,
 			AuthenticationSuccessHandler authenticationSuccessHandler,
 			AuthenticationFailureHandler authenticationFailureHandler,
 			ObjectMapper objectMapper,
@@ -60,13 +68,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		this.encoderId = encoderId;
 		this.encodeRounds = encodeRounds;
 		this.rememberMeKey = rememberMeKey;
+		this.rememberMeCookieName = rememberMeCookieName;
 		this.rememberMeExpires = rememberMeExpires;
+		this.errorPath = errorPath;
 		this.authenticationSuccessHandler = authenticationSuccessHandler;
 		this.authenticationFailureHandler = authenticationFailureHandler;
 		this.objectMapper = objectMapper;
 		this.userDetailsService = userDetailsService;
 		this.dataSource = dataSource;
 
+		auth.authenticationProvider(rememberMeAuthenticationProvider());
 		auth.userDetailsService(userDetailsService);
 	}
 
@@ -80,12 +91,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		http
 				.httpBasic()
-				.disable()
+					.disable()
 				.csrf()
-				.disable()
+					.disable()
+
+				.userDetailsService(userDetailsService)
+
 				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-//				.sessionAuthenticationStrategy()
 				.and()
 				.addFilterAt(new SignInFilter(authenticationManager(),
 						authenticationFailureHandler,
@@ -95,12 +108,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 				.addFilterAt(rememberMeAuthenticationFilter(), RememberMeAuthenticationFilter.class)
 
+				// Logout configuration
+				.logout()
+					.logoutUrl(Routes.LOGOUT_ROUTE)
+					.deleteCookies(rememberMeCookieName)
+					.invalidateHttpSession(true)
+					.logoutSuccessHandler(((request, response, authentication) -> {
+						response.setStatus(HttpServletResponse.SC_ACCEPTED);
+					}))
+				.and()
+
 				.authorizeRequests()
 					.antMatchers(HttpMethod.POST, Routes.SIGN_UP_ROUTE)
 						.permitAll()
+					.antMatchers(HttpMethod.GET, Routes.LOGOUT_ROUTE)
+						.authenticated()
+
+					// Deny all access to the error controller
+					.antMatchers(errorPath)
+						.denyAll()
 
 					.anyRequest()
-					.authenticated()
+						.authenticated()
 		;
 	}
 
@@ -118,8 +147,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		RememberMeAuthenticationFilter filter = new RememberMeAuthenticationFilter(
 				authenticationManager(), rememberMeServices()
 		);
-		filter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
-
 		return filter;
 	}
 
@@ -128,10 +155,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		PersistentTokenBasedRememberMeServices rememberMeServices =
 				new PersistentTokenBasedRememberMeServices(rememberMeKey, userDetailsService, rememberMeRepository());
 
+
+		rememberMeServices.setCookieName(rememberMeCookieName);
 		rememberMeServices.setTokenValiditySeconds(
-				(int) Duration.of(14, ChronoUnit.DAYS).toSeconds()
-		);
-		rememberMeServices.setTokenValiditySeconds( (int) Duration.ofMinutes(rememberMeExpires).toSeconds());
+				// Convert duration of days into seconds,
+				// toSeconds method returns a long, requires casting to (int)
+				(int) Duration.ofDays(rememberMeExpires).toSeconds());
+
+		rememberMeServices.setTokenValiditySeconds(32);
+		rememberMeServices.setTokenLength(32);
+
 
 		return rememberMeServices;
 	}
@@ -142,5 +175,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		repository.setCreateTableOnStartup(false);
 		repository.setDataSource(dataSource);
 		return repository;
+	}
+
+	public AuthenticationProvider rememberMeAuthenticationProvider() {
+		return new RememberMeAuthenticationProvider(rememberMeKey);
 	}
 }

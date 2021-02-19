@@ -50,7 +50,7 @@ public class UserDtoTest {
 
 		assertThat(dto).isEqualToComparingOnlyGivenFields(entity,
 				"id", "email", "firstName", "lastName",
-				"version", "archived", "createdDate", "lastModifiedDate");
+				"version", "createdDate", "lastModifiedDate");
 
 		assertThat(dto.getRoles()).hasSameSizeAs(entity.getRoles());
 		//assertThat(dto.getUserStatus()).hasSameSizeAs(entity.getUserStatus());

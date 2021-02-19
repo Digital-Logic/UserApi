@@ -3,6 +3,7 @@ package net.digitallogic.ProjectManager.persistence.entity.user;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.entity.AuditEntity;
+import net.digitallogic.ProjectManager.persistence.entity.SoftDelete;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -18,10 +19,13 @@ import java.util.stream.Collectors;
 @ToString(of = {"name"}, callSuper = true)
 @Entity(name = "RoleEntity")
 @Table(name = "role_entity")
-public class RoleEntity extends AuditEntity<UUID> {
+public class RoleEntity extends AuditEntity<UUID> implements SoftDelete {
 
 	@Column(name = "name", nullable = false, unique = true)
 	private String name;
+
+	@Column(name = "deleted", nullable = false)
+	private boolean deleted;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(

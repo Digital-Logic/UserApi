@@ -51,7 +51,7 @@ public class RoleDtoTest {
 
 		assertThat(dto).isEqualToComparingOnlyGivenFields(entity,
 				"id", "name", "version",
-				"archived", "createdDate", "createdBy", "lastModifiedDate",
+				"deleted", "createdDate", "createdBy", "lastModifiedDate",
 				"lastModifiedBy");
 
 		assertThat(dto.getAuthorities()).hasSameSizeAs(entity.getAuthorities());

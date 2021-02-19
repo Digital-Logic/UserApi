@@ -26,6 +26,7 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
 	                                    HttpServletResponse response,
 	                                    FilterChain chain,
 	                                    Authentication authentication) throws IOException, ServletException {
-		onAuthenticationSuccess(request, response, authentication);
+
+		chain.doFilter(request, response);
 	}
 }

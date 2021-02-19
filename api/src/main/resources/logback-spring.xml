@@ -3,6 +3,7 @@
 
     <logger name="net.digitallogic" level="DEBUG" />
     <logger name="org.springframework" level="INFO" />
-    <logger name="org.springframework.security" level="DEBUG" />
-    <logger name="org.springframework.session" level="DEBUG" />
+    <logger name="org.springframework.security" level="TRACE" />
+    <logger name="org.springframework.session" level="TRACE" />
+<!--    <logger name="org.apache.tomcat" level="DEBUG" />-->
 </configuration>

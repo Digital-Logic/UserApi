@@ -7,7 +7,6 @@ CREATE TABLE user_entity
     password           VARCHAR(160) NOT NULL,
     first_name         VARCHAR(40)  NOT NULL,
     last_name          VARCHAR(40)  NOT NULL,
-    archived           BOOLEAN      NOT NULL DEFAULT FALSE,
 
     /* OPT LOCK */
     version            INT          NOT NULL DEFAULT 0,

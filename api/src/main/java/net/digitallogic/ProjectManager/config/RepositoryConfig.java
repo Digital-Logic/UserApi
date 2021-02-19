@@ -55,6 +55,13 @@ public class RepositoryConfig {
 				.build();
 	}
 
+	@Bean
+	public GraphBuilder<VerificationToken> tokenGraphBuilder() {
+		return GraphBuilder.builder(VerificationToken.class)
+				.addProperty(VerificationToken_.user)
+				.build();
+	}
+
 
 	public static void configUserEntityFilters() {
 		SpecSupport.addFilter(UserEntity.class)
@@ -79,9 +86,9 @@ public class RepositoryConfig {
 					.resolvePath(false)
 					.addComparator(new AccountEnabled())
 					.build()
-				.addProperty(UserEntity_.ARCHIVED, Boolean.class)
-					.addComparator(new Equals<>())
-					.build()
+//				.addProperty(UserEntity_.ARCHIVED, Boolean.class)
+//					.addComparator(new Equals<>())
+//					.build()
 				.build();
 	}
 }

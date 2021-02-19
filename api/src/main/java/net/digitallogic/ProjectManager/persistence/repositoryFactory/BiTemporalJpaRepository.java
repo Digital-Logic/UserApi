@@ -121,19 +121,39 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 	}
 
 	// ** BiTemporal Methods ** //
-
-	public Optional<T> findById(ID id, final LocalDateTime time) {
+	public Optional<T> findByEntityId(ID id, final LocalDateTime time) {
 		return findOne(getById(id)
 				.and(currentValidTimeSpec(time))
 		);
 	}
 
-	public Iterable<T> getHistoryById(ID id, final LocalDateTime time) {
+	public Optional<T> findByEntityId(ID id, final Clock clock) {
+		return findByEntityId(id, LocalDateTime.now(clock));
+	}
+
+	public Iterable<T> findByEntityId(ID id, final LocalDateTime effectiveStart, final LocalDateTime effectiveStop) {
+		return findByEntityId(id, effectiveStart, effectiveStop, Clock.systemUTC());
+	}
+
+	public Iterable<T> findByEntityId(ID id, final LocalDateTime effectiveStart, final LocalDateTime effectiveStop, Clock clock) {
+		return findAll(
+				getById(id)
+						.and(validTimeSpec(effectiveStart, effectiveStop))
+						.and(systemTimeSpec(LocalDateTime.now(clock)))
+		);
+	}
+
+	public Iterable<T> getHistoryByEntityId(ID id, final LocalDateTime time) {
 		return findAll(
 				getById(id)
 						.and(systemTimeSpec(time))
 		);
 	}
+
+	public Iterable<T> getHistoryByEntityId(ID id, final Clock clock) {
+		return getHistoryByEntityId(id, LocalDateTime.now(clock));
+	}
+
 
 	/* ** BiTemporal Specifications ** */
 	public Specification<T> getById(final ID id) {
@@ -160,7 +180,8 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 	                                      final LocalDateTime validStop) {
 		return ((root, query, builder) ->
 				builder.and(
-						builder.lessThanOrEqualTo(root.get(BiTemporalEntity_.id).get(BiTemporalEntityId_.validStart), validStop),
+						builder.lessThanOrEqualTo(root.get(BiTemporalEntity_.id)
+								.get(BiTemporalEntityId_.validStart), validStop),
 						builder.greaterThan(root.get(BiTemporalEntity_.validStop), validStart)
 				));
 	}
@@ -173,7 +194,8 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 	                                       final LocalDateTime systemStop) {
 		return ((root, query, builder) ->
 				builder.and(
-						builder.lessThanOrEqualTo(root.get(BiTemporalEntity_.id).get(BiTemporalEntityId_.systemStart), systemStop),
+						builder.lessThanOrEqualTo(root.get(BiTemporalEntity_.id)
+								.get(BiTemporalEntityId_.systemStart), systemStop),
 						builder.greaterThan(root.get(BiTemporalEntity_.systemStop), systemStart)
 				));
 	}

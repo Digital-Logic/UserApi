@@ -3,6 +3,7 @@ package net.digitallogic.ProjectManager.persistence.dto.user;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.biTemporal.dto.BiTemporalDto;
+import net.digitallogic.ProjectManager.persistence.entity.SoftDelete;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
 
 import java.util.UUID;
@@ -12,12 +13,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class UserStatusDto extends BiTemporalDto<UUID> {
+public class UserStatusDto extends BiTemporalDto<UUID> implements SoftDelete {
 
 	private boolean accountEnabled;
 	private boolean accountExpired;
 	private boolean accountLocked;
 	private boolean credentialsExpired;
+	private boolean deleted;
 
 	public UserStatusDto(UserStatusEntity entity) {
 		super(entity);

@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UtilsTest {
 
-	@ParameterizedTest
+	@ParameterizedTest(name ="processSortBy {0}")
 	@MethodSource
 	void processSortByTest(String sortString, List<String> actual) {
 		List<Sort.Order> result = processSortBy(sortString);
@@ -32,11 +32,12 @@ public class UtilsTest {
 	}
 
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "toCamelCase {0}")
 	@MethodSource
 	void toCamelTest(String strToConvert, String actual) {
 		assertThat(toCamel(strToConvert)).isEqualTo(actual);
 	}
+
 	private static Stream<Arguments> toCamelTest() {
 		return Stream.of(
 				Arguments.of("firstName", "firstName"),

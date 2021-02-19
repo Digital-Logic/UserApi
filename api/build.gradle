@@ -44,7 +44,6 @@ dependencies {
     implementation 'org.springframework.session:spring-session-data-redis'
     // implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'io.lettuce:lettuce-core:6.0.2.RELEASE'
-    //implementation 'org.springframework.session:spring-session-jdbc'
 
     // Json web token
     implementation 'io.jsonwebtoken:jjwt-api:0.11.1'
@@ -84,7 +83,8 @@ flyway {
     placeholders = [
             'sysAccountEmail': "'system_account@localhost'",
             'sysAccountPwd'  : "'{bcrypt}\$2y\$17\$mnQvgxTWmCsE2Pecu2zk7uKnrfeH5Qhgw6A7qR6asRWBmvH7Mg4Qu'",
-            'app_user'       : dbConfig.dev.app.user
+            'app_user'       : dbConfig.dev.app.user,
+            'migration_user' : dbConfig.dev.mirgration.user
     ]
 }
 

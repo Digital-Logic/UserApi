@@ -24,8 +24,8 @@ public abstract class AuditDto<ID extends Serializable> {
 	@Builder.Default
 	protected int version = 0;
 
-	@Builder.Default
-	protected boolean archived = false;
+//	@Builder.Default
+//	protected boolean archived = false;
 
 	/* ** Audit Fields ** */
 	protected LocalDateTime createdDate;
@@ -38,7 +38,7 @@ public abstract class AuditDto<ID extends Serializable> {
 		this.id = entity.getId();
 		this.version = entity.getVersion();
 
-		this.archived = entity.isArchived();
+//		this.archived = entity.isArchived();
 
 		this.createdBy = entity.getCreatedBy();
 		this.createdDate = entity.getCreatedDate();
@@ -50,7 +50,7 @@ public abstract class AuditDto<ID extends Serializable> {
 	public AuditDto(AuditDto<ID> dto) {
 		this.id = dto.getId();
 		this.version = dto.getVersion();
-		this.archived = dto.isArchived();
+//		this.archived = dto.isArchived();
 		this.createdBy = dto.getCreatedBy();
 		this.createdDate = dto.getCreatedDate();
 		this.lastModifiedDate = dto.getLastModifiedDate();

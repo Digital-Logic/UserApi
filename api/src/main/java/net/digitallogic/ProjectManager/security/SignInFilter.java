@@ -8,6 +8,7 @@ import net.digitallogic.ProjectManager.web.Routes;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,12 +22,17 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.io.IOException;
+import java.util.Set;
 
 @Slf4j
 public class SignInFilter extends AbstractAuthenticationProcessingFilter {
 
 	private final ObjectMapper objectMapper;
+	private final Validator validator;
 
 	public SignInFilter(AuthenticationManager authenticationManager,
 	                    AuthenticationFailureHandler failureHandler,
@@ -35,12 +41,12 @@ public class SignInFilter extends AbstractAuthenticationProcessingFilter {
 	                    ObjectMapper objectMapper) {
 
 		super(new AntPathRequestMatcher(Routes.LOGIN_ROUTE, HttpMethod.POST.name()));
-
 		this.objectMapper = objectMapper;
 		setAuthenticationManager(authenticationManager);
 		setAuthenticationFailureHandler(failureHandler);
 		setAuthenticationSuccessHandler(successHandler);
 		setRememberMeServices(rememberMeServices);
+		this.validator = Validation.buildDefaultValidatorFactory().getValidator();
 	}
 
 	@Override
@@ -48,6 +54,14 @@ public class SignInFilter extends AbstractAuthenticationProcessingFilter {
 			throws AuthenticationException, IOException, ServletException {
 
 		LoginRequest login = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+
+		Set<ConstraintViolation<LoginRequest>> violations = validator.validate(login);
+
+		if (!violations.isEmpty()) {
+			log.info("Invalid authentication credentials.");
+			throw new BadCredentialsException(this.messages
+					.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+		}
 
 		log.info("Authentication attempt for user {}", login.getEmail());
 

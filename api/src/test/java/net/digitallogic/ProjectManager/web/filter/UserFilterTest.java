@@ -35,7 +35,7 @@ public class UserFilterTest {
 		System.out.println("Current timezone: " + timeZone);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "firstNameEquals {0}")
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	@ValueSource(strings = {"Sarah", "Howard", "Joe", "John"})
 	public void firstNameEqualsFilterTest(String queryName) {
@@ -46,7 +46,7 @@ public class UserFilterTest {
 		assertThat(result).hasSize(1);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "firstNameLike {0}")
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	@ValueSource(strings = {"Sara_", "Sar%", "%ward", "John"})
 	public void firstNameLikeFilterTest(String queryName) {
@@ -54,7 +54,7 @@ public class UserFilterTest {
 		assertThat(results).hasSize(1);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "firstNameILike {0}")
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	@ValueSource(strings = {"saRa_", "sar%", "%warD", "john"})
 	public void firstNameILikeFilterTest(String queryName) {
@@ -63,7 +63,7 @@ public class UserFilterTest {
 		assertThat(results).hasSize(1);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "lastNameEquals {0}")
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	@ValueSource(strings = {"Conner", "TheDuck", "Exotic", "Wick"})
 	public void lastNameEqualsFilterTest(String queryName) {
@@ -75,7 +75,7 @@ public class UserFilterTest {
 
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "lastNameLike {0}")
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	@ValueSource(strings = {"Conne_", "Con%", "%Duck", "Wick"})
 	public void lastNameLikeFilterTest(String queryName) {
@@ -85,7 +85,7 @@ public class UserFilterTest {
 		assertThat(results).hasSize(1);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "lastNameILike {0}")
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	@ValueSource(strings = {"coNne_", "con%", "%duck", "WICK"})
 	public void lastNameILikeFilterTest(String queryName) {
@@ -96,7 +96,7 @@ public class UserFilterTest {
 		assertThat(results).hasSize(1);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "invalidFilter {0}")
 	@ValueSource(strings = {"lastName<=joe", "createdDate==today", "accountEnabled==true", "lastName=ilike="})
 	public void invalidFilterTest(String filter){
 		assertThatThrownBy(() ->

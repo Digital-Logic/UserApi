@@ -67,7 +67,7 @@ public class UserServiceIntegrationTest {
 
 		assertThat(user).isNotNull();
 		assertThat(user).isEqualToComparingOnlyGivenFields(userEntity,
-				"id", "firstName", "email", "createdDate", "archived");
+				"id", "firstName", "email", "createdDate");
 		assertThat(user.getLastName()).isEqualToIgnoringCase("Dirt");
 		//assertThat(user.getLastModifiedDate()).isCloseToUtcNow(within(5, ChronoUnit.MINUTES));
 	}

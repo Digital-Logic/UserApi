@@ -2,7 +2,8 @@ package net.digitallogic.ProjectManager.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import net.digitallogic.ProjectManager.web.error.ErrorMessage;
+import net.digitallogic.ProjectManager.web.error.ErrorCode;
+import net.digitallogic.ProjectManager.web.MessageTranslator;
 import net.digitallogic.ProjectManager.web.error.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -43,27 +44,29 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 
-		ErrorMessage errorMessage;
+		MessageTranslator messageTranslator;
 
 		if (exception instanceof BadCredentialsException) {
-			errorMessage = ErrorMessage.BadCredentials();
+			messageTranslator = MessageTranslator.BadCredentials();
 		} else if (exception instanceof DisabledException) {
-			errorMessage = ErrorMessage.AccountDisabled();
+			messageTranslator = MessageTranslator.AccountDisabled();
 		} else if (exception instanceof LockedException) {
-			errorMessage = ErrorMessage.AccountLocked();
+			messageTranslator = MessageTranslator.AccountLocked();
 		} else if (exception instanceof AccountExpiredException) {
-			errorMessage = ErrorMessage.AccountExpired();
+			messageTranslator = MessageTranslator.AccountExpired();
 		} else if (exception instanceof CredentialsExpiredException) {
-			errorMessage = ErrorMessage.CredentialsExpired();
+			messageTranslator = MessageTranslator.CredentialsExpired();
 		} else {
 			log.error("Auth failed for unknown reason: {}", exception.getMessage());
-			errorMessage = ErrorMessage.BadCredentials();
+			messageTranslator = MessageTranslator.BadCredentials();
 		}
-
 
 		objectMapper.writeValue(
 				response.getWriter(),
-				new ErrorResponse(HttpStatus.UNAUTHORIZED, errorMessage, messageSource)
+				new ErrorResponse(HttpStatus.UNAUTHORIZED,
+						ErrorCode.AUTHENTICATION_FAILURE,
+						messageTranslator,
+						messageSource)
 		);
 	}
 }

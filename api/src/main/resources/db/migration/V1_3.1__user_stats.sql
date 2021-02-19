@@ -10,6 +10,7 @@ CREATE TABLE user_status
 
     system_start        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     system_stop         TIMESTAMP NOT NULL DEFAULT 'INFINITY'::TIMESTAMP,
+    deleted             BOOLEAN NOT NULL DEFAULT FALSE,
 
     /* ** User Status Properties ** */
     account_enabled     BOOLEAN   NOT NULL DEFAULT FALSE,

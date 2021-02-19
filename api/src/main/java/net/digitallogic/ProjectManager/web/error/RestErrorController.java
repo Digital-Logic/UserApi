@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @RestController
-@RequestMapping("${server.error.path}")
+@RequestMapping(path = "${server.error.path}")
 @Slf4j
 public class RestErrorController extends AbstractErrorController {
 
@@ -44,10 +44,10 @@ public class RestErrorController extends AbstractErrorController {
 	}
 
 	protected ErrorAttributeOptions getErrorAttributeOptions(HttpServletRequest request) {
-		ErrorAttributeOptions options = ErrorAttributeOptions.defaults();
 
-		options = options.including(ErrorAttributeOptions.Include.MESSAGE);
-
-		return options;
+		return ErrorAttributeOptions.defaults()
+				.including(ErrorAttributeOptions.Include.MESSAGE)
+				.including(ErrorAttributeOptions.Include.STACK_TRACE)
+				.including(ErrorAttributeOptions.Include.EXCEPTION);
 	}
 }

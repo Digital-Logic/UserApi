@@ -25,6 +25,8 @@ public abstract class BiTemporalEntity<ID extends Serializable> {
 
 	public LocalDateTime getValidStart() { return id.getValidStart(); }
 	public LocalDateTime getSystemStart() { return id.getSystemStart(); }
+	public void setSystemStart(LocalDateTime systemStart) { id.setSystemStart(systemStart); }
+
 	public ID getEmbeddedId() { return id.getId(); }
 
 	@Builder.Default

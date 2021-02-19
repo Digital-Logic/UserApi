@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 public class Utils {
 
 	private static final Pattern splitOnUnderscore = Pattern.compile("\\s*_\\s*");
-	private static final Pattern splitOnCommon = Pattern.compile("\\s*,\\s*");
+	private static final Pattern splitOnComma = Pattern.compile("\\s*,\\s*");
 
 	public static List<Order> processSortBy(String str) {
-		return Arrays.stream(splitOnCommon.split(str.trim()))
+		return Arrays.stream(splitOnComma.split(str.trim()))
 				// transform property to cameCase if it is in snake_case.
 				.map(Utils::toCamel)
 				.map(property -> {
@@ -24,6 +24,10 @@ public class Utils {
 						return new Order(Sort.Direction.ASC, property);
 				})
 				.collect(Collectors.toList());
+	}
+
+	public static List<String> splitOnComma(String str) {
+		return List.of(splitOnComma.split(str));
 	}
 
 	public static List<String> toCamel(String[] strs) {

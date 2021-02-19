@@ -2,7 +2,7 @@ CREATE TABLE audit_message
 (
     id                 UUID      NOT NULL PRIMARY KEY,
     message            TEXT      NOT NULL,
-    archived           BOOLEAN   NOT NULL DEFAULT FALSE,
+    deleted           BOOLEAN   NOT NULL DEFAULT FALSE,
 
     /* ** Opt Lock ** */
     version            INT       NOT NULL DEFAULT 0,

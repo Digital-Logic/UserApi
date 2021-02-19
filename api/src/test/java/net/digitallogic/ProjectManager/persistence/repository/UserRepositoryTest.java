@@ -81,7 +81,7 @@ public class UserRepositoryTest {
 						assertThat(pu.isLoaded(role, RoleEntity_.AUTHORITIES)).isFalse());
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "entityGraph {0}")
 	@Sql(value = "classpath:db/adminUser.sql")
 	@ValueSource(strings = {UserEntity_.ROLES, RoleEntity_.AUTHORITIES, " "})
 	public void userEntityGraphAuthoritiesTest(String resultGraph) {
@@ -117,7 +117,7 @@ public class UserRepositoryTest {
 		assertThat(userSlice).hasSize(2);
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "AllUsersGraph {0}")
 	@Sql(value = "classpath:db/adminUser.sql")
 	@ValueSource(strings = {" ", UserEntity_.ROLES, RoleEntity_.AUTHORITIES, UserEntity_.ROLES + "," + RoleEntity_.AUTHORITIES})
 	public void getAllUsersGraphTest(String requestGraph) {

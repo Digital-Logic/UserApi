@@ -2,7 +2,8 @@ package net.digitallogic.ProjectManager.web.filter;
 
 import cz.jirutka.rsql.parser.ast.*;
 import lombok.extern.slf4j.Slf4j;
-import net.digitallogic.ProjectManager.web.error.ErrorMessage;
+import net.digitallogic.ProjectManager.web.error.ErrorCode;
+import net.digitallogic.ProjectManager.web.MessageTranslator;
 import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
 import org.springframework.lang.NonNull;
 
@@ -84,7 +85,10 @@ public class Visitor<T> implements RSQLVisitor<Predicate, Root<T>> {
 					.toPredicate(builder, root, node.getOperator(), node.getArguments());
 
 		} catch (NullPointerException ex) {
-			throw new BadRequestException(ErrorMessage.InvalidFilterProperty(node.getSelector()));
+			throw new BadRequestException(
+					ErrorCode.INVALID_PROPERTY,
+					MessageTranslator.InvalidFilterProperty(node.getSelector())
+			);
 		}
 	}
 }

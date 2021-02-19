@@ -11,12 +11,11 @@ import net.digitallogic.ProjectManager.persistence.repository.UserRepository;
 import net.digitallogic.ProjectManager.persistence.repository.UserStatusRepository;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.security.ROLES;
-import net.digitallogic.ProjectManager.web.error.ErrorMessage;
+import net.digitallogic.ProjectManager.web.MessageTranslator;
+import net.digitallogic.ProjectManager.web.error.ErrorCode;
 import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
 import net.digitallogic.ProjectManager.web.error.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.util.UUID;
 
 import static net.digitallogic.ProjectManager.services.Utils.processSortBy;
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
 	private final UserStatusRepository userStatusRepository;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final MessageSource messageSource;
+
 
 	@Autowired
 	public UserServiceImpl(
@@ -48,14 +48,16 @@ public class UserServiceImpl implements UserService {
 			UserStatusRepository userStatusRepository,
 			RoleRepository roleRepository,
 			PasswordEncoder passwordEncoder,
-			MessageSource messageSource) {
+			Clock systemClock
+			) {
 
 		this.userRepository = userRepository;
 		this.userGraphBuilder = userGraphBuilder;
 		this.userStatusRepository = userStatusRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
-		this.messageSource = messageSource;
+
+
 	}
 
 	@Override
@@ -65,7 +67,7 @@ public class UserServiceImpl implements UserService {
 	                                  @Nullable String expand) {
 
 		return userRepository.findAll(
-				toSpecification(filter), // TODO filter processors do not have access to messageSource -- FixMe
+				toSpecification(filter),
 				PageRequest.of(page, limit, Sort.by(processSortBy(sort))),
 				userGraphBuilder.createResolver(expand)
 		)
@@ -78,7 +80,12 @@ public class UserServiceImpl implements UserService {
 
 		UserEntity userEntity = userRepository.findById(id)
 				.orElseThrow(() ->
-					new NotFoundException(ErrorMessage.NonExistentEntity("User", id)));
+					new NotFoundException(
+							ErrorCode.NON_EXISTENT_ENTITY,
+							MessageTranslator.NonExistentEntity("User", id))
+				);
+
+		// TODO Get users current state before updating user info
 
 		if (updateUser.getFirstName() != null && !updateUser.getFirstName().isBlank() &&
 				!userEntity.getFirstName().equals(updateUser.getFirstName()))
@@ -88,8 +95,8 @@ public class UserServiceImpl implements UserService {
 				!userEntity.getLastName().equals(updateUser.getLastName()))
 			userEntity.setLastName(updateUser.getLastName());
 
-		if (updateUser.isArchived() && userEntity.isArchived() != updateUser.isArchived())
-			userEntity.setArchived(true);
+//		if (updateUser.isArchived() && userEntity.isArchived() != updateUser.isArchived())
+//			userEntity.setArchived(true);
 
 		return new UserDto(userRepository.save(userEntity));
 	}
@@ -100,7 +107,9 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findById(id, userGraphBuilder.createResolver(expand))
 						.map(UserDto::new)
 				.orElseThrow(() ->
-					new NotFoundException(ErrorMessage.NonExistentEntity("User", id)));
+					new NotFoundException(
+							ErrorCode.NON_EXISTENT_ENTITY,
+							MessageTranslator.NonExistentEntity("User", id)));
 	}
 
 	@Override
@@ -108,7 +117,8 @@ public class UserServiceImpl implements UserService {
 	public UserDto createUser(CreateUserDto dto) {
 		if (userRepository.existsByEmailIgnoreCase(dto.getEmail()))
 			throw new BadRequestException(
-					ErrorMessage.DuplicateEntityExist("User", dto.getEmail())
+					ErrorCode.DUPLICATE_ENTITY,
+					MessageTranslator.DuplicateEntityExist("User", dto.getEmail())
 			);
 
 		RoleEntity role = roleRepository.findByName(ROLES.USER.name)
@@ -128,7 +138,8 @@ public class UserServiceImpl implements UserService {
 		UserEntity sysUser = userRepository.findByEmail("system_account@localhost")
 				.orElseThrow();
 
-		// TODO optimized this into one save
+		// TODO optimized this into one save, by adding UserStatusEntity to UserEntity
+		// with propagation
 		UserStatusEntity status = UserStatusEntity.builder()
 				.user(user)
 				.createdBy(sysUser.getId())
@@ -139,7 +150,11 @@ public class UserServiceImpl implements UserService {
 		return new UserDto(user);
 	}
 
-	private String getMessage(String code, Object... args) {
-		return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
-	}
+
+
+
+	// Not being used right now...
+//	private String getMessage(String code, Object... args) {
+//		return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
+//	}
 }

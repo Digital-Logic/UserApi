@@ -22,7 +22,7 @@ public class UserUpdateDto {
 	@Size(min=3, message = "{error.field.size.min.message}")
 	private String lastName;
 
-	private boolean archived;
+	private boolean deleted;
 
 	@NotNull(message = "{error.field.notNull.message}")
 	private int version;
@@ -32,7 +32,7 @@ public class UserUpdateDto {
 		this.id = dto.getId();
 		this.firstName = dto.getFirstName();
 		this.lastName = dto.getLastName();
-		this.archived = dto.isArchived();
+		this.deleted = dto.isDeleted();
 		this.version = dto.getVersion();
 	}
 }

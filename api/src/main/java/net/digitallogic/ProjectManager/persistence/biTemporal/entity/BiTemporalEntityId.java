@@ -19,7 +19,9 @@ public class BiTemporalEntityId<ID extends Serializable> implements Serializable
 	protected ID id;
 	@Builder.Default
 	protected LocalDateTime validStart = LocalDateTime.now(Clock.systemUTC());
-	@Builder.Default
+
+	@Setter
+	@Builder.Default // TODO Remove default value
 	protected LocalDateTime systemStart = LocalDateTime.now(Clock.systemUTC());
 
 	public BiTemporalEntityId(ID id) {

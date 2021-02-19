@@ -3,6 +3,7 @@ package net.digitallogic.ProjectManager.persistence.entity.user;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntity;
+import net.digitallogic.ProjectManager.persistence.entity.SoftDelete;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @SuperBuilder
 @Entity(name = "UserStatusEntity")
 @Table(name = "user_status")
-public class UserStatusEntity extends BiTemporalEntity<UUID> {
+public class UserStatusEntity extends BiTemporalEntity<UUID> implements SoftDelete {
 
 	@Builder.Default
 	@Column(name = "account_enabled", updatable = false)
@@ -31,6 +32,10 @@ public class UserStatusEntity extends BiTemporalEntity<UUID> {
 	@Builder.Default
 	@Column(name = "credentials_expired", updatable = false)
 	private boolean credentialsExpired = false;
+
+	@Builder.Default
+	@Column(name = "deleted", updatable = false)
+	private boolean deleted = false;
 
 	@MapsId("id")
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })

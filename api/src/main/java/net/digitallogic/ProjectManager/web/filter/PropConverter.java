@@ -4,7 +4,8 @@ import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.digitallogic.ProjectManager.web.error.ErrorMessage;
+import net.digitallogic.ProjectManager.web.error.ErrorCode;
+import net.digitallogic.ProjectManager.web.MessageTranslator;
 import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
 import net.digitallogic.ProjectManager.web.filter.SpecSupport.FilterBuilder;
 import net.digitallogic.ProjectManager.web.filter.operators.Operator;
@@ -64,13 +65,15 @@ public class PropConverter<T, P> {
 		} catch (ConversionFailedException ex) {
 
 			throw new BadRequestException(
-					ErrorMessage.ConversionFailed(ex.getTargetType().getType(), ex.getValue())
+					ErrorCode.CONVERSION_FAILED,
+					MessageTranslator.ConversionFailed(ex.getTargetType().getType(), ex.getValue())
 			);
 
 		} catch (ConversionException ex) {
 			log.error("Conversion service throw ConversionException error: " + ex.getMessage());
 			throw new BadRequestException(
-					ErrorMessage.ConversionFailed()
+					ErrorCode.CONVERSION_FAILED,
+					MessageTranslator.ConversionFailed()
 			);
 		}
 
@@ -87,7 +90,8 @@ public class PropConverter<T, P> {
 		} catch (NullPointerException ex) {
 			//throw new BadRequestException(MessageCode.FILTER_INVALID_COMPARISON_OPERATOR);
 			throw new BadRequestException(
-					ErrorMessage.InvalidComparisonOperator(operator.getSymbol())
+					ErrorCode.CONVERSION_FAILED,
+					MessageTranslator.InvalidComparisonOperator(operator.getSymbol())
 			);
 		}
 	}

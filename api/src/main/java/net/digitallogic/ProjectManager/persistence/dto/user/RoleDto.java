@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.dto.AuditDto;
+import net.digitallogic.ProjectManager.persistence.entity.SoftDelete;
 import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
 
@@ -19,16 +20,19 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class RoleDto extends AuditDto<UUID> {
+public class RoleDto extends AuditDto<UUID> implements SoftDelete {
 
 	private String name;
 
 	@Builder.Default
 	private List<AuthorityDto> authorities = new ArrayList<>();
 
+	private boolean deleted;
+
 	public RoleDto(RoleEntity entity) {
 		super(entity);
 		name = entity.getName();
+		deleted = entity.isDeleted();
 
 		if (pu.isLoaded(entity, RoleEntity_.AUTHORITIES)) {
 			authorities = entity.getAuthorities()

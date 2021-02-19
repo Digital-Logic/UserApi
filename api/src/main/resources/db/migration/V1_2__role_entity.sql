@@ -13,7 +13,7 @@ CREATE TABLE role_entity
     id                 UUID        NOT NULL PRIMARY KEY,
     name               VARCHAR(60) NOT NULL,
 
-    archived           BOOLEAN     NOT NULL DEFAULT FALSE,
+    deleted           BOOLEAN     NOT NULL DEFAULT FALSE,
 
     /* OPT LOCK */
     version            INT         NOT NULL DEFAULT 0,

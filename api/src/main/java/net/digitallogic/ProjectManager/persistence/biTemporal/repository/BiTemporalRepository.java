@@ -8,6 +8,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
 import java.io.Serializable;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -15,14 +16,21 @@ import java.util.Optional;
 public interface BiTemporalRepository<T extends BiTemporalEntity<ID>, ID extends Serializable>
 		extends Repository<T, BiTemporalEntityId<ID>>, JpaSpecificationExecutor<T> {
 
-	<S extends T> S save(S entity);
+	<S extends T> S save(S entity); // Uses Clock.systemUTC to set system time information.
 	<S extends T> Iterable<S> saveAll(Iterable<S> entities);
 	Iterable<T> findAll();
 	long count();
 
 	/* ** BiTemporal Specifications ** */
-	Optional<T> findById(ID id, final LocalDateTime time);
-	Iterable<T> getHistoryById(ID id, final LocalDateTime time);
+	Optional<T> findByEntityId(ID id, final Clock clock);
+	Optional<T> findByEntityId(ID id, final LocalDateTime time);
+
+
+	// Get all entities by entity id, with and an valid time between effetiveStart and effectiveStop
+	Iterable<T> findByEntityId(ID id, final LocalDateTime effectiveStart, final LocalDateTime effectiveStop);
+
+	Iterable<T> getHistoryByEntityId(ID id, final Clock clock);
+	Iterable<T> getHistoryByEntityId(ID id, final LocalDateTime time);
 
 	Specification<T> getById(final ID id);
 	Specification<T> currentValidTimeSpec(final LocalDateTime time);

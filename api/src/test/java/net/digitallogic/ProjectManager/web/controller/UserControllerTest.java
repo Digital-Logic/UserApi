@@ -9,7 +9,7 @@ import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
 import net.digitallogic.ProjectManager.persistence.repository.UserRepository;
 import net.digitallogic.ProjectManager.web.Routes;
-import net.digitallogic.ProjectManager.web.error.MessageCodes;
+import net.digitallogic.ProjectManager.web.error.ErrorCode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,8 +19,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -56,7 +58,8 @@ public class UserControllerTest {
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
 		)
-				.andExpect(status().isCreated());
+				.andExpect(status().isCreated()) // TODO add more test when I know how this method will respond
+		;
 	}
 
 	/* ****************************************************** */
@@ -71,11 +74,13 @@ public class UserControllerTest {
 
 		doCreateUser(createUser)
 				.andExpect(status().isBadRequest())
-		//		.andExpect(jsonPath("$.code", is(MessageCodes.DUPLICATE_ENTITY_2.code)))
+				.andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
+				.andExpect(jsonPath("$.reason", is(ErrorCode.DUPLICATE_ENTITY.code)))
+				.andExpect(jsonPath("$.message", containsString("test@testing.com")))
 		;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "createUserBadPassword {0}")
 	@NullAndEmptySource
 	@ValueSource(strings = {"asd", "   ", "de       ", "      df", "    asd    "})
 	void createUserBadPasswordTest(String password) throws Exception {
@@ -84,12 +89,17 @@ public class UserControllerTest {
 
 		doCreateUser(createUserDto)
 				.andExpect(status().isBadRequest())
-				.andExpect(content().string(containsString("password")))
-			//	.andExpect(jsonPath("$.code", is(MessageCodes.FIELD_VALIDATION_ERROR.code)))
+				.andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
+				.andExpect(jsonPath("$.reason", is(ErrorCode.VALIDATION_FAILED.code)))
+				.andExpect(jsonPath("$.errors").exists())
+				.andExpect(jsonPath("$.errors", hasSize(greaterThanOrEqualTo(1))))
+				.andExpect(jsonPath("$.errors[*].domain", hasItem("password")))
+				.andExpect(jsonPath("$.errors[*].reason", hasItem(ErrorCode.VALIDATION_FAILED.code)))
+				.andExpect(jsonPath("$.errors[*].message", hasItem(any(String.class))))
 		;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "createUserBadEmail {0}")
 	@ValueSource(strings = {"jklsdf", "joe@", "   ", ""})
 	@NullAndEmptySource
 	void createUserBadEmailTest(String email) throws Exception {
@@ -98,12 +108,17 @@ public class UserControllerTest {
 
 		doCreateUser(newUser)
 				.andExpect(status().isBadRequest())
-				.andExpect(content().string(containsString("email")))
-			//	.andExpect(jsonPath("$.code", is(MessageCodes.FIELD_VALIDATION_ERROR.code)))
+				.andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
+				.andExpect(jsonPath("$.reason", is(ErrorCode.VALIDATION_FAILED.code)))
+				.andExpect(jsonPath("$.errors").exists())
+				.andExpect(jsonPath("$.errors", hasSize(greaterThanOrEqualTo(1))))
+				.andExpect(jsonPath("$.errors[*].domain", hasItem("email")))
+				.andExpect(jsonPath("$.errors[*].reason", hasItem(ErrorCode.VALIDATION_FAILED.code)))
+				.andExpect(jsonPath("$.errors[*].message", hasItem(any(String.class))))
 		;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "createUserNoFirstName {0}")
 	@NullAndEmptySource
 	@ValueSource(strings = {"", "   ", "      ", "sd   ", "   sd"})
 	void createUserNoFirstNameTest(String firstName) throws Exception {
@@ -112,12 +127,16 @@ public class UserControllerTest {
 
 		doCreateUser(createUserDto)
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message.firstName", any(String.class)))
-	//			.andExpect(jsonPath("$.code", is(MessageCodes.FIELD_VALIDATION_ERROR.code)))
+				.andExpect(jsonPath("$.code", is(400)))
+				.andExpect(jsonPath("$.reason", is("ValidationFailed")))
+				.andExpect(jsonPath("$.errors", hasSize(greaterThanOrEqualTo(1))))
+				.andExpect(jsonPath("$.errors[*].domain", hasItem("firstName")))
+				.andExpect(jsonPath("$.errors[*].reason", hasItem("ValidationFailed")))
+				.andExpect(jsonPath("$.errors[*].message", hasItem(any(String.class))))
 		;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "createUserNoLastName {0}")
 	@NullAndEmptySource
 	@ValueSource(strings = {"", "    ", "sd   ", "   fe"})
 	void createUserNoLastNameTest(String lastName) throws Exception {
@@ -126,8 +145,12 @@ public class UserControllerTest {
 
 		doCreateUser(createUserDto)
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message.lastName", any(String.class)))
-		//		.andExpect(jsonPath("$.code", is(MessageCodes.FIELD_VALIDATION_ERROR.code)))
+				.andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
+				.andExpect(jsonPath("$.reason", is("ValidationFailed")))
+				.andExpect(jsonPath("$.errors").exists())
+				.andExpect(jsonPath("$.errors[*].domain", hasItem("lastName")))
+				.andExpect(jsonPath("$.errors[*].reason", hasItem("ValidationFailed")))
+				.andExpect(jsonPath("$.errors[*].message", hasItem(any(String.class))))
 		;
 
 	}
@@ -144,6 +167,7 @@ public class UserControllerTest {
 	/* ***************** Get All Users Test ***************** */
 	/* ****************************************************** */
 	@Test
+	@WithMockUser(authorities = {"ADMIN_USERS"})
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	void getAllUsersTest() throws Exception {
 		mockMvc.perform(get(Routes.USER_ROUTE)
@@ -156,7 +180,8 @@ public class UserControllerTest {
 
 
 	/* ******************** Test Sort ******************** */
-	@ParameterizedTest
+	@ParameterizedTest(name = "SortUsers by {0}")
+	@WithMockUser(authorities = {"ADMIN_USERS"})
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	@ValueSource(strings = {"email", "createdDate", "lastModifiedDate", "firstName", "lastName", "lastName, firstName",
 			"-last_name", "-first_name", "last_modified_date", "created_date", "last_name, first_name"})
@@ -167,11 +192,13 @@ public class UserControllerTest {
 				.param("sort", sortBy)
 		)
 				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
 		;
 	}
 
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "InvalidSort by {0}")
+	@WithMockUser(authorities = {"ADMIN_USERS"})
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	@ValueSource(strings = {"lestName", "firstName, lastNeme", "Lastname"})
 	void getAllUsersInvalidSortTest(String sortBy) throws Exception {
@@ -181,12 +208,15 @@ public class UserControllerTest {
 				.param("sort", sortBy)
 		)
 				.andExpect(status().isBadRequest())
-//				.andExpect(jsonPath("$.code", is(MessageCodes.ENTITY_INVALID_PROPERTY.code)))
+				.andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
+				.andExpect(jsonPath("$.reason", is(ErrorCode.INVALID_PROPERTY.code)))
+				.andExpect(jsonPath("$.message", is(any(String.class))))
 		;
 	}
 
 	/* ********************** Test Filtering ******************* */
-	@ParameterizedTest
+	@ParameterizedTest(name = "FirstNameFilter with {0}")
+	@WithMockUser(authorities = {"ADMIN_USERS"})
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	@ValueSource(strings = {"firstName==Sarah", "firstName==  Sarah ", " first_name == Sarah  ", "firstName==Sarah", "first_Name==Sarah",
 			"firstName=like=Sara_", "firstName=like=_arah", "firstName=like=Sarah", "firstName=like=Sa*",
@@ -199,21 +229,23 @@ public class UserControllerTest {
 		;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "InvalidFilter with {0}")
+	@WithMockUser(authorities = {"ADMIN_USERS"})
 	@ValueSource(strings = {"firstName==", "firstName=joe", "firstName=like==joe", "firstName<=joe",
 			"firstName > joe", "firstName!=sarah"})
 	void getAllUsersInvalidFilterTest(String filter) throws Exception {
 		doFilterOnUser(filter)
 				.andExpect(status().isBadRequest())
-//				.andExpect(jsonPath("$.code", anyOf(
-//						equalTo(MessageCodes.FILTER_INVALID_QUERY_0.code),
-//						equalTo(MessageCodes.FILTER_INVALID_COMPARISON_OPERATOR_1.code)))
-//				)
-				;
+				.andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
+				.andExpect(jsonPath("$.reason", anyOf(
+						equalTo(ErrorCode.INVALID_FILTER_QUERY.code),
+						equalTo(ErrorCode.CONVERSION_FAILED.code)
+				)))
 		;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "LastNameFilter by {0}")
+	@WithMockUser(authorities = {"ADMIN_USERS"})
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	@ValueSource(strings = {"lastName==Exotic", "last_name==Exotic",
 			"lastName=like=Exotic", "lastName=like=Exoti_", "lastName=like= _xotic", "lastName=like=Exot*", "lastName=like=*otic",
@@ -237,7 +269,8 @@ public class UserControllerTest {
 	/* ****************************************************** */
 	/* ****************** Get One User Test ***************** */
 	/* ****************************************************** */
-	@ParameterizedTest
+	@ParameterizedTest(name = "Expansion by {0}")
+	@WithMockUser(authorities = {"ADMIN_USERS"})
 	@Sql(value = "classpath:db/testUser.sql")
 	@ValueSource(strings = {UserEntity_.ROLES, RoleEntity_.AUTHORITIES, UserEntity_.ROLES + "," + RoleEntity_.AUTHORITIES})
 	@NullAndEmptySource
@@ -249,10 +282,13 @@ public class UserControllerTest {
 	}
 
 	@Test
+	@WithMockUser(authorities = {"ADMIN_USERS"})
 	void getOneUserInvalidIdTest() throws Exception {
 		onGetOneUser("216ca682-8292-4225-89c8-f2b3c9a6ab40", null)
 				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.code", is(MessageCodes.ENTITY_NOT_FOUND)))
+				.andExpect(jsonPath("$.code", is(HttpStatus.NOT_FOUND.value())))
+				.andExpect(jsonPath("$.reason", is(ErrorCode.NON_EXISTENT_ENTITY.code)))
+				.andExpect(jsonPath("$.message", containsString("216ca682-8292-4225-89c8-f2b3c9a6ab40")))
 		;
 	}
 
@@ -268,6 +304,7 @@ public class UserControllerTest {
 	/* **************** Update User Test ******************** */
 	/* ****************************************************** */
 	@Test
+	@WithMockUser
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	void putRequestTest() throws Exception {
 		UserEntity user = userRepository.findByEmail("joe@exotic.net")
@@ -284,6 +321,7 @@ public class UserControllerTest {
 	}
 
 	@Test
+	@WithMockUser
 	@Sql(value = "classpath:db/multiplyUsers.sql")
 	void invalidUserIdPutRequestTest() throws Exception {
 		UserUpdateDto update = UserUpdateDto.builder()
@@ -293,18 +331,22 @@ public class UserControllerTest {
 
 		doUserUpdate(update)
 				.andExpect(status().isNotFound())
-//				.andExpect(jsonPath("$.code", is(MessageCodes.ENTITY_NOT_FOUND.code)))
-
+				.andExpect(jsonPath("$.code", is(HttpStatus.NOT_FOUND.value())))
+				.andExpect(jsonPath("$.reason", is(ErrorCode.NON_EXISTENT_ENTITY.code)))
+				.andExpect(jsonPath("message", is(any(String.class))))
 		;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "InvalidPutRequest {index}")
 	@Sql(value = "classpath:db/multiplyUsers.sql")
+	@WithMockUser(authorities = {"ADMIN_USERS"})
 	@MethodSource
 	void invalidFieldPutRequestTest(UserUpdateDto updateData) throws Exception {
 		doUserUpdate(updateData)
 				.andExpect(status().isBadRequest())
-		//		.andExpect(jsonPath("$.code", is(MessageCodes.FIELD_VALIDATION_ERROR.code)))
+				.andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
+				.andExpect(jsonPath("$.reason", is(ErrorCode.VALIDATION_FAILED.code)))
+				.andExpect(jsonPath("$.errors").exists())
 		;
 
 	}

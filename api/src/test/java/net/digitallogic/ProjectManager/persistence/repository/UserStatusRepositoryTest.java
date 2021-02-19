@@ -34,7 +34,7 @@ public class UserStatusRepositoryTest {
 				.orElseThrow();
 
 		Optional<UserStatusEntity> status =
-				userStatusRepository.findById(user.getId(),
+				userStatusRepository.findByEntityId(user.getId(),
 						LocalDateTime.now(Clock.systemUTC()));
 
 		assertThat(status).isNotEmpty();
@@ -46,7 +46,7 @@ public class UserStatusRepositoryTest {
 		UserEntity user = userRepository.findByEmail("test@Testing.com").orElseThrow();
 
 		Iterable<UserStatusEntity> status = userStatusRepository
-				.getHistoryById(user.getId(), LocalDateTime.now(Clock.systemUTC()));
+				.getHistoryByEntityId(user.getId(), LocalDateTime.now(Clock.systemUTC()));
 
 		assertThat(status).hasSize(2);
 	}
