@@ -1,5 +1,6 @@
 package net.digitallogic.ProjectManager.services;
 
+import net.digitallogic.ProjectManager.events.RegistrationCompleteEvent;
 import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
@@ -16,6 +17,7 @@ import net.digitallogic.ProjectManager.web.error.ErrorCode;
 import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
 import net.digitallogic.ProjectManager.web.error.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static net.digitallogic.ProjectManager.services.Utils.processSortBy;
@@ -37,8 +40,10 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final GraphBuilder<UserEntity> userGraphBuilder;
 	private final UserStatusRepository userStatusRepository;
+	private final ApplicationEventPublisher eventPublisher;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final Clock systemClock;
 
 
 	@Autowired
@@ -46,17 +51,18 @@ public class UserServiceImpl implements UserService {
 			UserRepository userRepository,
 			GraphBuilder<UserEntity> userGraphBuilder,
 			UserStatusRepository userStatusRepository,
-			RoleRepository roleRepository,
+			ApplicationEventPublisher eventPublisher, RoleRepository roleRepository,
 			PasswordEncoder passwordEncoder,
 			Clock systemClock
-			) {
+	) {
 
 		this.userRepository = userRepository;
 		this.userGraphBuilder = userGraphBuilder;
 		this.userStatusRepository = userStatusRepository;
+		this.eventPublisher = eventPublisher;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
-
+		this.systemClock = systemClock;
 
 	}
 
@@ -115,6 +121,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public UserDto createUser(CreateUserDto dto) {
+		LocalDateTime now = LocalDateTime.now(systemClock);
+
 		if (userRepository.existsByEmailIgnoreCase(dto.getEmail()))
 			throw new BadRequestException(
 					ErrorCode.DUPLICATE_ENTITY,
@@ -139,13 +147,18 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow();
 
 		// TODO optimized this into one save, by adding UserStatusEntity to UserEntity
-		// with propagation
+		//  with propagation
 		UserStatusEntity status = UserStatusEntity.builder()
 				.user(user)
+				.validStart(now)
+				.systemStart(now)
 				.createdBy(sysUser.getId())
 				.build();
 
 		userStatusRepository.save(status);
+
+		eventPublisher.publishEvent(new RegistrationCompleteEvent(user));
+
 
 		return new UserDto(user);
 	}

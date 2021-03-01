@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    <title>Activate Account</title>
+    <style>
+        /* Remove space around the email design. */
+        html,
+        body {
+            margin: 0 auto !important;
+            padding: 0 !important;
+            height: 100% !important;
+            width: 100% !important;
+        }
+
+        /* Stop Outlook resizing small text. */
+        * {
+            -ms-text-size-adjust: 100%;
+        }
+
+        /* Stop Outlook from adding extra spacing to tables. */
+        table,
+        td {
+            mso-table-lspace: 0pt !important;
+            mso-table-rspace: 0pt !important;
+        }
+
+        /* Use a better rendering method when resizing images in Outlook IE. */
+        img {
+            -ms-interpolation-mode:bicubic;
+        }
+
+        /* Prevent Windows 10 Mail from underlining links. Styles for underlined links should be inline. */
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body width="100$" style="margin: 0; padding: 30px 10px 30px 10px; background-color: #eeeeee; mso-line-height-rule: exactly;">
+<!--
+    Required Context Variables:
+    name            --      Users Name
+    activationLink    -- account activation link
+-->
+<!--/*@thymesVar id="name" type="string"*/-->
+<!--/*@thymesVar id="activationLink" type="link"*/-->
+<table align="center" cellpadding="0" cellspacing="0" role="presentation" border="0"
+    style=" border-collapse: collapse; background-color: #ffffff; border: 1px solid #ccc;">
+    <tr>
+        <td>
+            <h1 th:text="#{activate.intro}">Just one more step...</h1>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p th:text="#{activate.greeting(${name})}">Hi, New User!</p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p th:text="#{activate.bigButton}">Click the big button below to activate your account!</p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                    <td style="border-radius: 4px; background-color: #0077cc;">
+                        <a th:href="@{ (${activationLink}) }"
+                           href="http://localhost:8080?activate=true"
+                           th:text="#{activate.activateAccountBtn}"
+                        style="background-color: #0077cc; font-size: 15px; line-height: 15px; text-decoration: none;
+                            padding: 13px 17px; color: #ffffff; border-radius: 4px;">Activate Account</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p th:text="#{activate.linkFailureInstructions}">If the link above does not work, copy this address into your browser.</p>
+        </td>
+    </tr>
+    <tr>
+        <td><p th:text="${activationLink}">http://localhost:8080/activateAccount</p></td>
+    </tr>
+</table>
+</body>
+</html>

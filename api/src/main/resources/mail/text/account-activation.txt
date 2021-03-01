@@ -1,0 +1,7 @@
+[( #{activate.intro} )]
+
+[( #{activate.greeting(${name})} )]
+
+[( #{activate.accountActivationInstructions} )]
+
+[( ${activationLink} )]

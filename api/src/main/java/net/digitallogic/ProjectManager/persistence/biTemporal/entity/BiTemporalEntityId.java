@@ -4,7 +4,6 @@ import lombok.*;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
-import java.time.Clock;
 import java.time.LocalDateTime;
 
 @Getter
@@ -17,12 +16,9 @@ public class BiTemporalEntityId<ID extends Serializable> implements Serializable
 	public static final long serialVersionUID = -7542524972168201884L;
 
 	protected ID id;
-	@Builder.Default
-	protected LocalDateTime validStart = LocalDateTime.now(Clock.systemUTC());
+	protected LocalDateTime validStart;
+	protected LocalDateTime systemStart;
 
-	@Setter
-	@Builder.Default // TODO Remove default value
-	protected LocalDateTime systemStart = LocalDateTime.now(Clock.systemUTC());
 
 	public BiTemporalEntityId(ID id) {
 		this.id = id;

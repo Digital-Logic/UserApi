@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  db:
+    image: library/postgres:13.2-alpine
+    container_name: datasource
+    environment:
+      POSTGRES_DB: project_manager
+      POSTGRES_PASSWORD: password
+
+    ports:
+      - 5432:5432
+    volumes:
+      - ./api/src/main/resources/db/init:/docker-entrypoint-initdb.d
+
+  flyway:
+    image: flyway/flyway
+    container_name: flyway
+    command: >-  # Line folding
+      -url=jdbc:postgresql://db/project_manager
+      -schemas=public
+      -user=pm_migration_user
+      -password=password
+      -connectRetries=60
+      migrate
+    volumes:
+    - ./api/src/main/resources/db/migration:/flyway/sql
+    - ./api/src/main/resources/db/conf:/flyway/conf
+    depends_on:
+      - db
+
+  redis:
+    image: library/redis:6.2-alpine3.13
+    container_name: redis
+    ports:
+      - 6379:6379
+
+  smpt:
+    image: mailhog/mailhog:v1.0.1
+    container_name: smtp_server
+    environment:
+      MH_SMTP_BIND_ADDR: 0.0.0.0:587
+    ports:
+      - 587:587
+      - 8025:8025

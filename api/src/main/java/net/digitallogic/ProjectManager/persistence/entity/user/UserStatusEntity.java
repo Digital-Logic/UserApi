@@ -1,7 +1,6 @@
 package net.digitallogic.ProjectManager.persistence.entity.user;
 
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntity;
 import net.digitallogic.ProjectManager.persistence.entity.SoftDelete;
 
@@ -12,28 +11,22 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 @Entity(name = "UserStatusEntity")
 @Table(name = "user_status")
 public class UserStatusEntity extends BiTemporalEntity<UUID> implements SoftDelete {
 
-	@Builder.Default
 	@Column(name = "account_enabled", updatable = false)
 	private boolean accountEnabled = false;
 
-	@Builder.Default
 	@Column(name = "account_expired", updatable = false)
 	private boolean accountExpired = false;
 
-	@Builder.Default
 	@Column(name = "account_locked", updatable = false)
 	private boolean accountLocked = false;
 
-	@Builder.Default
 	@Column(name = "credentials_expired", updatable = false)
 	private boolean credentialsExpired = false;
 
-	@Builder.Default
 	@Column(name = "deleted", updatable = false)
 	private boolean deleted = false;
 
@@ -51,5 +44,79 @@ public class UserStatusEntity extends BiTemporalEntity<UUID> implements SoftDele
 		this.accountLocked = entity.isAccountLocked();
 		this.credentialsExpired = entity.isCredentialsExpired();
 		this.user = entity.getUser();
+	}
+
+	public UserStatusEntity(UserStatusEntityBuilder<UserStatusEntity, UserStatusEntityBuilderImpl> builder) {
+		super(builder);
+		this.accountEnabled = builder.accountEnabled;
+		this.accountExpired = builder.accountExpired;
+		this.accountLocked = builder.accountLocked;
+		this.credentialsExpired = builder.credentialsExpired;
+		this.deleted = builder.deleted;
+
+		if (builder.user != null)
+			this.user = builder.user;
+	}
+
+	public static UserStatusEntityBuilder<?, ?> builder() {return new UserStatusEntityBuilderImpl();}
+
+	public static abstract class UserStatusEntityBuilder<C extends UserStatusEntity, B extends UserStatusEntityBuilder<C, B>> extends BiTemporalEntityBuilder<UUID, C, B> {
+		private boolean accountEnabled;
+		private boolean accountExpired;
+		private boolean accountLocked;
+		private boolean credentialsExpired;
+		private boolean deleted;
+		private UserEntity user;
+
+		public B accountEnabled(boolean accountEnabled) {
+			this.accountEnabled = accountEnabled;
+			return self();
+		}
+
+		public B accountExpired(boolean accountExpired) {
+			this.accountExpired = accountExpired;
+			return self();
+		}
+
+		public B accountLocked(boolean accountLocked) {
+			this.accountLocked = accountLocked;
+			return self();
+		}
+
+		public B credentialsExpired(boolean credentialsExpired) {
+			this.credentialsExpired = credentialsExpired;
+			return self();
+		}
+
+		public B deleted(boolean deleted) {
+			this.deleted = deleted;
+			return self();
+		}
+
+		public B user(UserEntity user) {
+			this.user = user;
+			return self();
+		}
+
+		protected abstract B self();
+
+		public abstract C build();
+
+		public String toString() {
+			return "UserStatusEntity.UserStatusEntityBuilder(super=" + super.toString() +
+					", accountEnabled$value=" + this.accountEnabled +
+					", accountExpired$value=" + this.accountExpired +
+					", accountLocked$value=" + this.accountLocked +
+					", credentialsExpired$value=" + this.credentialsExpired +
+					", deleted$value=" + this.deleted +
+					", user=" + this.user + ")";}
+	}
+
+	private static final class UserStatusEntityBuilderImpl extends UserStatusEntityBuilder<UserStatusEntity, UserStatusEntityBuilderImpl> {
+		private UserStatusEntityBuilderImpl() {}
+
+		protected UserStatusEntityBuilderImpl self() {return this;}
+
+		public UserStatusEntity build() {return new UserStatusEntity(this);}
 	}
 }

@@ -5,6 +5,7 @@ CREATE TABLE verification_token
     user_id            UUID        NOT NULL,
 
     expires            TIMESTAMP   NOT NULL,
+    count              INT    NOT NULL DEFAULT 0,
 
     /* OPT LOCK */
     version            INT         NOT NULL DEFAULT 0,

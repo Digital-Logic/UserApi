@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  dbTest:
+    image: library/postgres:13.2-alpine
+    container_name: datasourceTest
+    environment:
+      POSTGRES_DB: project_manager
+      POSTGRES_PASSWORD: password
+
+    ports:
+      - 5435:5432
+    volumes:
+      - ./api/src/main/resources/db/init:/docker-entrypoint-initdb.d
+
+  flywayTest:
+    image: flyway/flyway
+    container_name: flywayTest
+    command: >-  # Line folding
+      -url=jdbc:postgresql://dbTest/project_manager
+      -schemas=public
+      -user=pm_migration_user
+      -password=password
+      -connectRetries=60
+      migrate
+    volumes:
+      - ./api/src/main/resources/db/migration:/flyway/sql
+      - ./api/src/main/resources/db/conf:/flyway/conf
+    depends_on:
+      - dbTest
+
+

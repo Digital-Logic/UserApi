@@ -1,9 +1,6 @@
 package net.digitallogic.ProjectManager.persistence.entity.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.entity.EntityBase;
 
@@ -28,5 +25,9 @@ public class VerificationToken extends EntityBase<String> {
 
 	@Column(name = "expires")
 	private LocalDateTime expires;
+
+	@Builder.Default
+	@Column(name = "count")
+	private int count=0;
 
 }

@@ -6,6 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -20,9 +21,11 @@ public class AppConfig {
 	@Autowired
 	public AppConfig()
 	{
+
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 	}
 
+	@Primary
 	@Bean
 	public MessageSource messageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
@@ -42,6 +45,19 @@ public class AppConfig {
 	public Clock clock() {
 		return Clock.systemUTC();
 	}
+
+//	@Bean
+//	public JavaMailSender javaMailSender() {
+//		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+//		mailSender.setHost(mailHost);
+//		mailSender.setPort(mailPort);
+//		mailSender.setUsername(mailUser);
+//		mailSender.setPassword(mailPassword);
+//		mailSender.setProtocol("smtp");
+//
+//
+//		return mailSender;
+//	}
 
 //	@Bean
 //	public ErrorAttributes errorAttributes() {

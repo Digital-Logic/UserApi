@@ -39,6 +39,7 @@ public class RestErrorController extends AbstractErrorController {
 	}
 
 	@Override
+	@Deprecated
 	public String getErrorPath() {
 		return errorPath;
 	}

@@ -1,7 +1,9 @@
 package net.digitallogic.ProjectManager.persistence.biTemporal.entity;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import net.digitallogic.ProjectManager.persistence.entity.audit.AuditMessageEntity;
 
 import javax.persistence.*;
@@ -14,26 +16,21 @@ import static net.digitallogic.ProjectManager.persistence.biTemporal.Constants.M
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 @EqualsAndHashCode(of = {"id"})
 @MappedSuperclass
 public abstract class BiTemporalEntity<ID extends Serializable> {
 
-	@Builder.Default
 	@EmbeddedId
 	protected BiTemporalEntityId<ID> id = new BiTemporalEntityId<>();
 
 	public LocalDateTime getValidStart() { return id.getValidStart(); }
 	public LocalDateTime getSystemStart() { return id.getSystemStart(); }
-	public void setSystemStart(LocalDateTime systemStart) { id.setSystemStart(systemStart); }
 
 	public ID getEmbeddedId() { return id.getId(); }
 
-	@Builder.Default
 	@Column(name = "valid_stop")
 	protected LocalDateTime validStop = MAX_DATE;
 
-	@Builder.Default
 	@Column(name = "system_stop")
 	protected LocalDateTime systemStop = MAX_DATE;
 
@@ -53,5 +50,77 @@ public abstract class BiTemporalEntity<ID extends Serializable> {
 
 		this.createdBy = entity.getCreatedBy();
 		this.auditMessage = entity.getAuditMessage();
+	}
+
+	public BiTemporalEntity(BiTemporalEntityBuilder<ID, ?, ?> builder) {
+		this.id = new BiTemporalEntityId<>(builder.id, builder.validStart, builder.systemStart);
+
+		if (builder.validStop != null)
+			this.validStop = builder.validStop;
+
+		if (builder.systemStop != null)
+			this.systemStop = builder.systemStop;
+
+		this.createdBy = builder.createdBy;
+		this.auditMessage = builder.auditMessage;
+	}
+
+	public static abstract class BiTemporalEntityBuilder<ID extends Serializable, C extends BiTemporalEntity<ID>, B extends BiTemporalEntityBuilder<ID, C, B>> {
+		private ID id;
+
+		private LocalDateTime validStart;
+		private LocalDateTime validStop;
+		private LocalDateTime systemStart;
+		private LocalDateTime systemStop;
+
+		private UUID createdBy;
+		private AuditMessageEntity auditMessage;
+
+		public B id(ID id) {
+			this.id = id;
+			return self();
+		}
+		public  B validStart(LocalDateTime validStart) {
+			this.validStart = validStart;
+			return self();
+		}
+
+		public B validStop(LocalDateTime validStop) {
+			this.validStop = validStop;
+			return self();
+		}
+
+		public B systemStart(LocalDateTime systemStart) {
+			this.systemStart = systemStart;
+			return  self();
+		}
+
+		public B systemStop(LocalDateTime systemStop) {
+			this.systemStop = systemStop;
+			return self();
+		}
+
+		public B createdBy(UUID createdBy) {
+			this.createdBy = createdBy;
+			return self();
+		}
+
+		public B auditMessage(AuditMessageEntity auditMessage) {
+			this.auditMessage = auditMessage;
+			return self();
+		}
+
+		protected abstract B self();
+
+		public abstract C build();
+
+		public String toString() {return "BiTemporalEntity.BiTemporalEntityBuilder(id=" + this.id +
+				"validStart=" + this.validStart +
+				", validStop=" + this.validStop +
+				", systemStart=" + this.systemStart +
+				", systemStop=" + this.systemStop +
+				", createdBy=" + this.createdBy +
+				", auditMessage=" + this.auditMessage +
+				")";}
 	}
 }

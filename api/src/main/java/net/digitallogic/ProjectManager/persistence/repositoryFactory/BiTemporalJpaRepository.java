@@ -71,7 +71,6 @@ public class BiTemporalJpaRepository<T extends BiTemporalEntity<ID>, ID extends 
 
 			return Optional.of(query.getSingleResult());
 		} catch (NoResultException ex) {
-
 			return Optional.empty();
 		}
 	}

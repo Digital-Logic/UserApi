@@ -14,19 +14,21 @@ import net.digitallogic.ProjectManager.persistence.repository.UserStatusReposito
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
 import net.digitallogic.ProjectManager.web.error.exceptions.NotFoundException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.context.MessageSource;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Clock;
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,16 +50,21 @@ public class UserServiceTest {
 	UserStatusRepository userStatusRepository;
 
 	@Mock
-	PasswordEncoder encoder;
+	ApplicationEventPublisher eventPublisher;
 
 	@Mock
-	MessageSource messageSource;
+	PasswordEncoder encoder;
 
 	@Mock
 	GraphBuilder<UserEntity> userGraphBuilder;
 
-	@InjectMocks
+
+	Clock systemClock = Clock.fixed(Clock.systemDefaultZone()
+			.instant(), ZoneId.of("UTC"));
+
 	UserServiceImpl userService;
+
+	AutoCloseable closeable;
 
 	@BeforeAll
 	static void beforeAll() {
@@ -66,7 +73,20 @@ public class UserServiceTest {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
+		closeable = MockitoAnnotations.openMocks(this);
+
+		userService = new UserServiceImpl(userRepository,
+				userGraphBuilder,
+				userStatusRepository,
+				eventPublisher,
+				roleRepository,
+				encoder,
+				systemClock);
+	}
+
+	@AfterEach
+	void teardown() throws Exception {
+		closeable.close();
 	}
 
 	@Test
@@ -90,7 +110,6 @@ public class UserServiceTest {
 
 		when(userStatusRepository.save(any(UserStatusEntity.class)))
 				.then(invocation -> invocation.getArgument(0));
-
 
 		UserDto response = userService.createUser(createUserDto);
 

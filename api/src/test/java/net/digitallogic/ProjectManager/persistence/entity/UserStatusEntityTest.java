@@ -6,6 +6,7 @@ import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,7 +17,7 @@ public class UserStatusEntityTest {
 	public void equalsAndHashEqualityTest() {
 		UserEntity user = UserFixtures.userEntity();
 		UserStatusEntity status = UserStatusEntity.builder()
-				.id(new BiTemporalEntityId<>(user.getId()))
+				.id(user.getId())
 				.user(user)
 				.accountEnabled(true)
 				.accountExpired(false)
@@ -26,7 +27,8 @@ public class UserStatusEntityTest {
 				.build();
 
 		UserStatusEntity copy = UserStatusEntity.builder()
-				.id(new BiTemporalEntityId<>(user.getId(), status.getValidStart()))
+				//.id(new BiTemporalEntityId<>(user.getId(), status.getValidStart()))
+				.id(user.getId())
 				.build();
 
 		assertThat(copy).isEqualTo(status);
@@ -76,5 +78,21 @@ public class UserStatusEntityTest {
 		assertThat(difId).isNotEqualTo(status);
 		assertThat(difId.hashCode()).isNotEqualTo(status.hashCode());
 
+	}
+
+	@Test
+	public void builderTest() {
+		UserEntity user = UserFixtures.userEntity();
+		LocalDateTime now = LocalDateTime.now();
+
+		UserStatusEntity entity = UserStatusEntity.builder()
+				.id(user.getId())
+				.validStart(now)
+				.systemStart(now)
+				.build();
+
+		assertThat(entity.getId()).isNotNull();
+		assertThat(entity.getSystemStart()).isEqualTo(now);
+		assertThat(entity.getValidStart()).isEqualTo(now);
 	}
 }

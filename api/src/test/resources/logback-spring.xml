@@ -3,4 +3,5 @@
 
     <logger name="net.digitallogic" level="DEBUG" />
     <logger name="org.springframework" level="INFO" />
+<!--    <logger name="org.thymeleaf" level="DEBUG" />-->
 </configuration>

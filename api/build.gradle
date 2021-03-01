@@ -1,6 +1,3 @@
-import org.flywaydb.gradle.task.FlywayCleanTask
-import org.flywaydb.gradle.task.FlywayMigrateTask
-
 plugins {
     id 'org.springframework.boot' version '2.4.2' // '2.4.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -8,17 +5,6 @@ plugins {
     id 'nu.studer.jooq' version '5.2'
     id 'java'
 }
-
-def dbConfig = [
-        dev : [dbUrl   : 'jdbc:postgresql://localhost/project_manager',
-               app: [user: 'pm_app_user', password: 'password'],
-               mirgration : [user: 'pm_migration_user', password: 'password']
-        ],
-        test: [dbUrl   : 'jdbc:postgresql://localhost/project_manager_test',
-               app: [user: 'pm_app_user', password: 'password'],
-               mirgration: [user: 'pm_migration_user', password: 'password']
-        ]
-]
 
 group = 'net.digitallogic'
 version = '0.0.1-SNAPSHOT'
@@ -40,10 +26,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    //implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.session:spring-session-core'
     implementation 'org.springframework.session:spring-session-data-redis'
-    // implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'io.lettuce:lettuce-core:6.0.2.RELEASE'
+    implementation 'org.thymeleaf:thymeleaf:3.0.12.RELEASE'
+    implementation 'org.thymeleaf:thymeleaf-spring5:3.0.12.RELEASE'
 
     // Json web token
     implementation 'io.jsonwebtoken:jjwt-api:0.11.1'
@@ -60,11 +49,12 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.16'
     runtimeOnly 'org.postgresql:postgresql'
 
+    // Testing Dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-
     testImplementation 'org.springframework.security:spring-security-test'
+
     testImplementation 'org.assertj:assertj-core:3.16.1'
     testCompileOnly 'org.projectlombok:lombok:1.18.16'
 
@@ -76,30 +66,31 @@ dependencies {
 }
 
 flyway {
-    url = dbConfig.dev.dbUrl
-    user = dbConfig.dev.mirgration.user
-    password = dbConfig.dev.mirgration.password
+    url = 'jdbc:postgresql://localhost/project_manager'
+    user = 'pm_migration_user'
+    password = 'password'
     schemas = ['public']
+
     placeholders = [
             'sysAccountEmail': "'system_account@localhost'",
             'sysAccountPwd'  : "'{bcrypt}\$2y\$17\$mnQvgxTWmCsE2Pecu2zk7uKnrfeH5Qhgw6A7qR6asRWBmvH7Mg4Qu'",
-            'app_user'       : dbConfig.dev.app.user,
-            'migration_user' : dbConfig.dev.mirgration.user
+            'app_user'       : 'pm_app_user',
+            'migration_user' : 'pm_migration_user'
     ]
 }
 
+
 jooq {
     version = '3.13.4'
-
     configurations {
         main {  // name of the jOOQ configuration
             generationTool {
                 logging = org.jooq.meta.jaxb.Logging.WARN
                 jdbc {
                     driver = 'org.postgresql.Driver'
-                    url = dbConfig.dev.dbUrl
-                    user = dbConfig.dev.app.user
-                    password = dbConfig.dev.app.password
+                    url = 'jdbc:postgresql://localhost/project_manager'
+                    user = 'pm_app_user'
+                    password = 'password'
                 }
                 generator {
                     name = 'org.jooq.codegen.DefaultGenerator'
@@ -126,7 +117,7 @@ jooq {
     }
 }
 
-tasks.withType(org.gradle.api.tasks.testing.Test) {
+tasks.withType(Test) {
     environment('TZ', 'UTC')
 }
 
@@ -136,15 +127,15 @@ tasks.withType(JavaCompile) {
 }
 
 
-task migrateTest(type: FlywayMigrateTask) {
-    group = 'flywayTest'
-    url = dbConfig.test.dbUrl
-}
-
-task cleanTest(type: FlywayCleanTask) {
-    group = 'flywayTest'
-    url = dbConfig.test.dbUrl
-}
+//task migrateTest(type: FlywayMigrateTask) {
+//    group = 'flywayTest'
+//    url = dbConfig.test.dbUrl
+//}
+//
+//task cleanTest(type: FlywayCleanTask) {
+//    group = 'flywayTest'
+//    url = dbConfig.test.dbUrl
+//}
 
 test {
     useJUnitPlatform()

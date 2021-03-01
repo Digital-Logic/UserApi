@@ -54,6 +54,8 @@ public class UserStatusRepositoryTest {
 	@Test
 	@Sql(value = "classpath:db/testUser.sql")
 	public void saveUserStatusTest() {
+		LocalDateTime now = LocalDateTime.now();
+
 		UserEntity user = userRepository.findByEmail("test@testing.com").orElseThrow();
 
 		UserStatusEntity status = UserStatusEntity.builder()
@@ -61,6 +63,8 @@ public class UserStatusRepositoryTest {
 				.accountEnabled(true)
 				.createdBy(user.getId())
 				.user(user)
+				.validStart(now)
+				.systemStart(now)
 				.build();
 
 		assertThat(status.getEmbeddedId()).isNull();
