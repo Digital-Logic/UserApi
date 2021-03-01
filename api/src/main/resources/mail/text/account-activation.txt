@@ -2,6 +2,6 @@
 
 [( #{activate.greeting(${name})} )]
 
-[( #{activate.accountActivationInstructions} )]
+[( #{activate.manualActivationInstructions} )]
 
 [( ${activationLink} )]
