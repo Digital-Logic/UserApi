@@ -9,8 +9,8 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.ZoneId;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasLength;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class TokenGeneratorTest {
 
@@ -20,13 +20,14 @@ public class TokenGeneratorTest {
 	@Test
 	void generateRandomDataTest() {
 		String data = generator.generateData(64);
-		assertThat(data, hasLength(64));
+		assertThat(data).hasSize(64);
 
 	}
 
+	@Test
 	void generateTokenTest() {
 		UserEntity user = UserFixtures.userEntity();
 		VerificationToken token = generator.generate(user);
-
+		assertThat(token).isNotNull();
 	}
 }

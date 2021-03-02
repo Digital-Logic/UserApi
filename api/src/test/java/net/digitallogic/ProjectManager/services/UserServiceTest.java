@@ -1,9 +1,10 @@
 package net.digitallogic.ProjectManager.services;
 
 import net.digitallogic.ProjectManager.config.RepositoryConfig;
+import net.digitallogic.ProjectManager.events.CreateAccountActivateToken;
 import net.digitallogic.ProjectManager.fixtures.RoleFixtures;
 import net.digitallogic.ProjectManager.fixtures.UserFixtures;
-import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
+import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
@@ -25,7 +26,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Clock;
 import java.time.ZoneId;
@@ -91,7 +95,7 @@ public class UserServiceTest {
 
 	@Test
 	void createUserTest() {
-		CreateUserDto createUserDto = UserFixtures.createUser();
+		CreateUserRequest createUserRequest = UserFixtures.createUser();
 
 		when(userRepository.existsByEmailIgnoreCase(anyString()))
 				.thenReturn(false);
@@ -111,12 +115,18 @@ public class UserServiceTest {
 		when(userStatusRepository.save(any(UserStatusEntity.class)))
 				.then(invocation -> invocation.getArgument(0));
 
-		UserDto response = userService.createUser(createUserDto);
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+		doNothing().when(eventPublisher).publishEvent(CreateAccountActivateToken.class);
+
+		UserDto response = userService.createUser(createUserRequest);
 
 		verify(encoder, times(1)).encode(anyString());
+		verify(eventPublisher, times(1)).publishEvent(any(CreateAccountActivateToken.class));
 
 		assertThat(response).as("UserService response is null").isNotNull();
-		assertThat(response).isEqualToComparingOnlyGivenFields(createUserDto,
+		assertThat(response).isEqualToComparingOnlyGivenFields(createUserRequest,
 				"email", "firstName", "lastName");
 		assertThat(response.getId()).isNotNull();
 	}

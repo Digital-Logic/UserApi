@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateUserDto {
+public class CreateUserRequest {
 
 	@Size(max = 60, message = "{error.field.size.max.message}")
 	@NotEmpty

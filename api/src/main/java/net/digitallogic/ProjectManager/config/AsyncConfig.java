@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Configuration
 @EnableAsync
 @EnableScheduling
-@Profile("!non-async")
+@Profile(Profiles.NOT_NON_ASYNC)
 public class AsyncConfig implements AsyncConfigurer {
 
 }

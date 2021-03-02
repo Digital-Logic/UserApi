@@ -1,6 +1,6 @@
 package net.digitallogic.ProjectManager.web.controller;
 
-import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
+import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import org.springframework.lang.Nullable;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserController {
-	UserDto createUserAccount(CreateUserDto createUser);
+	UserDto createUserAccount(CreateUserRequest createUser);
 
 	UserDto getUser(UUID id, @Nullable String expand);
 

@@ -2,7 +2,7 @@ package net.digitallogic.ProjectManager.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.digitallogic.ProjectManager.fixtures.UserFixtures;
-import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
+import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
@@ -69,7 +69,7 @@ public class UserControllerTest {
 	@Sql(value = "classpath:db/testUser.sql")
 	void createDuplicateUserTest() throws Exception {
 
-		CreateUserDto createUser = UserFixtures.createUser();
+		CreateUserRequest createUser = UserFixtures.createUser();
 		createUser.setEmail("test@testing.com");
 
 		doCreateUser(createUser)
@@ -84,10 +84,10 @@ public class UserControllerTest {
 	@NullAndEmptySource
 	@ValueSource(strings = {"asd", "   ", "de       ", "      df", "    asd    "})
 	void createUserBadPasswordTest(String password) throws Exception {
-		CreateUserDto createUserDto = UserFixtures.createUser();
-		createUserDto.setPassword(password);
+		CreateUserRequest createUserRequest = UserFixtures.createUser();
+		createUserRequest.setPassword(password);
 
-		doCreateUser(createUserDto)
+		doCreateUser(createUserRequest)
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
 				.andExpect(jsonPath("$.reason", is(ErrorCode.VALIDATION_FAILED.code)))
@@ -103,7 +103,7 @@ public class UserControllerTest {
 	@ValueSource(strings = {"jklsdf", "joe@", "   ", ""})
 	@NullAndEmptySource
 	void createUserBadEmailTest(String email) throws Exception {
-		CreateUserDto newUser = UserFixtures.createUser();
+		CreateUserRequest newUser = UserFixtures.createUser();
 		newUser.setEmail(email);
 
 		doCreateUser(newUser)
@@ -122,10 +122,10 @@ public class UserControllerTest {
 	@NullAndEmptySource
 	@ValueSource(strings = {"", "   ", "      ", "sd   ", "   sd"})
 	void createUserNoFirstNameTest(String firstName) throws Exception {
-		CreateUserDto createUserDto = UserFixtures.createUser();
-		createUserDto.setFirstName(firstName);
+		CreateUserRequest createUserRequest = UserFixtures.createUser();
+		createUserRequest.setFirstName(firstName);
 
-		doCreateUser(createUserDto)
+		doCreateUser(createUserRequest)
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.code", is(400)))
 				.andExpect(jsonPath("$.reason", is("ValidationFailed")))
@@ -140,10 +140,10 @@ public class UserControllerTest {
 	@NullAndEmptySource
 	@ValueSource(strings = {"", "    ", "sd   ", "   fe"})
 	void createUserNoLastNameTest(String lastName) throws Exception {
-		CreateUserDto createUserDto = UserFixtures.createUser();
-		createUserDto.setLastName(lastName);
+		CreateUserRequest createUserRequest = UserFixtures.createUser();
+		createUserRequest.setLastName(lastName);
 
-		doCreateUser(createUserDto)
+		doCreateUser(createUserRequest)
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.code", is(HttpStatus.BAD_REQUEST.value())))
 				.andExpect(jsonPath("$.reason", is("ValidationFailed")))
@@ -155,7 +155,7 @@ public class UserControllerTest {
 
 	}
 
-	private ResultActions doCreateUser(CreateUserDto userData) throws Exception {
+	private ResultActions doCreateUser(CreateUserRequest userData) throws Exception {
 		return mockMvc.perform(post(Routes.USER_ROUTE)
 				.content(mapper.writeValueAsString(userData))
 				.accept(MediaType.APPLICATION_JSON)

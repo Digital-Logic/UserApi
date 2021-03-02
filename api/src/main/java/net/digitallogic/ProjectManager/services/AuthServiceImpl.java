@@ -1,6 +1,7 @@
 package net.digitallogic.ProjectManager.services;
 
 import lombok.extern.slf4j.Slf4j;
+import net.digitallogic.ProjectManager.events.CreateAccountActivateToken;
 import net.digitallogic.ProjectManager.events.SendMailEvent;
 import net.digitallogic.ProjectManager.persistence.dto.user.ResetPasswordRequest;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
@@ -17,9 +18,12 @@ import net.digitallogic.ProjectManager.web.error.exceptions.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URLDecoder;
@@ -155,9 +159,13 @@ public class AuthServiceImpl implements AuthService {
 		return true;
 	}
 
-	@Transactional
 	@Override
-	public String createAccountActivationToken(UserEntity user) {
+	@Async		// Run this event async
+	@Transactional(propagation = Propagation.REQUIRES_NEW) // Create a new transaction separate from any other.
+	@TransactionalEventListener
+	public void createAccountActivationToken(CreateAccountActivateToken event) {
+		// UserEntity is in a Detached state.
+		UserEntity user = event.getUser();
 		VerificationToken token = activateAccountToken.generate(user);
 		tokenRepository.save(token);
 
@@ -169,6 +177,36 @@ public class AuthServiceImpl implements AuthService {
 		eventPublisher.publishEvent(
 				SendMailEvent.builder()
 						.source(this)
+						.templateName("account-activation")
+						.fromEmail("noreplay@pr")
+						.recipientEmail(user.getEmail())
+						.subject("Account Activation Required")
+						.addVariable("name", user.getFirstName() + ' ' + user.getLastName())
+						.addVariable("activationLink",
+							event.getUriComponentsBuilder()
+									.queryParam("activate", tokenStr)
+										.build()
+										.toUriString()
+						)
+						.build()
+		);
+	}
+
+	@Transactional
+	@Override
+	public String createResetPasswordToken(UserEntity user) {
+		VerificationToken token = resetPasswordToken.generate(user);
+		tokenRepository.save(token);
+
+		if (token.getId() == null)
+			throw new RuntimeException();
+
+		String tokenStr = URLEncoder.encode(token.getId(), StandardCharsets.UTF_8);
+
+		eventPublisher.publishEvent(
+				SendMailEvent.builder()
+						.source(this)
+						.templateName("account-activation")
 						.fromEmail("noreplay@pr")
 						.recipientEmail(user.getEmail())
 						.subject("Account Activation Required")
@@ -181,19 +219,6 @@ public class AuthServiceImpl implements AuthService {
 						)
 						.build()
 		);
-
 		return tokenStr;
-	}
-
-	@Transactional
-	@Override
-	public String createResetPasswordToken(UserEntity user) {
-		VerificationToken token = resetPasswordToken.generate(user);
-		tokenRepository.save(token);
-
-		if (token.getId() == null)
-			throw new RuntimeException();
-
-		return URLEncoder.encode(token.getId(), StandardCharsets.UTF_8);
 	}
 }

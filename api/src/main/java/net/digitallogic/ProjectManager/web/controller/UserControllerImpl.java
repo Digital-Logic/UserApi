@@ -1,6 +1,6 @@
 package net.digitallogic.ProjectManager.web.controller;
 
-import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
+import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
 import net.digitallogic.ProjectManager.services.UserService;
@@ -29,7 +29,7 @@ public class UserControllerImpl implements UserController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public UserDto createUserAccount(@RequestBody @Valid CreateUserDto createUser) {
+	public UserDto createUserAccount(@RequestBody @Valid CreateUserRequest createUser) {
 		// TODO change return type to void
 		return userService.createUser(createUser);
 	}

@@ -1,6 +1,9 @@
 package net.digitallogic.ProjectManager.services;
 
 import com.github.javafaker.Faker;
+import net.digitallogic.ProjectManager.config.Profiles;
+import net.digitallogic.ProjectManager.fixtures.UserFixtures;
+import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
@@ -10,10 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import javax.persistence.OptimisticLockException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
@@ -24,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles(Profiles.NON_ASYNC)
 public class UserServiceIntegrationTest {
 
 	private final Faker faker = new Faker();
@@ -34,8 +38,6 @@ public class UserServiceIntegrationTest {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private EntityManager entityManager;
 
 	@Test
 	@Sql(value = "classpath:db/multiplyUsers.sql")
@@ -50,6 +52,30 @@ public class UserServiceIntegrationTest {
 		assertThat(user).isEqualToComparingOnlyGivenFields(userEntity,
 				"id", "firstName", "lastName", "email");
 	}
+
+	@Test
+	public void createUserTest() {
+		UserDto newUser = UserFixtures.userDto();
+		CreateUserRequest createUserRequest = CreateUserRequest.builder()
+				.email(newUser.getEmail())
+				.lastName(newUser.getLastName())
+				.firstName(newUser.getFirstName())
+				.password("Password")
+				.build();
+
+		UserDto response = userService.createUser(createUserRequest);
+
+		assertThat(response).isNotNull();
+		assertThat(response).isEqualToComparingOnlyGivenFields(newUser,
+				"email", "firstName", "lastName");
+
+		UserEntity persisted = userRepository.findById(response.getId())
+				.orElseThrow();
+
+		assertThat(response).isEqualToComparingOnlyGivenFields(persisted,
+				"id", "email", "firstName", "lastName");
+	}
+
 
 	@Test
 	@Sql(value = "classpath:db/multiplyUsers.sql")

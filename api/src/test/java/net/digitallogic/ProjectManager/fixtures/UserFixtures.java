@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.fixtures;
 
 import com.github.javafaker.Faker;
-import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
+import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 
@@ -62,9 +62,9 @@ public class UserFixtures {
 				.collect(Collectors.toList());
 	}
 
-	public static CreateUserDto createUser() { return createUser(clock); }
-	public static CreateUserDto createUser(Clock clock) {
-		return CreateUserDto.builder()
+	public static CreateUserRequest createUser() { return createUser(clock); }
+	public static CreateUserRequest createUser(Clock clock) {
+		return CreateUserRequest.builder()
 				.email(faker.internet().emailAddress())
 				.firstName(faker.name().firstName())
 				.lastName(faker.name().lastName())

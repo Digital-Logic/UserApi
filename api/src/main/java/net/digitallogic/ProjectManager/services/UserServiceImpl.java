@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.services;
 
-import net.digitallogic.ProjectManager.events.RegistrationCompleteEvent;
-import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserDto;
+import net.digitallogic.ProjectManager.events.CreateAccountActivateToken;
+import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public UserDto createUser(CreateUserDto dto) {
+	public UserDto createUser(CreateUserRequest dto) {
 		LocalDateTime now = LocalDateTime.now(systemClock);
 
 		if (userRepository.existsByEmailIgnoreCase(dto.getEmail()))
@@ -157,8 +157,7 @@ public class UserServiceImpl implements UserService {
 
 		userStatusRepository.save(status);
 
-		eventPublisher.publishEvent(new RegistrationCompleteEvent(user));
-
+		eventPublisher.publishEvent(new CreateAccountActivateToken(user));
 
 		return new UserDto(user);
 	}
