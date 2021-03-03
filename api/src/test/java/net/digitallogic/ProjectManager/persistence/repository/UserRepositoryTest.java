@@ -33,6 +33,9 @@ public class UserRepositoryTest {
 	@Autowired
 	UserRepository userRepository;
 
+	@Autowired
+	GraphBuilder<UserEntity> userEntityGraphBuilder;
+
 	@Test
 	@Sql(value = "classpath:db/testUser.sql")
 	public void existByEmailTest() {
@@ -60,13 +63,11 @@ public class UserRepositoryTest {
 	@Sql(value = "classpath:db/adminUser.sql")
 	public void userEntityGraphRolesTest() {
 
-		GraphBuilder<UserEntity> graphBuilder = new RepositoryConfig().userEntityGraphBuilder();
-
 		PersistenceUtil pu = Persistence.getPersistenceUtil();
 
 		Optional<UserEntity> user = userRepository
 				.findByEmail(
-						"adminTestUser@gmail.com", graphBuilder.createResolver("roles")
+						"adminTestUser@gmail.com", userEntityGraphBuilder.createResolver("roles")
 				);
 
 		assertThat(user).isNotEmpty();

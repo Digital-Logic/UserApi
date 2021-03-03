@@ -7,9 +7,6 @@ import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.jdbc.Sql;
 
 import javax.persistence.EntityManager;
@@ -23,18 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RepositoryTest
 public class VerificationTokenRepositoryTest {
-
-    @TestConfiguration
-    public static class TestConfig {
-
-        @Bean
-        @Primary
-        public GraphBuilder<VerificationToken> verificationTokenGraphBuilder() {
-            return GraphBuilder.builder(VerificationToken.class)
-                    .addProperty(VerificationToken_.user)
-                    .build();
-        }
-    }
 
     @Autowired
     VerificationTokenRepository verificationTokenRepository;

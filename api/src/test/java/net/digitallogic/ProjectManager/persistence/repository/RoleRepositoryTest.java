@@ -1,7 +1,6 @@
 package net.digitallogic.ProjectManager.persistence.repository;
 
 import net.digitallogic.ProjectManager.annotations.RepositoryTest;
-import net.digitallogic.ProjectManager.config.RepositoryConfig;
 import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity;
 import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity_;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
@@ -25,6 +24,9 @@ public class RoleRepositoryTest {
 	@Autowired
 	private RoleRepository roleRepository;
 
+	@Autowired
+	GraphBuilder<RoleEntity> graphBuilder;
+
 	private final PersistenceUtil pu = Persistence.getPersistenceUtil();
 
 	@Test
@@ -36,7 +38,6 @@ public class RoleRepositoryTest {
 
 	@Test
 	public void findByNameEntityGraphTest() {
-		GraphBuilder<RoleEntity> graphBuilder = new RepositoryConfig().roleEntityGraphBuilder();
 
 		Optional<RoleEntity> role = roleRepository.findByName(ROLES.ADMIN.name,
 				graphBuilder.createResolver(RoleEntity_.AUTHORITIES));
