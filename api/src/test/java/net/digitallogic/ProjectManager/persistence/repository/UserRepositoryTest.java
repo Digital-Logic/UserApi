@@ -2,7 +2,7 @@ package net.digitallogic.ProjectManager.persistence.repository;
 
 import net.digitallogic.ProjectManager.annotations.RepositoryTest;
 import net.digitallogic.ProjectManager.config.RepositoryConfig;
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity_;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;

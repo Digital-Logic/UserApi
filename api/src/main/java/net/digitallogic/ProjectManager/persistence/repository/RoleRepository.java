@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.persistence.repository;
 
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity_;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.EntityGraphRepository;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder.GraphResolver;
 import org.springframework.data.jpa.domain.Specification;

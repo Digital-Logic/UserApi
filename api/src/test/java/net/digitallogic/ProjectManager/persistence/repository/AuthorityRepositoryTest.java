@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.persistence.repository;
 
 import net.digitallogic.ProjectManager.annotations.RepositoryTest;
-import net.digitallogic.ProjectManager.persistence.entity.user.AuthorityEntity;
+import net.digitallogic.ProjectManager.persistence.entity.auth.AuthorityEntity;
 import net.digitallogic.ProjectManager.security.Authorities;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,12 +6,12 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Getter
-public class CreateAccountActivateToken extends ApplicationEvent {
+public class CreateAccountActivationToken extends ApplicationEvent {
 
 	private final UserEntity user;
 	private final ServletUriComponentsBuilder uriComponentsBuilder;
 
-	public CreateAccountActivateToken(UserEntity user) {
+	public CreateAccountActivationToken(UserEntity user) {
 		super(user);
 		this.user = user;
 

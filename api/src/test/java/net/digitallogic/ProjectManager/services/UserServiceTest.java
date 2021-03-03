@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.services;
 
 import net.digitallogic.ProjectManager.config.RepositoryConfig;
-import net.digitallogic.ProjectManager.events.CreateAccountActivateToken;
+import net.digitallogic.ProjectManager.events.CreateAccountActivationToken;
 import net.digitallogic.ProjectManager.fixtures.RoleFixtures;
 import net.digitallogic.ProjectManager.fixtures.UserFixtures;
 import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
@@ -118,12 +118,12 @@ public class UserServiceTest {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-		doNothing().when(eventPublisher).publishEvent(CreateAccountActivateToken.class);
+		doNothing().when(eventPublisher).publishEvent(CreateAccountActivationToken.class);
 
 		UserDto response = userService.createUser(createUserRequest);
 
 		verify(encoder, times(1)).encode(anyString());
-		verify(eventPublisher, times(1)).publishEvent(any(CreateAccountActivateToken.class));
+		verify(eventPublisher, times(1)).publishEvent(any(CreateAccountActivationToken.class));
 
 		assertThat(response).as("UserService response is null").isNotNull();
 		assertThat(response).isEqualToComparingOnlyGivenFields(createUserRequest,
@@ -146,7 +146,7 @@ public class UserServiceTest {
 		when(userRepository.findAll(any(), any(PageRequest.class), any()))
 				.thenReturn(new PageImpl<>(UserFixtures.userEntity(2), PageRequest.of(0, 2, Sort.by("createdDate")), 2));
 
-		when(userGraphBuilder.createResolver(any())).thenReturn(null);
+		when(userGraphBuilder.createResolver(anyString())).thenReturn(null);
 
 		Slice<UserDto> resultSet = userService.getAllUsers(0, 25, "createdDate", null, null);
 
@@ -158,7 +158,7 @@ public class UserServiceTest {
 		when(userRepository.findById(any(UUID.class), any()))
 				.thenReturn(Optional.of(UserFixtures.userEntity()));
 
-		when(userGraphBuilder.createResolver(any())).thenReturn(null);
+		when(userGraphBuilder.createResolver(anyString())).thenReturn(null);
 
 		UserDto result = userService.getUser(UUID.randomUUID(), null);
 		assertThat(result).isNotNull();
@@ -169,7 +169,7 @@ public class UserServiceTest {
 		when(userRepository.findById(any(UUID.class), any()))
 				.thenReturn(Optional.empty());
 
-		when(userGraphBuilder.createResolver(any())).thenReturn(null);
+		when(userGraphBuilder.createResolver(anyString())).thenReturn(null);
 
 		assertThatThrownBy(() ->
 				userService.getUser(UUID.randomUUID(), null))

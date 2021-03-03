@@ -10,13 +10,16 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
-import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.SingularAttribute;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+// TODO Add GraphBuilder test and support for static super class type checking.
+// 	This will require supporting Singular and Plural Attribute resolution.
 
 @Slf4j
 public class GraphBuilder<T> {
@@ -38,13 +41,24 @@ public class GraphBuilder<T> {
 		return new GraphResolver(expandAttributes);
 	}
 
+	public GraphResolver createResolver(SingularAttribute<T, ?> attribute) {
+		return new GraphResolver(attribute);
+	}
+
 
 	public static <E>EntityGraphBuilder<E> builder(Class<E> type) {
 		return new EntityGraphBuilder<>(type);
 	}
 
+	/**
+	 *
+	 */
 	public class GraphResolver {
 		private final List<String> properties;
+
+		public GraphResolver(SingularAttribute<?, ?> attribute) {
+			this(attribute.getName());
+		}
 
 		public GraphResolver(String expandAttributes) {
 			// Split attributes list and transform to camelCase if needed.
@@ -83,6 +97,11 @@ public class GraphBuilder<T> {
 		}
 	}
 
+	/**
+	 * Create an GraphBuilder
+	 * @param <T>
+	 */
+
 	public static class EntityGraphBuilder<T> {
 
 		private final Class<T> entityType;
@@ -96,8 +115,8 @@ public class GraphBuilder<T> {
 			return addProperty(property, graph -> graph.addSubgraph(property));
 		}
 
-		public EntityGraphBuilder<T> addProperty(Attribute<T, ?> property) {
-			return addProperty(property.getName(), graph -> graph.addSubgraph(property));
+		public EntityGraphBuilder<T> addProperty(SingularAttribute<T, ?> attribute) {
+			return addProperty(attribute.getName(), graph -> graph.addSubgraph(attribute));
 		}
 
 		public EntityGraphBuilder<T> addProperty(String property, Consumer<EntityGraph<T>> mapper) {
@@ -108,5 +127,6 @@ public class GraphBuilder<T> {
 		public GraphBuilder<T> build() {
 			return new GraphBuilder<>(entityType, graphMapper);
 		}
+
 	}
 }

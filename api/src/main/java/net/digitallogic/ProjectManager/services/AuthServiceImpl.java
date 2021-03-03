@@ -1,13 +1,14 @@
 package net.digitallogic.ProjectManager.services;
 
 import lombok.extern.slf4j.Slf4j;
-import net.digitallogic.ProjectManager.events.CreateAccountActivateToken;
+import net.digitallogic.ProjectManager.events.CreateAccountActivationToken;
 import net.digitallogic.ProjectManager.events.SendMailEvent;
+import net.digitallogic.ProjectManager.persistence.dto.user.ActivateAccountRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.ResetPasswordRequest;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
-import net.digitallogic.ProjectManager.persistence.entity.user.VerificationToken;
-import net.digitallogic.ProjectManager.persistence.entity.user.VerificationToken_;
+import net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken;
+import net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken_;
 import net.digitallogic.ProjectManager.persistence.repository.UserStatusRepository;
 import net.digitallogic.ProjectManager.persistence.repository.VerificationTokenRepository;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
@@ -35,6 +36,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken.*;
+
 @Service
 @Slf4j
 public class AuthServiceImpl implements AuthService {
@@ -47,9 +50,6 @@ public class AuthServiceImpl implements AuthService {
 	private final TokenGenerator activateAccountToken;
 	private final TokenGenerator resetPasswordToken;
 	private final Clock systemClock;
-
-	public static final String ENABLE_ACCOUNT_TOKEN_TYPE = "EnableAccount";
-	public static final String RESET_PASSWORD_TOKEN_TYPE = "ResetPassword";
 
 	@Autowired
 	public AuthServiceImpl(
@@ -69,24 +69,28 @@ public class AuthServiceImpl implements AuthService {
 		this.tokenGraphBuilder = tokenGraphBuilder;
 		this.systemClock = systemClock;
 
-		activateAccountToken = new TokenGenerator(ENABLE_ACCOUNT_TOKEN_TYPE,
+		activateAccountToken = new TokenGenerator(TokenType.ENABLE_ACCOUNT,
 				Duration.ofHours(enableAccountTokenDuration),
 				systemClock);
 
-		resetPasswordToken = new TokenGenerator(RESET_PASSWORD_TOKEN_TYPE,
+		resetPasswordToken = new TokenGenerator(TokenType.RESET_PASSWORD,
 				Duration.ofHours(resetPasswordTokenDuration),
 				systemClock);
 	}
 
 	@Transactional
 	@Override
-	public boolean activateAccount(String encodedToken) {
-		String tokenId = URLDecoder.decode(encodedToken, StandardCharsets.UTF_8);
+	public boolean activateAccount(ActivateAccountRequest activateAccountRequest) {
+		String tokenId = URLDecoder.decode(activateAccountRequest.getCode(), StandardCharsets.UTF_8);
+		log.info("Activate account with token: {}", tokenId);
 
-		VerificationToken token = tokenRepository.findById(tokenId,
-				tokenGraphBuilder.createResolver(VerificationToken_.USER)
+		VerificationToken token = tokenRepository.findByIdAndTokenType(tokenId, TokenType.ENABLE_ACCOUNT, LocalDateTime.now(systemClock),
+				tokenGraphBuilder.createResolver(VerificationToken_.user)
 		)
-				.orElseThrow(() -> new BadRequestException(ErrorCode.INVALID_TOKEN, MessageTranslator.InvalidToken()));
+				.orElseThrow(() -> new BadRequestException(ErrorCode.INVALID_TOKEN, MessageTranslator.invalidAccountActivationToken()));
+
+		// Increment used counter
+		token.setUsedCount(token.getUsedCount() + 1);
 
 		UserStatusEntity status = userStatusRepository.findByEntityId(token.getUser()
 				.getId(), systemClock)
@@ -117,6 +121,7 @@ public class AuthServiceImpl implements AuthService {
 						.accountEnabled(status.isAccountEnabled())
 						.accountLocked(status.isAccountLocked())
 						.credentialsExpired(status.isCredentialsExpired())
+						.createdBy(token.getUser().getId())
 						.build()
 				);
 			}
@@ -128,13 +133,15 @@ public class AuthServiceImpl implements AuthService {
 							.validStart(now)
 							.accountEnabled(true)
 							.accountLocked(status.isAccountLocked())
-							.accountEnabled(status.isAccountExpired())
+							.accountExpired(status.isAccountExpired())
 							.credentialsExpired(status.isCredentialsExpired())
+							.createdBy(status.getCreatedBy())
 							.build()
 			);
 
 			userStatusRepository.saveAll(newStatus);
 		}
+
 		return true;
 	}
 
@@ -163,7 +170,7 @@ public class AuthServiceImpl implements AuthService {
 	@Async		// Run this event async
 	@Transactional(propagation = Propagation.REQUIRES_NEW) // Create a new transaction separate from any other.
 	@TransactionalEventListener
-	public void createAccountActivationToken(CreateAccountActivateToken event) {
+	public void createAccountActivationToken(CreateAccountActivationToken event) {
 		// UserEntity is in a Detached state.
 		UserEntity user = event.getUser();
 		VerificationToken token = activateAccountToken.generate(user);

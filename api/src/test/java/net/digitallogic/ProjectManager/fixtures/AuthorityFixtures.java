@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.fixtures;
 
 import net.digitallogic.ProjectManager.persistence.dto.user.AuthorityDto;
-import net.digitallogic.ProjectManager.persistence.entity.user.AuthorityEntity;
+import net.digitallogic.ProjectManager.persistence.entity.auth.AuthorityEntity;
 import net.digitallogic.ProjectManager.security.Authorities;
 
 import java.util.Arrays;

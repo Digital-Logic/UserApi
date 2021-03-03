@@ -3,6 +3,7 @@ package net.digitallogic.ProjectManager.persistence.entity.user;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.entity.EntityBase;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity;
 
 import javax.persistence.*;
 import java.util.HashSet;

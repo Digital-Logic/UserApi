@@ -82,7 +82,13 @@ public class MessageTranslator implements Translator {
 	public static MessageTranslator BadCredentials() {
 		return new MessageTranslator("AbstractUserDetailsAuthenticationProvider.badCredentials");
 	}
+	public static MessageTranslator InternalServerError() {
+		return new MessageTranslator("internal_server_error");
+	}
 
+	public static MessageTranslator invalidAccountActivationToken() {
+		return new MessageTranslator("invalidAccountActivationToken");
+	}
 	public static MessageTranslator InvalidToken() {
 		return new MessageTranslator("token.invalid");
 	}

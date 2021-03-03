@@ -1,9 +1,7 @@
-package net.digitallogic.ProjectManager.persistence.entity;
+package net.digitallogic.ProjectManager.persistence.entity.user;
 
 import net.digitallogic.ProjectManager.fixtures.UserFixtures;
 import net.digitallogic.ProjectManager.persistence.biTemporal.entity.BiTemporalEntityId;
-import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
-import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -94,5 +92,28 @@ public class UserStatusEntityTest {
 		assertThat(entity.getId()).isNotNull();
 		assertThat(entity.getSystemStart()).isEqualTo(now);
 		assertThat(entity.getValidStart()).isEqualTo(now);
+	}
+
+	@Test
+	public void builderTest2() {
+		UserEntity user = UserFixtures.userEntity();
+		LocalDateTime now = LocalDateTime.now();
+
+		UserStatusEntity status = UserStatusEntity.builder()
+				.user(user)
+				.validStart(now)
+				.systemStart(now)
+				.accountEnabled(true)
+				.accountExpired(true)
+				.accountLocked(true)
+				.credentialsExpired(true)
+				.build();
+
+		assertThat(status.isAccountEnabled()).isTrue();
+		assertThat(status.isAccountExpired()).isTrue();
+		assertThat(status.isAccountLocked()).isTrue();
+		assertThat(status.isCredentialsExpired()).isTrue();
+		assertThat(status.getEmbeddedId()).isNull();
+		assertThat(status.getUser()).isNotNull();
 	}
 }

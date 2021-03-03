@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.digitallogic.ProjectManager.fixtures.UserFixtures;
 import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity_;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
 import net.digitallogic.ProjectManager.persistence.repository.UserRepository;

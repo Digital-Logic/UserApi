@@ -1,7 +1,7 @@
-package net.digitallogic.ProjectManager.persistence.entity;
+package net.digitallogic.ProjectManager.persistence.entity.auth;
 
 import net.digitallogic.ProjectManager.fixtures.AuthorityFixtures;
-import net.digitallogic.ProjectManager.persistence.entity.user.AuthorityEntity;
+import net.digitallogic.ProjectManager.persistence.entity.auth.AuthorityEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;

@@ -1,10 +1,10 @@
 package net.digitallogic.ProjectManager.services;
 
-import net.digitallogic.ProjectManager.events.CreateAccountActivateToken;
+import net.digitallogic.ProjectManager.events.CreateAccountActivationToken;
 import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
 import net.digitallogic.ProjectManager.persistence.repository.RoleRepository;
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
 
 		userStatusRepository.save(status);
 
-		eventPublisher.publishEvent(new CreateAccountActivateToken(user));
+		eventPublisher.publishEvent(new CreateAccountActivationToken(user));
 
 		return new UserDto(user);
 	}

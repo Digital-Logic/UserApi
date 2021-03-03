@@ -123,12 +123,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 					.antMatchers(HttpMethod.POST, Routes.SIGN_UP_ROUTE)
 						.permitAll()
+					.antMatchers(HttpMethod.POST, Routes.ACTIVATE_ACCOUNT_ROUTE)
+						.permitAll()
 					.antMatchers(HttpMethod.GET, Routes.LOGOUT_ROUTE)
 						.authenticated()
 
 					// Deny all access to the error controller
 					.antMatchers(errorPath)
-						.denyAll()
+						//.denyAll()
+						.permitAll()
 
 					.anyRequest()
 						.authenticated()

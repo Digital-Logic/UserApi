@@ -1,6 +1,13 @@
 package net.digitallogic.ProjectManager.config;
 
-import net.digitallogic.ProjectManager.persistence.entity.user.*;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity_;
+import net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken;
+import net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken_;
+import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
+import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
+import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
+import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity_;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.AdvancedJpaRepository;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.RepositoryFactoryBean;
@@ -50,7 +57,7 @@ public class RepositoryConfig {
 	@Bean
 	public GraphBuilder<UserStatusEntity> userStatusGraphBuilder() {
 		return GraphBuilder.builder(UserStatusEntity.class)
-				.addProperty(UserStatusEntity_.USER)
+				.addProperty(UserStatusEntity_.user)
 				.addProperty(UserStatusEntity_.AUDIT_MESSAGE)
 				.build();
 	}

@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.security;
 
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
-import net.digitallogic.ProjectManager.persistence.entity.user.VerificationToken;
+import net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken;
 
 import java.security.SecureRandom;
 import java.time.Clock;
@@ -9,21 +9,23 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
+import static net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken.*;
+
 public class TokenGenerator {
 
-	private final String tokenType;
+	private final TokenType tokenType;
 	private final int tokenLength;
 	private final SecureRandom random;
 	private final Duration duration;
 	private final Clock clock;
 
-	public static final int DEFAULT_TOKEN_LENGTH = 64;
+	public static final int DEFAULT_TOKEN_LENGTH = 48;
 
-	public TokenGenerator(String tokenType, Duration duration, Clock clock) {
+	public TokenGenerator(TokenType tokenType, Duration duration, Clock clock) {
 		this(tokenType, DEFAULT_TOKEN_LENGTH, duration, clock);
 	}
 
-	public TokenGenerator(String tokenType,  int tokenLength, Duration duration, Clock clock) {
+	public TokenGenerator(TokenType tokenType,  int tokenLength, Duration duration, Clock clock) {
 		this.tokenType = tokenType;
 		this.tokenLength = tokenLength;
 		this.duration = duration;
@@ -34,7 +36,7 @@ public class TokenGenerator {
 	}
 
 	public VerificationToken generate(UserEntity user) {
-		return VerificationToken.builder()
+		return builder()
 				.id(generateData(tokenLength))
 				.tokenType(tokenType)
 				.user(user)

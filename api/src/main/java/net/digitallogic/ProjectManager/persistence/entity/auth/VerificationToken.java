@@ -1,8 +1,9 @@
-package net.digitallogic.ProjectManager.persistence.entity.user;
+package net.digitallogic.ProjectManager.persistence.entity.auth;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.entity.EntityBase;
+import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 public class VerificationToken extends EntityBase<String> {
 
 	@Column(name = "token_type")
-	private String tokenType;
+	private TokenType tokenType;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -27,7 +28,16 @@ public class VerificationToken extends EntityBase<String> {
 	private LocalDateTime expires;
 
 	@Builder.Default
-	@Column(name = "count")
-	private int count=0;
+	@Column(name = "used_count")
+	private int usedCount=0;
 
+
+	public enum TokenType {
+		ENABLE_ACCOUNT(1),
+		RESET_PASSWORD(2)
+		;
+
+		public final int value;
+		private TokenType(int value) { this.value = value; }
+	}
 }

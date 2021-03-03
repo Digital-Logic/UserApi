@@ -54,8 +54,9 @@ public class UserStatusEntity extends BiTemporalEntity<UUID> implements SoftDele
 		this.credentialsExpired = builder.credentialsExpired;
 		this.deleted = builder.deleted;
 
-		if (builder.user != null)
+		if (builder.user != null) {
 			this.user = builder.user;
+		}
 	}
 
 	public static UserStatusEntityBuilder<?, ?> builder() {return new UserStatusEntityBuilderImpl();}

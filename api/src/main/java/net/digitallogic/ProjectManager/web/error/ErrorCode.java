@@ -26,7 +26,14 @@ public enum ErrorCode {
 
 	INVALID_TOKEN("InvalidToken"),
 
-	SYSTEM_FAILURE("SystemFailure")
+	SYSTEM_FAILURE("SysEx"),
+	INTERNAL_SERVER_ERROR("InfEx"),
+
+	// Persistence Exception codes
+	DATA_INTEGRITY_EXCEPTION("DaInVioEx"),
+	DATA_ACCESS_EXCEPTION("daAcEx"),
+	DAO_PERSISTENCE_EXCEPTION("daoPrsEx"),
+	PROPERTY_VALUE_EXCEPTION("ProValEx")
 	;
 
 	@JsonValue

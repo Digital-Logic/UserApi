@@ -1,4 +1,4 @@
-package net.digitallogic.ProjectManager.persistence.entity;
+package net.digitallogic.ProjectManager.persistence.entity.user;
 
 import net.digitallogic.ProjectManager.fixtures.UserFixtures;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;

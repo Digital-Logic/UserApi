@@ -2,8 +2,8 @@ package net.digitallogic.ProjectManager.persistence.repository;
 
 import net.digitallogic.ProjectManager.annotations.RepositoryTest;
 import net.digitallogic.ProjectManager.config.RepositoryConfig;
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity_;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.security.ROLES;
 import org.junit.jupiter.api.Test;

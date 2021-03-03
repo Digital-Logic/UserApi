@@ -5,8 +5,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.dto.AuditDto;
 import net.digitallogic.ProjectManager.persistence.entity.SoftDelete;
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity_;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity_;
 
 import java.util.ArrayList;
 import java.util.List;

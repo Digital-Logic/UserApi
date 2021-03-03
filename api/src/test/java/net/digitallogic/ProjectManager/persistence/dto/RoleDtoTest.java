@@ -2,7 +2,7 @@ package net.digitallogic.ProjectManager.persistence.dto;
 
 import net.digitallogic.ProjectManager.fixtures.RoleFixtures;
 import net.digitallogic.ProjectManager.persistence.dto.user.RoleDto;
-import net.digitallogic.ProjectManager.persistence.entity.user.RoleEntity;
+import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
