@@ -17,14 +17,14 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 @Slf4j
-public class MailServiceImpl implements MailService {
+public class EmailNotificationService implements NotificationService {
 
 	private final JavaMailSender mailSender;
 	private final ITemplateEngine templateEngine;
 
 	@Autowired
-	public MailServiceImpl(JavaMailSender mailSender,
-	                       @Qualifier("emailTemplateEngine") ITemplateEngine templateEngine) {
+	public EmailNotificationService(JavaMailSender mailSender,
+									@Qualifier("emailTemplateEngine") ITemplateEngine templateEngine) {
 		this.mailSender = mailSender;
 		this.templateEngine = templateEngine;
 	}
@@ -32,7 +32,7 @@ public class MailServiceImpl implements MailService {
 	@Async
 	@EventListener
 	@Override
-	public void sendEmail(SendMailEvent event) {
+	public void sendNotification(SendMailEvent event) {
 
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();

@@ -17,10 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles(Profiles.NON_ASYNC)
-public class MailServiceIntegrationTest {
+public class NotificationServiceIntegrationTest {
 
 	@Autowired
-	private MailService mailService;
+	private NotificationService notificationService;
 	private final QuerySmtpServer server = new QuerySmtpServer();
 
 
@@ -28,7 +28,7 @@ public class MailServiceIntegrationTest {
 	void sendEmailTest() {
 		UUID id = UUID.randomUUID();
 
-		mailService.sendEmail(
+		notificationService.sendNotification(
 				SendMailEvent.builder()
 						.source(this)
 						.templateName("account-activation")

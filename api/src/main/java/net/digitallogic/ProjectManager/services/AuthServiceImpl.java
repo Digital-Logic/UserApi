@@ -5,12 +5,12 @@ import net.digitallogic.ProjectManager.events.CreateAccountActivationToken;
 import net.digitallogic.ProjectManager.events.SendMailEvent;
 import net.digitallogic.ProjectManager.persistence.dto.user.ActivateAccountRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.ResetPasswordRequest;
-import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
-import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
 import net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken;
 import net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken_;
-import net.digitallogic.ProjectManager.persistence.repository.UserStatusRepository;
+import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
+import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
 import net.digitallogic.ProjectManager.persistence.repository.TokenRepository;
+import net.digitallogic.ProjectManager.persistence.repository.UserStatusRepository;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.security.TokenGenerator;
 import net.digitallogic.ProjectManager.web.MessageTranslator;
@@ -36,7 +36,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken.*;
+import static net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken.TokenType;
 
 @Service
 @Slf4j
@@ -190,7 +190,7 @@ public class AuthServiceImpl implements AuthService {
 						.subject("Account Activation Required")
 						.addVariable("name", user.getFirstName() + ' ' + user.getLastName())
 						.addVariable("activationLink",
-							event.getUriComponentsBuilder()
+							ServletUriComponentsBuilder.fromContextPath(event.getRequest() )
 									.queryParam("activate", tokenStr)
 										.build()
 										.toUriString()

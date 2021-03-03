@@ -1,5 +1,6 @@
 package net.digitallogic.ProjectManager.services;
 
+import lombok.extern.slf4j.Slf4j;
 import net.digitallogic.ProjectManager.events.CreateAccountActivationToken;
 import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
@@ -26,6 +27,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -35,6 +38,7 @@ import static net.digitallogic.ProjectManager.services.Utils.processSortBy;
 import static net.digitallogic.ProjectManager.web.filter.SpecSupport.toSpecification;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
@@ -157,8 +161,16 @@ public class UserServiceImpl implements UserService {
 
 		userStatusRepository.save(status);
 
-		eventPublisher.publishEvent(new CreateAccountActivationToken(user));
+		try {
+			eventPublisher.publishEvent(new CreateAccountActivationToken(user,
+					((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+							.getRequest())
+			);
 
+		} catch (NullPointerException ex) {
+			log.error("Error creating user account activation token, null point exception occurred during event dispatch, in UserServiceImpl: {}",
+					ex.getMessage());
+		}
 		return new UserDto(user);
 	}
 

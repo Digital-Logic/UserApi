@@ -37,7 +37,7 @@ public class TokenRepositoryTest {
     private final String tokenId = "fJvhX9z1L+c4QN3MD8ZFWdNamUnK7JIQQyicDzMIevk+CTQG";
 
     @Test
-    @Sql(value = "classpath:db/verificationTokenRepositoryTest.sql")
+    @Sql(value = "classpath:db/accountActivationToken.sql")
     void findByIdAndTokenTypeTest() {
         UserEntity user = userRepository.findById(userID)
                 .orElseThrow();
@@ -49,7 +49,7 @@ public class TokenRepositoryTest {
     }
 
     @Test
-    @Sql(value = "classpath:db/verificationTokenRepositoryTest.sql")
+    @Sql(value = "classpath:db/accountActivationToken.sql")
     void findByIdAndTokenTypeWithTimeTest() {
         UserEntity user = userRepository.findById(UUID.fromString("4876a5ba-319e-4ca1-849d-1f6cb5e3524c"))
                 .orElseThrow();
@@ -61,7 +61,7 @@ public class TokenRepositoryTest {
     }
 
     @Test
-    @Sql(value = "classpath:db/verificationTokenRepositoryTest.sql")
+    @Sql(value = "classpath:db/accountActivationToken.sql")
     void findByIdAndTokenTypeWithTimeAndGraphResolverTest() {
         UserEntity user = userRepository.findById(UUID.fromString("4876a5ba-319e-4ca1-849d-1f6cb5e3524c"))
                 .orElseThrow();

@@ -9,7 +9,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.ITemplateEngine;
 
-public class MailServiceTest {
+public class NotificationServiceTest {
 
 	@Mock
 	JavaMailSender mailSender;
@@ -18,7 +18,7 @@ public class MailServiceTest {
 	ITemplateEngine templateEngine;
 
 	@InjectMocks
-	MailServiceImpl mailService;
+    EmailNotificationService mailService;
 
 	AutoCloseable closeable;
 
