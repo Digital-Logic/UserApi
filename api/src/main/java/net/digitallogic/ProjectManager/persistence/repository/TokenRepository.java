@@ -14,7 +14,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface VerificationTokenRepository extends CrudRepository<VerificationToken, String>,
+public interface TokenRepository extends CrudRepository<VerificationToken, String>,
 		EntityGraphRepository<VerificationToken, String>, JpaSpecificationExecutor<VerificationToken> {
 
 	// Do I need this method????

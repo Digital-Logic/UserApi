@@ -10,7 +10,7 @@ import net.digitallogic.ProjectManager.persistence.entity.user.UserStatusEntity;
 import net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken;
 import net.digitallogic.ProjectManager.persistence.entity.auth.VerificationToken_;
 import net.digitallogic.ProjectManager.persistence.repository.UserStatusRepository;
-import net.digitallogic.ProjectManager.persistence.repository.VerificationTokenRepository;
+import net.digitallogic.ProjectManager.persistence.repository.TokenRepository;
 import net.digitallogic.ProjectManager.persistence.repositoryFactory.GraphBuilder;
 import net.digitallogic.ProjectManager.security.TokenGenerator;
 import net.digitallogic.ProjectManager.web.MessageTranslator;
@@ -42,7 +42,7 @@ import static net.digitallogic.ProjectManager.persistence.entity.auth.Verificati
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
-	private final VerificationTokenRepository tokenRepository;
+	private final TokenRepository tokenRepository;
 	private final UserStatusRepository userStatusRepository;
 	private final ApplicationEventPublisher eventPublisher;
 	private final PasswordEncoder encoder;
@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
 	@Autowired
 	public AuthServiceImpl(
-			VerificationTokenRepository tokenRepository,
+			TokenRepository tokenRepository,
 			UserStatusRepository userStatusRepository,
 			ApplicationEventPublisher eventPublisher,
 			PasswordEncoder encoder,

@@ -19,10 +19,10 @@ import static net.digitallogic.ProjectManager.persistence.entity.auth.Verificati
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RepositoryTest
-public class VerificationTokenRepositoryTest {
+public class TokenRepositoryTest {
 
     @Autowired
-    VerificationTokenRepository verificationTokenRepository;
+    TokenRepository tokenRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -42,7 +42,7 @@ public class VerificationTokenRepositoryTest {
         UserEntity user = userRepository.findById(userID)
                 .orElseThrow();
 
-        Optional<VerificationToken> token = verificationTokenRepository.
+        Optional<VerificationToken> token = tokenRepository.
                 findByIdAndTokenType(tokenId, TokenType.ENABLE_ACCOUNT);
 
         assertThat(token).isNotEmpty();
@@ -54,7 +54,7 @@ public class VerificationTokenRepositoryTest {
         UserEntity user = userRepository.findById(UUID.fromString("4876a5ba-319e-4ca1-849d-1f6cb5e3524c"))
                 .orElseThrow();
 
-        Optional<VerificationToken> token = verificationTokenRepository.
+        Optional<VerificationToken> token = tokenRepository.
                 findByIdAndTokenType(tokenId, TokenType.ENABLE_ACCOUNT, LocalDateTime.now(Clock.systemUTC()));
 
         assertThat(token).isNotEmpty();
@@ -66,7 +66,7 @@ public class VerificationTokenRepositoryTest {
         UserEntity user = userRepository.findById(UUID.fromString("4876a5ba-319e-4ca1-849d-1f6cb5e3524c"))
                 .orElseThrow();
 
-        Optional<VerificationToken> token = verificationTokenRepository.
+        Optional<VerificationToken> token = tokenRepository.
                 findByIdAndTokenType(tokenId, TokenType.ENABLE_ACCOUNT, LocalDateTime.now(Clock.systemUTC()),
                         graphBuilder.createResolver(VerificationToken_.user));
 
