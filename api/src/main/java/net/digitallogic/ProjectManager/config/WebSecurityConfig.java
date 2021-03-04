@@ -123,8 +123,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 					.antMatchers(HttpMethod.POST, Routes.SIGN_UP_ROUTE)
 						.permitAll()
-					.antMatchers(HttpMethod.POST, Routes.ACTIVATE_ACCOUNT_ROUTE)
-						.permitAll()
+					.antMatchers(HttpMethod.POST,
+							Routes.ACTIVATE_ACCOUNT_ROUTE,
+							Routes.ACTIVATE_ACCOUNT_REQUEST_ROUTE,
+							Routes.RESET_PASSWORD_ROUTE,
+							Routes.RESET_PASSWORD_REQUEST_ROUTE)
+						.anonymous()
+
 					.antMatchers(HttpMethod.GET, Routes.LOGOUT_ROUTE)
 						.authenticated()
 

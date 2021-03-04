@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.services;
 
 import lombok.extern.slf4j.Slf4j;
-import net.digitallogic.ProjectManager.events.CreateAccountActivationToken;
+import net.digitallogic.ProjectManager.events.AccountRegistrationCompletedEvent;
 import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserDto;
 import net.digitallogic.ProjectManager.persistence.dto.user.UserUpdateDto;
@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
 		userStatusRepository.save(status);
 
 		try {
-			eventPublisher.publishEvent(new CreateAccountActivationToken(user,
+			eventPublisher.publishEvent(new AccountRegistrationCompletedEvent(user,
 					((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
 							.getRequest())
 			);

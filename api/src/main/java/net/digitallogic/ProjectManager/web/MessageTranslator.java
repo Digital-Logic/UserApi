@@ -86,10 +86,18 @@ public class MessageTranslator implements Translator {
 		return new MessageTranslator("internal_server_error");
 	}
 
-	public static MessageTranslator invalidAccountActivationToken() {
-		return new MessageTranslator("invalidAccountActivationToken");
-	}
-	public static MessageTranslator InvalidToken() {
+	public static MessageTranslator invalidAccountActivationToken() { return new MessageTranslator("invalidAccountActivationToken"); }
+
+	// Token Messages
+	public static MessageTranslator TokenIsInvalid() {
 		return new MessageTranslator("token.invalid");
 	}
+	public static MessageTranslator TokenIsExpired() { return new MessageTranslator("token.expired"); }
+	public static MessageTranslator TokenIsUsed() { return new MessageTranslator("token.used"); }
+
+	// Reset password
+	public static MessageTranslator ResetPasswordAccountDisabled() { return new MessageTranslator("resetPassword.accountDisabled");}
+	public static MessageTranslator ResetPasswordAccountLocked() { return new MessageTranslator("resetPassword.accountLock");}
+	public static MessageTranslator ResetPasswordAccountExpired() { return new MessageTranslator("resetPassword.accountExpired");}
+	public static MessageTranslator ResetPasswordCredentialsExpired() { return new MessageTranslator("resetPassword.credentialsExpired");}
 }

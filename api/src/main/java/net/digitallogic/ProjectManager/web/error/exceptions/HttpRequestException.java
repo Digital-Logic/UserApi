@@ -31,6 +31,7 @@ public abstract class HttpRequestException extends RuntimeException {
 		this(errorCode, messageTranslator, Collections.emptyList());
 	}
 
+
 //	protected HttpRequestException(HttpRequestExceptionBuilder<?, ?> b) {
 //		this.errorMessage = b.errorMessage;
 //		List<Error> errors;
