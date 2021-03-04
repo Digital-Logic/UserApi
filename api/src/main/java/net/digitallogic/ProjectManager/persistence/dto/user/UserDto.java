@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import net.digitallogic.ProjectManager.persistence.dto.DtoBase;
+import net.digitallogic.ProjectManager.persistence.dto.auth.RoleDto;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity_;
 

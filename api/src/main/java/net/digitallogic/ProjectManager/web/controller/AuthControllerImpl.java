@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import net.digitallogic.ProjectManager.persistence.dto.user.ActivateAccountRequest;
+import net.digitallogic.ProjectManager.persistence.dto.auth.ActivateAccountRequest;
 import net.digitallogic.ProjectManager.services.AuthService;
 import net.digitallogic.ProjectManager.web.Routes;
 import org.springframework.http.HttpStatus;
@@ -26,4 +26,8 @@ public class AuthControllerImpl {
         log.info("Activate Account Request.");
         return authService.activateAccount(activateAccount);
     }
+
+//    public boolean resetPasswordRequest() {
+//
+//    }
 }

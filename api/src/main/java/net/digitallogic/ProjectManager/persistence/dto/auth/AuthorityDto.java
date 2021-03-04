@@ -1,4 +1,4 @@
-package net.digitallogic.ProjectManager.persistence.dto.user;
+package net.digitallogic.ProjectManager.persistence.dto.auth;
 
 import lombok.*;
 import net.digitallogic.ProjectManager.persistence.entity.auth.AuthorityEntity;

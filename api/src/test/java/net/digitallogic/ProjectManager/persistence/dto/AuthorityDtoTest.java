@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.persistence.dto;
 
 import net.digitallogic.ProjectManager.fixtures.AuthorityFixtures;
-import net.digitallogic.ProjectManager.persistence.dto.user.AuthorityDto;
+import net.digitallogic.ProjectManager.persistence.dto.auth.AuthorityDto;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;

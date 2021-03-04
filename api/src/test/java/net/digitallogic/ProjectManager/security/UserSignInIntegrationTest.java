@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.digitallogic.ProjectManager.persistence.dto.user.LoginRequest;
+import net.digitallogic.ProjectManager.persistence.dto.security.LoginRequest;
 import net.digitallogic.ProjectManager.web.Routes;
 import net.digitallogic.ProjectManager.web.error.ErrorCode;
 import org.junit.jupiter.api.Test;

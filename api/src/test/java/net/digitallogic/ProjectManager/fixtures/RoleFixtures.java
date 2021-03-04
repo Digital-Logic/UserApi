@@ -1,6 +1,6 @@
 package net.digitallogic.ProjectManager.fixtures;
 
-import net.digitallogic.ProjectManager.persistence.dto.user.RoleDto;
+import net.digitallogic.ProjectManager.persistence.dto.auth.RoleDto;
 import net.digitallogic.ProjectManager.persistence.entity.auth.RoleEntity;
 import net.digitallogic.ProjectManager.security.ROLES;
 

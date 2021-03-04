@@ -2,8 +2,8 @@ package net.digitallogic.ProjectManager.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import net.digitallogic.ProjectManager.persistence.dto.user.LoginRequest;
-import net.digitallogic.ProjectManager.persistence.dto.user.UserAuthenticationDto;
+import net.digitallogic.ProjectManager.persistence.dto.security.LoginRequest;
+import net.digitallogic.ProjectManager.persistence.dto.security.UserAuthenticationDto;
 import net.digitallogic.ProjectManager.web.Routes;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;

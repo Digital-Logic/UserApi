@@ -1,4 +1,4 @@
-package net.digitallogic.ProjectManager.persistence.dto.user;
+package net.digitallogic.ProjectManager.persistence.dto.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

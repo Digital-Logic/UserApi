@@ -1,8 +1,8 @@
 package net.digitallogic.ProjectManager.services;
 
 import net.digitallogic.ProjectManager.events.CreateAccountActivationToken;
-import net.digitallogic.ProjectManager.persistence.dto.user.ActivateAccountRequest;
-import net.digitallogic.ProjectManager.persistence.dto.user.ResetPasswordRequest;
+import net.digitallogic.ProjectManager.persistence.dto.auth.ActivateAccountRequest;
+import net.digitallogic.ProjectManager.persistence.dto.security.ResetPasswordRequest;
 import net.digitallogic.ProjectManager.persistence.entity.user.UserEntity;
 
 public interface AuthService {
