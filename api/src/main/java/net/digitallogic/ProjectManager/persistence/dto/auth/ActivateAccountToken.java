@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ActivateAccountRequest {
+@AllArgsConstructor
+public class ActivateAccountToken {
 
     @NotEmpty
-    private String email;
+    private String token;
 }

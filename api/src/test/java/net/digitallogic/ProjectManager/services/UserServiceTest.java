@@ -1,7 +1,7 @@
 package net.digitallogic.ProjectManager.services;
 
 import net.digitallogic.ProjectManager.config.RepositoryConfig;
-import net.digitallogic.ProjectManager.events.CreateAccountActivationToken;
+import net.digitallogic.ProjectManager.events.AccountRegistrationCompletedEvent;
 import net.digitallogic.ProjectManager.fixtures.RoleFixtures;
 import net.digitallogic.ProjectManager.fixtures.UserFixtures;
 import net.digitallogic.ProjectManager.persistence.dto.user.CreateUserRequest;
@@ -118,12 +118,12 @@ public class UserServiceTest {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-		doNothing().when(eventPublisher).publishEvent(CreateAccountActivationToken.class);
+		doNothing().when(eventPublisher).publishEvent(AccountRegistrationCompletedEvent.class);
 
 		UserDto response = userService.createUser(createUserRequest);
 
 		verify(encoder, times(1)).encode(anyString());
-		verify(eventPublisher, times(1)).publishEvent(any(CreateAccountActivationToken.class));
+		verify(eventPublisher, times(1)).publishEvent(any(AccountRegistrationCompletedEvent.class));
 
 		assertThat(response).as("UserService response is null").isNotNull();
 		assertThat(response).isEqualToComparingOnlyGivenFields(createUserRequest,

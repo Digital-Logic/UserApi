@@ -24,7 +24,10 @@ public enum ErrorCode {
 	VALIDATION_FAILED("ValidationFailed"),
 	AUTHENTICATION_FAILURE("AuthenticationFailed"),
 
-	INVALID_TOKEN("InvalidToken"),
+	// Token Error codes
+	TOKEN_INVALID("tknInv"),
+	TOKEN_EXPIRED("TknExp"),
+	TOKEN_USED("TknUsd"),
 
 	SYSTEM_FAILURE("SysEx"),
 	INTERNAL_SERVER_ERROR("InfEx"),

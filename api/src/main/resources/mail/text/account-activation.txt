@@ -5,3 +5,5 @@
 [( #{activate.manualActivationInstructions} )]
 
 [( ${activationLink} )]
+
+[( #{companyFooter} )]
