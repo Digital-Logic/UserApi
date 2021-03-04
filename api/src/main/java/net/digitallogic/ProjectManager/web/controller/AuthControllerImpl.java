@@ -26,32 +26,32 @@ public class AuthControllerImpl implements AuthController {
     @Override
     @PostMapping(path = "activate-account")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public boolean activateAccount(@RequestBody @Valid ActivateAccountToken activateAccountToken) {
+    public void activateAccount(@RequestBody @Valid ActivateAccountToken activateAccountToken) {
         log.info("Attempting to activate user account.");
-        return authService.activateAccount(activateAccountToken);
+        authService.activateAccount(activateAccountToken);
     }
 
     // Send a new Activate Account email
     @Override
     @PostMapping(path = Routes.ACTIVATE_ACCOUNT_REQUEST)
-    public boolean activateAccountRequest(@RequestBody @Valid ActivateAccountRequest activateAccountRequest) {
+    public void activateAccountRequest(@RequestBody @Valid ActivateAccountRequest activateAccountRequest) {
         log.info("Send user account activation email request.");
-        return authService.accountActivateRequest(activateAccountRequest);
+        authService.accountActivateRequest(activateAccountRequest);
     }
 
     @Override
     @PostMapping(path = Routes.RESET_PASSWORD)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public boolean resetPassword(@RequestBody @Valid ResetPassword resetPassword) {
+    public void resetPassword(@RequestBody @Valid ResetPassword resetPassword) {
         log.info("Reset user account password");
-        return authService.resetPassword(resetPassword);
+        authService.resetPassword(resetPassword);
     }
 
     @Override
     @PostMapping(path = Routes.RESET_PASSWORD_REQUEST)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public boolean resetPasswordRequest(@RequestBody @Valid ResetPasswordRequest resetPasswordRequest) {
+    public void resetPasswordRequest(@RequestBody @Valid ResetPasswordRequest resetPasswordRequest) {
         log.info("User request password password reset.");
-        return authService.createResetPasswordToken(resetPasswordRequest);
+        authService.createResetPasswordToken(resetPasswordRequest);
     }
 }

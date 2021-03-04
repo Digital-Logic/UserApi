@@ -18,30 +18,9 @@ public class BadRequestException extends HttpRequestException {
 		super(errorCode, messageTranslator, errorMessages);
 	}
 
-//	protected BadRequestException(BadRequestExceptionBuilder<?, ?> b) {
-//		super(b);
-//	}
-
-//	public static BadRequestExceptionBuilder<?, ?> builder() {return new BadRequestExceptionBuilderImpl();}
-
 	@Override
 	public HttpStatus getHttpStatus() {
 		return HttpStatus.BAD_REQUEST;
 	}
 
-//	public static abstract class BadRequestExceptionBuilder<C extends BadRequestException, B extends BadRequestExceptionBuilder<C, B>> extends HttpRequestExceptionBuilder<C, B> {
-//		protected abstract B self();
-//
-//		public abstract C build();
-//
-//		public String toString() {return "BadRequestException.BadRequestExceptionBuilder(super=" + super.toString() + ")";}
-//	}
-
-//	private static final class BadRequestExceptionBuilderImpl extends BadRequestExceptionBuilder<BadRequestException, BadRequestExceptionBuilderImpl> {
-//		private BadRequestExceptionBuilderImpl() {}
-//
-//		protected BadRequestExceptionBuilderImpl self() {return this;}
-//
-//		public BadRequestException build() {return new BadRequestException(this);}
-//	}
 }

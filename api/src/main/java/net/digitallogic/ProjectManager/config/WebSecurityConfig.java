@@ -115,9 +115,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 					.logoutUrl(Routes.LOGOUT_ROUTE)
 					.deleteCookies(rememberMeCookieName)
 					.invalidateHttpSession(true)
-					.logoutSuccessHandler(((request, response, authentication) -> {
-						response.setStatus(HttpServletResponse.SC_ACCEPTED);
-					}))
+					.logoutSuccessHandler(((request, response, authentication) ->
+							response.setStatus(HttpServletResponse.SC_ACCEPTED)))
 				.and()
 
 				.authorizeRequests()
@@ -152,6 +151,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new DelegatingPasswordEncoder(encoderId, encoders);
 	}
 
+	@SuppressWarnings("UnnecessaryLocalVariable")
 	@Bean
 	public RememberMeAuthenticationFilter rememberMeAuthenticationFilter() throws Exception {
 		RememberMeAuthenticationFilter filter = new RememberMeAuthenticationFilter(

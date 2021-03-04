@@ -46,21 +46,4 @@ public class AppConfig {
 		return Clock.systemUTC();
 	}
 
-//	@Bean
-//	public JavaMailSender javaMailSender() {
-//		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-//		mailSender.setHost(mailHost);
-//		mailSender.setPort(mailPort);
-//		mailSender.setUsername(mailUser);
-//		mailSender.setPassword(mailPassword);
-//		mailSender.setProtocol("smtp");
-//
-//
-//		return mailSender;
-//	}
-
-//	@Bean
-//	public ErrorAttributes errorAttributes() {
-//		return new RestErrorAttributes();
-//	}
 }

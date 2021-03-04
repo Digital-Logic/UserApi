@@ -44,7 +44,7 @@ public class UserSignInIntegrationTest {
 	@Value("${rememberMe.cookie.name}")
 	private String rememberMeCookieName;
 
-	private String rememberMeParam="remember-me";
+	private final String rememberMeParam="remember-me";
 
 	@Test
 	@Sql(value = "classpath:db/testUser.sql")

@@ -34,7 +34,6 @@ public class NotificationServiceTest {
 
 	@Test
 	void sendMailTest() {
-
 //		when(templateEngine.process(anyString(), any(Context.class)))
 //				.thenReturn("Message body text.");
 //

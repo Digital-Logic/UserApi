@@ -38,6 +38,6 @@ public class VerificationToken extends EntityBase<String> {
 		;
 
 		public final int value;
-		private TokenType(int value) { this.value = value; }
+		TokenType(int value) { this.value = value; }
 	}
 }

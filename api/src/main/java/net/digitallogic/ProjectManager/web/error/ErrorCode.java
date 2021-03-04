@@ -42,7 +42,7 @@ public enum ErrorCode {
 	@JsonValue
 	public final String code;
 
-	private ErrorCode(String code) {
+	ErrorCode(String code) {
 		this.code = code;
 	}
 }

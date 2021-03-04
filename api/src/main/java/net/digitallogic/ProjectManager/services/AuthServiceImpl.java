@@ -97,7 +97,7 @@ public class AuthServiceImpl implements AuthService {
 	 */
 	@Transactional
 	@Override
-	public boolean activateAccount(ActivateAccountToken activateAccountToken) {
+	public void activateAccount(ActivateAccountToken activateAccountToken) {
 		String tokenId = URLDecoder.decode(activateAccountToken.getToken(), StandardCharsets.UTF_8);
 		log.info("Activate account with token: {}", tokenId);
 
@@ -165,8 +165,6 @@ public class AuthServiceImpl implements AuthService {
 
 			userStatusRepository.saveAll(newStatus);
 		}
-
-		return true;
 	}
 
 	/**
@@ -176,7 +174,7 @@ public class AuthServiceImpl implements AuthService {
 	 */
 	@Transactional
 	@Override
-	public boolean resetPassword(ResetPassword resetPassword) {
+	public void resetPassword(ResetPassword resetPassword) {
 
 		// Load the token and the user entity
 		VerificationToken token = tokenRepository.findByIdAndTokenType(resetPassword.getToken(),
@@ -205,8 +203,6 @@ public class AuthServiceImpl implements AuthService {
 		verifyUserStatusOnPasswordReset(user);
 
 		user.setPassword(encoder.encode(resetPassword.getPassword()));
-
-		return true;
 	}
 
 	@Async
@@ -217,22 +213,16 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-	public boolean accountActivateRequest(ActivateAccountRequest activateRequest) {
+	public void accountActivateRequest(ActivateAccountRequest activateRequest) {
 		UserEntity user = getUserEntity(activateRequest.getEmail());
 
 		UserStatusEntity status = getUserStatus(user);
-
-		// User's account is already enabled, nothing to do
-		if (status.isAccountEnabled())
-			return false;
 
 		createAccountActivationToken(
 				user,
 				((ServletRequestAttributes)
 						Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest()
 		);
-
-		return true;
 	}
 
 	private UserEntity getUserEntity(String email) {
@@ -274,7 +264,7 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	@Transactional
-	public boolean createResetPasswordToken(ResetPasswordRequest resetRequest) {
+	public void createResetPasswordToken(ResetPasswordRequest resetRequest) {
 
 		// Get the user entity or else throw BadRequest
 		UserEntity user = getUserEntity(resetRequest.getEmail());
@@ -308,7 +298,6 @@ public class AuthServiceImpl implements AuthService {
 						)
 						.build()
 		);
-		return true;
 	}
 
 	/**

@@ -36,7 +36,7 @@ public class SendMailEvent extends ApplicationEvent {
 		private String fromEmail;
 		private String subject;
 		private Context ctx = new Context();
-		private Map<String, Object> variableMap = new HashMap<>();
+		private final Map<String, Object> variableMap = new HashMap<>();
 
 		SendMailEventBuilder() {}
 

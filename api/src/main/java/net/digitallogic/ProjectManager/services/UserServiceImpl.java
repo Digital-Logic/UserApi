@@ -37,6 +37,7 @@ import java.util.UUID;
 import static net.digitallogic.ProjectManager.services.Utils.processSortBy;
 import static net.digitallogic.ProjectManager.web.filter.SpecSupport.toSpecification;
 
+@SuppressWarnings("ALL")
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -104,9 +105,6 @@ public class UserServiceImpl implements UserService {
 		if (updateUser.getLastName() != null && !updateUser.getLastName().isBlank() &&
 				!userEntity.getLastName().equals(updateUser.getLastName()))
 			userEntity.setLastName(updateUser.getLastName());
-
-//		if (updateUser.isArchived() && userEntity.isArchived() != updateUser.isArchived())
-//			userEntity.setArchived(true);
 
 		return new UserDto(userRepository.save(userEntity));
 	}

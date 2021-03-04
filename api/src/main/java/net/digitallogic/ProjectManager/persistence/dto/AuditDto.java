@@ -24,10 +24,7 @@ public abstract class AuditDto<ID extends Serializable> {
 	@Builder.Default
 	protected int version = 0;
 
-//	@Builder.Default
-//	protected boolean archived = false;
-
-	/* ** Audit Fields ** */
+    /* ** Audit Fields ** */
 	protected LocalDateTime createdDate;
 	protected LocalDateTime lastModifiedDate;
 	protected UUID lastModifiedBy;

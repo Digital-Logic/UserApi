@@ -6,8 +6,8 @@ import net.digitallogic.ProjectManager.persistence.dto.security.ResetPassword;
 import net.digitallogic.ProjectManager.persistence.dto.security.ResetPasswordRequest;
 
 public interface AuthService {
-	boolean activateAccount(ActivateAccountToken activateAccountToken);
-	boolean resetPassword(ResetPassword resetPassword);
-	boolean accountActivateRequest(ActivateAccountRequest request);
-	boolean createResetPasswordToken(ResetPasswordRequest resetPasswordRequest);
+	void activateAccount(ActivateAccountToken activateAccountToken);
+	void resetPassword(ResetPassword resetPassword);
+	void accountActivateRequest(ActivateAccountRequest request);
+	void createResetPasswordToken(ResetPasswordRequest resetPasswordRequest);
 }

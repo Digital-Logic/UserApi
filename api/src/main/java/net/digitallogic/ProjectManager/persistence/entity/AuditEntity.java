@@ -35,10 +35,6 @@ public abstract class AuditEntity<ID extends Serializable>
 	@Column(name = "version", nullable = false)
 	protected int version = 0;
 
-//	@Builder.Default
-//	@Column(name = "archived", nullable = false)
-//	protected boolean archived = false;
-
 	@Transient
 	@Builder.Default
 	@Setter(AccessLevel.PROTECTED)
@@ -68,14 +64,12 @@ public abstract class AuditEntity<ID extends Serializable>
 
 	public AuditEntity(AuditDto<ID> dto) {
 		this.id = dto.getId();
-//		this.archived = dto.isArchived();
 		this.version = dto.getVersion();
 	}
 
 	public AuditEntity(AuditEntity<ID> entity) {
 		this.id = entity.getId();
 		this.version = entity.getVersion();
-//		this.archived = entity.isArchived();
 		this.isNew = entity.isNew;
 		this.createdDate = entity.getCreatedDate();
 		this.lastModifiedDate = entity.getLastModifiedDate();
