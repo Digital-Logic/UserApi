@@ -27,7 +27,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
-    //implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.session:spring-session-core'
     implementation 'org.springframework.session:spring-session-data-redis'
     implementation 'io.lettuce:lettuce-core:6.0.2.RELEASE'
@@ -66,16 +65,16 @@ dependencies {
 }
 
 flyway {
-    url = 'jdbc:postgresql://localhost/project_manager'
-    user = 'pm_migration_user'
+    url = 'jdbc:postgresql://localhost/app_db'
+    user = 'migration_user'
     password = 'password'
     schemas = ['public']
 
     placeholders = [
             'sysAccountEmail': "'system_account@localhost'",
             'sysAccountPwd'  : "'{bcrypt}\$2y\$17\$mnQvgxTWmCsE2Pecu2zk7uKnrfeH5Qhgw6A7qR6asRWBmvH7Mg4Qu'",
-            'app_user'       : 'pm_app_user',
-            'migration_user' : 'pm_migration_user'
+            'app_user'       : 'app_user',
+            'migration_user' : 'migration_user'
     ]
 }
 
@@ -88,8 +87,8 @@ jooq {
                 logging = org.jooq.meta.jaxb.Logging.WARN
                 jdbc {
                     driver = 'org.postgresql.Driver'
-                    url = 'jdbc:postgresql://localhost/project_manager'
-                    user = 'pm_app_user'
+                    url = 'jdbc:postgresql://localhost/app_db'
+                    user = 'app_user'
                     password = 'password'
                 }
                 generator {
@@ -107,7 +106,7 @@ jooq {
                         fluentSetters = true
                     }
                     target {
-                        packageName = 'net.digitallogic.ProjectManager'
+                        packageName = 'net.digitallogic.UserApi'
                         directory = 'build/generated/sources/jooq/java/main'  // default (can be omitted)
                     }
                     strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
@@ -125,17 +124,6 @@ tasks.withType(JavaCompile) {
     options.verbose
     options.compilerArgs += ["-Xlint:unchecked"]
 }
-
-
-//task migrateTest(type: FlywayMigrateTask) {
-//    group = 'flywayTest'
-//    url = dbConfig.test.dbUrl
-//}
-//
-//task cleanTest(type: FlywayCleanTask) {
-//    group = 'flywayTest'
-//    url = dbConfig.test.dbUrl
-//}
 
 test {
     useJUnitPlatform()

@@ -4,7 +4,7 @@ services:
     image: library/postgres:13.2-alpine
     container_name: datasource
     environment:
-      POSTGRES_DB: project_manager
+      POSTGRES_DB: app_db
       POSTGRES_PASSWORD: password
 
     ports:
@@ -16,9 +16,9 @@ services:
     image: flyway/flyway
     container_name: flyway
     command: >-  # Line folding
-      -url=jdbc:postgresql://db/project_manager
+      -url=jdbc:postgresql://db/app_db
       -schemas=public
-      -user=pm_migration_user
+      -user=migration_user
       -password=password
       -connectRetries=60
       migrate

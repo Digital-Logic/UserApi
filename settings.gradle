@@ -1,2 +1,2 @@
-rootProject.name = 'ProjectManager'
+rootProject.name = 'UserApi'
 include 'api'

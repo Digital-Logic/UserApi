@@ -1,7 +1,7 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml" />
 
-    <logger name="net.digitallogic.ProjectManager" level="DEBUG" />
+    <logger name="net.digitallogic.UserApi" level="DEBUG" />
     <logger name="org.springframework" level="INFO" />
     <logger name="org.springframework.security" level="TRACE" />
     <logger name="org.springframework.session" level="TRACE" />
