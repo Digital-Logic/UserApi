@@ -1,4 +1,4 @@
-# LoginApi
+# UserApi
 
 ## Getting Started
 
