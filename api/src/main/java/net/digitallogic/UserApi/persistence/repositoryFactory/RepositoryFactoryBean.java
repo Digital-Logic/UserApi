@@ -22,6 +22,11 @@ public class RepositoryFactoryBean<R extends Repository<T, ID>, T, ID extends Se
 		this.repositoryInterface = repositoryInterface;
 	}
 
+	/**
+	 * Creates and returns a new repository factory.
+	 * @param entityManager
+	 * @return
+	 */
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory(EntityManager entityManager) {
 

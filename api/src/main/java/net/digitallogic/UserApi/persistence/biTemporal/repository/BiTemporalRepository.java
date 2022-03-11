@@ -26,7 +26,7 @@ public interface BiTemporalRepository<T extends BiTemporalEntity<ID>, ID extends
 	Optional<T> findByEntityId(ID id, final LocalDateTime time);
 
 
-	// Get all entities by entity id, with and an valid time between effetiveStart and effectiveStop
+	// Get all entities by entity id, with a valid time between effectiveStart and effectiveStop
 	Iterable<T> findByEntityId(ID id, final LocalDateTime effectiveStart, final LocalDateTime effectiveStop);
 
 	Iterable<T> getHistoryByEntityId(ID id, final Clock clock);

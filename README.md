@@ -1,8 +1,8 @@
 # UserApi
-
-## Getting Started
-
-User authentication and access control api with bi-temporal database design. Supports dynamic property expansion integrated directly into JPA repositories. API endpoints support filtering, sorting, searching, and bi-temporal queries.
+- User authentication and access control.
+- Bitemporal database design integrated with JPA repositories.
+- Dynamic property expansion integrated into JPA repositories.
+- API endpoints support filtering, sorting, searching, with bitemporal queries.
 
 ### Built With
 
